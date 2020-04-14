@@ -12,7 +12,7 @@ const CreateUser = ()=>{
 
     return(
         <Container style={{flex:1,
-        marginTop:'30%',
+        marginTop:'15%',
         width:'40%',
         flexDirection:'row',
         alignItems:'center',
