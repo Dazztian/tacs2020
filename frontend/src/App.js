@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 import './App.css';
 import Home from './Home';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
@@ -38,3 +38,25 @@ class App extends Component {
 }
 
 export default App;
+*/
+import React from 'react';
+import {StyleSheet, Text,View} from "react-native-web";
+import Home from './screens/Home'
+import CreateUser from './screens/CreateUser'
+
+export default function App(){
+    return(
+        <View style={styles.container}>
+        {/*<Home/>*/}
+        <CreateUser/>
+        </View>
+)
+}
+
+const styles= StyleSheet.create({
+    container:{
+        flex:1,
+        backgroundColor:'#fff',
+    }
+
+})
