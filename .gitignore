@@ -1,11 +1,12 @@
-/backend/.gradle
-/backend/.idea
-/backend/out
-/backend/build
-/backend/*.iml
-/backend/*.ipr
-/backend/*.iws
+.gradle
+*.gradle
+*/build/
+*.jar
+*.war
+*.ear
 
+!gradle-wrapper.jar
 
-/frontend/node_modules
-/frontend/package-lock.json
+# IDE
+.idea/
+*.iml
