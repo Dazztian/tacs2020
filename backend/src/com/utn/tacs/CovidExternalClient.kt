@@ -3,16 +3,14 @@ package com.utn.tacs
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
 import java.util.*
-import com.google.gson.Gson
 
-data class location (
+data class Location (
     val lat: Double,
     val lon: Double
 )
 
-data class countryCode (
+data class CountryCode (
     val iso2: String,
     val iso3: String
 )
@@ -28,6 +26,5 @@ data class CountryRegion (
 
 suspend fun getExternalData(): String {
     val client = HttpClient(CIO)
-    val response: String = client.get("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest?onlyCountries=true")
-    return response
+    return client.get("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest?onlyCountries=true")
 }
