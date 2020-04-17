@@ -26,6 +26,20 @@ fun Application.countries() {
                 call.respond(response)
             }
         }
+        get("/") {
+                call.respondText("Hello World!")
+        }
+        route("/api/countries") {
+            get {
+                val lat = call.request.queryParameters["lat"]?.toDouble()
+                val lon = call.request.queryParameters["lon"]?.toDouble()
+                if(lat != null && lon != null){
+                    call.respond(getNearestCountries(lat,lon)); 
+                }else{
+                    call.respond(getAllCountries()); 
+                }
+            }
+        }
     }
 }
 
