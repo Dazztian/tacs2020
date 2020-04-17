@@ -66,6 +66,24 @@ fun Application.countries() {
 
 fun Application.database() {
     routing {
+        route("/register"){
+            post{
+                call.respondText("register");
+            }
+        }
+        route("/login"){
+            post{
+                call.respondText("login");
+            }
+        }
+        route("/auth/google"){
+            post{
+                call.respondText("Oauth");
+            }
+        }
+        route("/logout"){
+                call.respondText("logout");
+        }
         route("/database"){
             get {
                 val response = getCountriesFromDatabase()
