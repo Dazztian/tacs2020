@@ -20,14 +20,14 @@ fun Application.module() {
 
 fun Application.countries() {
     routing {
+        get("/") {
+            call.respondText("Hello World!")
+        }
         route("/countries") {
             get {
                 val response = getExternalData()
                 call.respond(response)
             }
-        }
-        get("/") {
-                call.respondText("Hello World!")
         }
         route("/api/countries") {
             get {
@@ -38,6 +38,27 @@ fun Application.countries() {
                 }else{
                     call.respond(getAllCountries()); 
                 }
+            }
+        }
+        route("/api/countries/list") {
+            get{
+                call.respondText("Retornal las listas del usuario");                 
+            }
+            post{
+                call.respondText("Guarda una nueva listas del usuario");       
+            }
+        }
+        route("/api/countries/list/{idList}") {
+            delete{
+                call.respondText("Borra una lista del usuario"); 
+            }
+            patch{
+                call.respondText("Modifica una lista del usuario"); 
+            }
+        }
+        route("/api/countries/list/{idList}/table"){
+            get{
+                call.respondText("Envia los datos e/m/r para una lista de paises"); 
             }
         }
     }
