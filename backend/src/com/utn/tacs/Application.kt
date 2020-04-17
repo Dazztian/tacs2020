@@ -82,7 +82,10 @@ fun Application.database() {
             }
         }
         route("/logout"){
+            get{
                 call.respondText("logout");
+            }
+
         }
         route("/database"){
             get {
