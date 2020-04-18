@@ -21,7 +21,7 @@ Frontend
 
 ```bash
 cd frontend
-./gradlew build
+./npm install (just run in case you want to install dependencies, otherwise is not needed)
 docker build -t covid19-frontend .
 ```
 
