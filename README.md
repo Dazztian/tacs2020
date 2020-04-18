@@ -4,6 +4,23 @@
 
 This project is the work done following this [statement](https://docs.google.com/document/u/1/d/e/2PACX-1vQo5WkN-3RTLaeB5885hlfcnuWFgxzxe-u5gPa5IGrtkeTF9BHMjeh1YScTO-Tg000gzllwmRaFFKet/pub "TACS - Covid19 - Enunciado")
 
+##### Building the application
+
+First build the applications using gradle.
+
+Backend 
+
+```bash
+cd backend
+./gradlew build
+```
+Frontend
+
+```bash
+cd frontend
+./npm install (just run in case you want to install dependencies, otherwise is not needed)
+```
+
 ##### Compose docker containers
 
 Just up the docker compose. It will proceed to build all the dockers images before composing the containers.
@@ -11,46 +28,6 @@ Remember always to build your backend app
 
 ```bash
 docker-compose up -d
-```
-
-##### Building the application
-
-First build the application using gradle, then create a local docker image using Dockerfile.
-
-Backend 
-
-```bash
-cd backend
-./gradlew build
-docker build -t covid19-backend .
-```
-Frontend
-
-```bash
-cd frontend
-./npm install (just run in case you want to install dependencies, otherwise is not needed)
-docker build -t covid19-frontend .
-```
-
-##### Running the application
-
-This will start the container and run it.
-```bash
-docker run -it -d -p 8080:8080 --rm covid19-backend
-docker run -it -d -p 8081:8080 --rm covid19-frontend
-```
-
-The -d option makes the docker to be detached, removing it will allow to see logs in real time.
-
-
-#### Develop
-
-For now the application does not have a docker-compose, so running from docker can not connect to mongo db.
-
-If launching using Intellij, first start mongo docker container:
-
-```bash
-docker run --name <CONTAINER_NAME> -p 27017:27017 -d mongo:3.6.17
 ```
 
 #### Troubleshooting
