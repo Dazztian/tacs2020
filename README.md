@@ -4,9 +4,16 @@
 
 This project is the work done following this [statement](https://docs.google.com/document/u/1/d/e/2PACX-1vQo5WkN-3RTLaeB5885hlfcnuWFgxzxe-u5gPa5IGrtkeTF9BHMjeh1YScTO-Tg000gzllwmRaFFKet/pub "TACS - Covid19 - Enunciado")
 
+##### Compose docker containers
 
+Just up the docker compose. It will proceed to build all the dockers images before composing the containers.
+Remember always to build your backend app
 
-##### Building  the application
+```bash
+docker-compose up -d
+```
+
+##### Building the application
 
 First build the application using gradle, then create a local docker image using Dockerfile.
 
