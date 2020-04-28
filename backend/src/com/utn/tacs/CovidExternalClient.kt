@@ -1,50 +1,67 @@
 package com.utn.tacs
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.get
-import io.ktor.gson.gson
-import java.util.*
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.utn.tacs.utils.isDistanceLowerThan
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import java.util.*
 
-data class Location (
-    val name: String,
-    val lat: Double,
-    val lon: Double
+data class Location(
+        val name: String,
+        val lat: Double,
+        val lng: Double
 )
 
-data class CountryCode (
-    val iso2: String,
-    val iso3: String
+data class CountryCode(
+        val iso2: String,
+        val iso3: String
 )
 
-data class CountryData (
-    val countryregion: String,
-    val lastupdate: Date,
-    val location: Location,
-    val countrycode: CountryCode,
-    val confirmed: Int,
-    val deaths: Int,
-    val recovered: Int
+data class CountryData(
+        val countryregion: String,
+        val lastrpdate: Date,
+        val location: Location,
+        val countrycode: CountryCode,
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int
 )
 
-suspend fun getExternalData(): Array<CountryData> {
-    
-    val client = HttpClient(CIO)
-    val jsonData: String? = client.get("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest?onlyCountries=true")
-    val gson = Gson()
-    val arrayDePaisesType = object : TypeToken<Array<CountryData>>() {}.type
-    var paises: Array<CountryData> = gson.fromJson(jsonData, arrayDePaisesType)
-    return paises
+val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
+const val onlyCountries = "onlyCountries=true"
+const val maxDistance = 2000.0
+
+
+suspend fun getCountriesLatest(): Array<CountryData> {
+    return getCountriesLatest("")
 }
 
+suspend fun getCountriesLatest(queryParams: String): Array<CountryData> {
+    return HttpClient().use { client ->
+        val jsonData: String? = client.get(apiEntryPoint + "latest?" + onlyCountries + queryParams)
+        val countryArray = object : TypeToken<Array<CountryData>>() {}.type
+        gson.fromJson(jsonData, countryArray)
+    }
+}
+
+suspend fun getCountryLatestByIsoCode(iso2: String): CountryData {
+    try {
+        return getCountriesLatest("&iso2=$iso2")[0]
+    } catch (e: IndexOutOfBoundsException) {
+        throw kotlin.IllegalArgumentException("There was no country with iso2 code $iso2")
+    }
+}
+
+//We will consider that nearest countries are the one that are 3000km from latitude and long
 suspend fun getNearestCountries(lat: Double, lon: Double): List<String> {
-    val data: Array<CountryData> = getExternalData()
-    return data.map{it.countryregion}
+    val data: Array<CountryData> = getCountriesLatest()
+    return data.filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }.map { it.countryregion }
 }
 
 suspend fun getAllCountries(): List<String> {
-    val data: Array<CountryData> = getExternalData()
-    return data.map{it.countryregion}
+    val data: Array<CountryData> = getCountriesLatest()
+    return data.map { it.countryregion }
 }
