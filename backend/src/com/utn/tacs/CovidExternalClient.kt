@@ -21,7 +21,7 @@ data class CountryCode(
 
 data class CountryData(
         val countryregion: String,
-        val lastrpdate: Date,
+        val lastupdate: Date,
         val location: Location,
         val countrycode: CountryCode,
         val confirmed: Int,
