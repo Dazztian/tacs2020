@@ -8,27 +8,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import java.util.*
 
-data class Location(
-        val name: String,
-        val lat: Double,
-        val lng: Double
-)
-
-data class CountryCode(
-        val iso2: String,
-        val iso3: String
-)
-
-data class CountryData(
-        val countryregion: String,
-        val lastupdate: Date,
-        val location: Location,
-        val countrycode: CountryCode,
-        val confirmed: Int,
-        val deaths: Int,
-        val recovered: Int
-)
-
 val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
 const val onlyCountries = "onlyCountries=true"
@@ -45,6 +24,11 @@ suspend fun getCountriesLatest(queryParams: String): Array<CountryData> {
         val countryArray = object : TypeToken<Array<CountryData>>() {}.type
         gson.fromJson(jsonData, countryArray)
     }
+}
+
+suspend fun getCountriesLatest(isoCodes2: List<String>): List<CountryData> {
+    val data: Array<CountryData> = getCountriesLatest()
+    return data.filter { countryData -> isoCodes2.contains(countryData.countrycode.iso2) }.map { it.countryregion }
 }
 
 suspend fun getCountryLatestByIsoCode(iso2: String): CountryData {

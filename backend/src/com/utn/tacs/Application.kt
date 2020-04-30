@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import com.utn.tacs.user.*
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -32,7 +33,7 @@ fun Application.module() {
 fun Application.countries() {
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("Application running")
         }
 
         route("/api/countries") {
@@ -55,7 +56,7 @@ fun Application.countries() {
         }
         route("/api/countries/list") {
             get {
-                call.respondText("Retorna las listas del usuario");
+                call.respondText(getUserCountriesList(1).map { it.countryregion  });
             }
             post {
                 call.respondText("Guarda una nueva listas del usuario");
