@@ -36,6 +36,10 @@ fun Application.countries() {
             call.respondText("Application running")
         }
 
+        get("/api/tree") {
+            call.respond(getCountriesLatest())
+        }
+
         route("/api/countries") {
             get {
                 val lat = call.request.queryParameters["lat"]?.toDouble()
@@ -51,15 +55,16 @@ fun Application.countries() {
         route("/api/countries/{iso2}") {
             get {
                 val iso2: String = call.parameters["iso2"].toString()
-                call.respond(   getCountryLatestByIsoCode(iso2.toUpperCase()))
+                call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
             }
         }
-        route("/api/countries/list") {
+        route("/api/user/countries/list") {
             get {
-                call.respondText(getUserCountriesList(1).map { it.countryregion  });
+                val userId = 1
+                call.respond(getUserCountriesList(userId))
             }
             post {
-                call.respondText("Guarda una nueva listas del usuario");
+                call.respondText("Guarda una nueva listas del usuario")
             }
         }
         route("/api/countries/list/{idList}") {
