@@ -58,7 +58,7 @@ fun Application.countries() {
                 call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
             }
         }
-        route("/api/user/countries/list") {
+        route("/api/user/countries/lists") {
             get {
                 val userId = 1
                 call.respond(getUserCountriesList(userId))
@@ -67,7 +67,12 @@ fun Application.countries() {
                 call.respondText("Guarda una nueva listas del usuario")
             }
         }
-        route("/api/countries/list/{idList}") {
+        route("/api/user/countries/lists/{idList}") {
+            get{
+                val listName: String = call.parameters["idList"].toString()
+                val userId = 1
+                call.respond(getUserCountriesList(userId,listName))
+            }
             delete {
                 call.respondText("Borra una lista del usuario");
             }

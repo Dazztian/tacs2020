@@ -23,7 +23,12 @@ data class CountryData(
     val recovered: Int
 )
 
+data class UserCountriesList(
+    val name: String,
+    val countries: List<String>
+)
+
 data class User(
    val id: Int,
-   val countries: List<String>
+   val countriesLists: List<UserCountriesList>
 )
