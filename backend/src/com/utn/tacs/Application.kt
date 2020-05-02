@@ -7,10 +7,10 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
-import io.ktor.response.respondText
+import io.ktor.response.*
 import io.ktor.routing.*
 import com.utn.tacs.user.*
+import com.utn.tacs.rest.*
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -26,67 +26,19 @@ fun Application.module() {
             call.respond(error)
         }
     }
-    countries()
-    database()
+
+    routes()
 }
 
-fun Application.countries() {
+fun Application.routes() {
     routing {
-        get("/") {
-            call.respondText("Application running")
-        }
-
-        get("/api/tree") {
-            call.respond(getCountriesLatest())
-        }
-
-        route("/api/countries") {
-            get {
-                val lat = call.request.queryParameters["lat"]?.toDouble()
-                val lon = call.request.queryParameters["lon"]?.toDouble()
-                if (lat != null && lon != null) {
-                    call.respond(getNearestCountries(lat, lon));
-                } else {
-                    call.respond(getAllCountries());
-                }
-            }
-        }
-        //Returns a country latest information based on iso2 code.
-        route("/api/countries/{iso2}") {
-            get {
-                val iso2: String = call.parameters["iso2"].toString()
-                call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
-            }
-        }
-        route("/api/user/countries/lists") {
-            get {
-                val userId = 1
-                call.respond(getUserCountriesList(userId))
-            }
-            post {
-                call.respondText("Guarda una nueva listas del usuario")
-            }
-        }
-        route("/api/user/countries/lists/{idList}") {
-            get{
-                val listName: String = call.parameters["idList"].toString()
-                val userId = 1
-                call.respond(getUserCountriesList(userId,listName))
-            }
-            delete {
-                call.respondText("Borra una lista del usuario");
-            }
-            patch {
-                call.respondText("Modifica una lista del usuario");
-            }
-        }
-        route("/api/countries/list/{idList}/table") {
-            get {
-                call.respondText("Envia los datos e/m/r para una lista de paises");
-            }
-        }
+        countriesRoutes()
+        healthCheckRoutes()
+        userRoutes()
+        database()
     }
 }
+
 
 fun Application.database() {
     routing {

@@ -8,7 +8,7 @@ import org.bson.Document
 
 fun getCountriesFromDatabase(): String {
 
-    //Only for testing mongo, this must be deleted in future iterations.
+
     var mongoClient: MongoClient? = null
     try {
         mongoClient = MongoClient("localhost", 27017)
@@ -32,7 +32,7 @@ fun getCountriesFromDatabase(): String {
     val db = mongoClient.getDatabase("testDB")
     val countries: MongoCollection<Document> = db.getCollection("country")
     val country = countries.find(Document("name", "Argentina")).first()
-    return country.toJson();
+    return country.toJson()
 }
 
 

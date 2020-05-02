@@ -14,11 +14,7 @@ suspend fun getUserCountriesList(userId: Int, listName: String): UserListRespons
     ))
 
     val list = user.countriesLists.filter{ l -> l.name.equals(listName) }.first()
-    if (list == null) {
-        throw Exception()
-    }
     return UserListResponse(listName, getCountriesLatest(list.countries).map { it.countryregion })
-
 }
 
 suspend fun getUserCountriesList(userId: Int): List<UserListResponse> {
