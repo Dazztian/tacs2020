@@ -48,3 +48,4 @@ shadowJar {
     classifier = null
     archiveVersion = null
 }
+
