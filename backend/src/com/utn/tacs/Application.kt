@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import com.utn.tacs.user.*
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -32,7 +33,11 @@ fun Application.module() {
 fun Application.countries() {
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("Application running")
+        }
+
+        get("/api/tree") {
+            call.respond(getCountriesLatest())
         }
 
         route("/api/countries") {
@@ -50,18 +55,24 @@ fun Application.countries() {
         route("/api/countries/{iso2}") {
             get {
                 val iso2: String = call.parameters["iso2"].toString()
-                call.respond(   getCountryLatestByIsoCode(iso2.toUpperCase()))
+                call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
             }
         }
-        route("/api/countries/list") {
+        route("/api/user/countries/lists") {
             get {
-                call.respondText("Retorna las listas del usuario");
+                val userId = 1
+                call.respond(getUserCountriesList(userId))
             }
             post {
-                call.respondText("Guarda una nueva listas del usuario");
+                call.respondText("Guarda una nueva listas del usuario")
             }
         }
-        route("/api/countries/list/{idList}") {
+        route("/api/user/countries/lists/{idList}") {
+            get{
+                val listName: String = call.parameters["idList"].toString()
+                val userId = 1
+                call.respond(getUserCountriesList(userId,listName))
+            }
             delete {
                 call.respondText("Borra una lista del usuario");
             }
