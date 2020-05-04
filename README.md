@@ -30,6 +30,10 @@ Remember always to build your backend app
 docker-compose up -d
 ```
 
+##### Telegram bot
+
+To use the telegram bot send a message to @Tacs_2020_Grupo_4_bot
+
 #### Troubleshooting
 
 If having problems seeing the downloaded libraries, and using Intellij do this:
