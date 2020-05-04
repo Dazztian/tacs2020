@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {StyleSheet, Text, View, Modal} from "react-native-web";
 import {TextInput, Button} from 'react-native-paper'
 import { Container } from '@material-ui/core';
+import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 
 
 const Login = ()=>{
@@ -33,14 +34,15 @@ const Login = ()=>{
                     mode="outlined"
                     onChangeText={text =>setPassword(text) }
                 />
-                <Button  style={styles.botones} mode="contained" theme={theme}
-                         onPress={()=>setModal(true)}>
+                <Button style={styles.botones} mode="contained" theme={theme}
+                        onPress={()=>setModal(true)}>
                     LOGIN
                 </Button>
                 <Button style={styles.botones} mode="contained" theme={theme}
                         onPress={()=>setModal(true)}>
                     CREAR USUARIO
                 </Button>
+
             </View>
         </Container>
 

@@ -16,7 +16,15 @@ import com.utn.tacs.rest.*
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
-    install(ContentNegotiation) {
+    install(CORS) {
+        method(HttpMethod.Post)
+        method(HttpMethod.Get)
+        header(HttpHeaders.Accept)
+        anyHost()
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+    }
+    install(Content Negotiation) {
         gson {
         }
     }
@@ -36,6 +44,8 @@ fun Application.routes() {
         healthCheckRoutes()
         userRoutes()
         database()
+        createUser()
+        login()
     }
 }
 
@@ -62,6 +72,39 @@ fun Application.database() {
                 call.respondText("logout")
             }
 
+        }
+    }
+}
+
+fun Application.createUser() {
+    route("/createUser"){
+        get {
+            val response = getUserFromDatabase("juan")
+            call.respond(response)
+        }
+        post {
+            //Recibe el body en json como string
+            val text: String = call.receiveText()
+
+            val json = Json(JsonConfiguration.Stable)
+            val output = json.parse(User.serializer(),text)
+
+            call.respond(createUser(output));
+        }
+    }
+}
+
+fun Application.login() {
+    route("/login") {
+        get {
+            //Recibe el body en json como string
+            val text: String = call.receiveText()
+
+            val json = Json(JsonConfiguration.Stable)
+            val output = json.parse(User.serializer(),text)
+
+            val response = getUserFromDatabase(output.name)
+            call.respond(response)
         }
     }
 }
