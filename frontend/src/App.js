@@ -10,10 +10,16 @@ export default function App(){
         <Router>
             <div className="container">
                 <h1>BARRA DE NAVEGACION...</h1>
+                <Link to="/logout" className="btn btn-dark" activeClassName="active">
+                    LOGOUT
+                </Link>
                 <hr/>
                 <Switch>
-                    <Route>
+                    <Route path="/signUp">
                         <CreateUser/>
+                    </Route>
+                    <Route path="/" exact>
+                        <Login/>
                     </Route>
                 </Switch>
             </div>
