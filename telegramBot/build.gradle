@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        /*I liked this plugin, this transforms all in a very big fat jar. Can be removed and done manually.*/
+        classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: "com.github.johnrengelman.shadow"
+
+
+group 'com.utn.tacs'
+version '0.0.1'
+mainClassName = "com.utn.tacs.MainKt"
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+kotlin {
+    // For ARM, should be changed to iosArm32 or iosArm64
+    // For Linux, should be changed to e.g. linuxX64
+    // For MacOS, should be changed to e.g. macosX64
+    // For Windows, should be changed to e.g. mingwX64
+    sourceSets {
+        // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
+        // in gradle.properties file and re-import your project in IDE.
+        mingwTest {
+        }
+
+        sourceSets {
+            main.kotlin.srcDirs = [ 'src' ]
+        }
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "io.ktor:ktor-gson:$ktor_version"
+    implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+    implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "org.mongodb:mongodb-driver:$mongo_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib_version"
+    testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
+    compile 'com.github.kotlin-telegram-bot:kotlin-telegram-bot:master'
+}
+
+shadowJar {
+    archiveBaseName = 'covid19-grupo4-telegram-bot'
+    classifier = null
+    archiveVersion = null
+}
+
+// Use the following Gradle tasks to run your application:
+// :runReleaseExecutableMingw - without debug symbols
+// :runDebugExecutableMingw - with debug symbols
