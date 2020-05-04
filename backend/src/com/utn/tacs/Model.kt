@@ -40,6 +40,9 @@ data class UserCountriesList(
 )
 
 data class User(
-   val id: Int,
-   val countriesLists: List<UserCountriesList>
+   val id: Int?,
+   val name: String,
+   val email: String?,
+   val password: String?
+   val countriesLists: List<UserCountriesList>?
 )
