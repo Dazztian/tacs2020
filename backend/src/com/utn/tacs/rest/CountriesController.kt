@@ -4,7 +4,7 @@ import io.ktor.application.call
 import io.ktor.routing.*
 import io.ktor.response.*
 import com.utn.tacs.*
-
+import com.utn.tacs.countries.*
 
 fun Route.countriesRoutes() {
     route("/api/countries") {
@@ -18,7 +18,7 @@ fun Route.countriesRoutes() {
             }
         }
         get("/tree") {
-            call.respond(getCountriesLatest())
+            call.respond(getCountriesFromDatabase())
         }
         get("/{iso2}") {
             val iso2: String = call.parameters["iso2"].toString()

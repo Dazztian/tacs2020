@@ -14,7 +14,6 @@ const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainiz
 const val onlyCountries = "onlyCountries=true"
 const val maxDistance = 2000.0
 
-
 suspend fun getCountriesLatest(): List<CountryData> {
     return getCountriesLatest("")
 }

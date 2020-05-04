@@ -59,15 +59,9 @@ fun Application.database() {
         }
         route("/logout") {
             get {
-                call.respondText("logout");
+                call.respondText("logout")
             }
 
-        }
-        route("/database") {
-            get {
-                val response = getCountriesFromDatabase()
-                call.respond(response)
-            }
         }
     }
 }
