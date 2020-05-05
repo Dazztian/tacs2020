@@ -12,7 +12,7 @@ export default makeStyles(theme => ({
     left: 0,
   },
   logotypeContainer: {
-    backgroundColor: "#90caf9",
+    backgroundColor: "#e0e0e0",
     width: "60%",
     height: "100%",
     display: "flex",

@@ -39,12 +39,12 @@ function Login(props) {
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
-      <Typography variant="h1" className={classes.greeting}>
+      <p></p><Typography variant="h1" className={classes.greeting}> 
         UTN FRBA
-      </Typography>  
+      </Typography><p/>
       <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>
-        <p>TACS</p>
+        <Typography variant="h1" className={classes.greeting}>
+          TACS    
         </Typography>
       </div>
       <div className={classes.formContainer}>

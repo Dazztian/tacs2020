@@ -44,7 +44,7 @@ export default function App() {
         {...rest}
         render={props =>
           true ? (
-            true ? (
+            false ? (
               React.createElement(LayoutAdmin, props)
             ) : (
               React.createElement(LayoutUser, props)
@@ -52,7 +52,7 @@ export default function App() {
           ) : (
             <Redirect
               to={{
-                pathname: "/",
+                pathname: "/login",
                 state: { from: props.location }
               }}
             />
