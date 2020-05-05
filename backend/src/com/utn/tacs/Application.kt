@@ -1,16 +1,20 @@
 package com.utn.tacs
 
+import com.mongodb.MongoClient
+import com.utn.tacs.rest.*
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.*
-import io.ktor.routing.*
-import com.utn.tacs.user.*
-import com.utn.tacs.rest.*
+import io.ktor.response.respond
+import io.ktor.routing.routing
+
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -24,7 +28,7 @@ fun Application.module() {
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
-    install(Content Negotiation) {
+    install(ContentNegotiation) {
         gson {
         }
     }
@@ -39,72 +43,14 @@ fun Application.module() {
 }
 
 fun Application.routes() {
+    //TODO verificar esto, no se bien donde colocar la base para poder usarla en los tests.
     routing {
-        countriesRoutes()
         healthCheckRoutes()
-        userRoutes()
-        database()
-        createUser()
+        countriesRoutes()
+        userCountriesListRoutes()
+        users()
         login()
     }
 }
 
 
-fun Application.database() {
-    routing {
-        route("/register") {
-            post {
-                call.respondText("register");
-            }
-        }
-        route("/login") {
-            post {
-                call.respondText("login");
-            }
-        }
-        route("/auth/google") {
-            post {
-                call.respondText("Oauth");
-            }
-        }
-        route("/logout") {
-            get {
-                call.respondText("logout")
-            }
-
-        }
-    }
-}
-
-fun Application.createUser() {
-    route("/createUser"){
-        get {
-            val response = getUserFromDatabase("juan")
-            call.respond(response)
-        }
-        post {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
-
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(),text)
-
-            call.respond(createUser(output));
-        }
-    }
-}
-
-fun Application.login() {
-    route("/login") {
-        get {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
-
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(),text)
-
-            val response = getUserFromDatabase(output.name)
-            call.respond(response)
-        }
-    }
-}

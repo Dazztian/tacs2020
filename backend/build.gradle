@@ -46,6 +46,11 @@ dependencies {
     testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+    testCompile "org.testcontainers:testcontainers:$test_containers_version"
+    testCompile "org.testcontainers:junit-jupiter:$test_containers_version"
 }
 
 shadowJar {

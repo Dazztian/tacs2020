@@ -3,6 +3,7 @@ package com.utn.tacs.user
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
+import com.utn.tacs.User
 import org.bson.Document
 
 fun getUserFromDatabase(unNombre: String): String {
@@ -14,8 +15,17 @@ fun getUserFromDatabase(unNombre: String): String {
     return user.toJson()
 }
 
+fun getUserById(id: Int): String {
 
-fun createUser(unUser: User): String{
+    var mongoClient = MongoClient("127.0.0.1", 27017)
+    val db = mongoClient.getDatabase("testDB")
+    val users: MongoCollection<Document> = db.getCollection("user")
+    val user = users.find(Document("id", id)).first()
+    return user.toJson()
+}
+
+
+fun createUser(user: User): String{
 
     var mongoClient = MongoClient("localhost", 27017)
     try {
@@ -26,9 +36,9 @@ fun createUser(unUser: User): String{
         val document = Document()
 
 
-        document["name"] = unUser.name
-        document["email"] = unUser.email
-        document["password"] = unUser.password
+        document["name"] = user.name
+        document["email"] = user.email
+        document["password"] = user.password
 
         tbl.insertOne(document)
 
@@ -39,5 +49,5 @@ fun createUser(unUser: User): String{
         mongoClient!!.close()
     }
 
-    return getUserFromDatabase(unUser.name)
+    return getUserFromDatabase(user.name)
 }
