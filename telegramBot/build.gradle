@@ -18,7 +18,6 @@ apply plugin: "com.github.johnrengelman.shadow"
 
 
 group 'com.utn.tacs'
-version '0.0.1'
 mainClassName = "com.utn.tacs.MainKt"
 
 repositories {
