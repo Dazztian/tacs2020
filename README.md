@@ -1,4 +1,4 @@
-# Covid-19 - Grupo  3
+# Covid-19 - Grupo  4
 ## Técnicas Avanzadas de la Construcción de Software
 ### UTN - FRBA
 
@@ -19,6 +19,12 @@ Frontend
 ```bash
 cd frontend
 ./npm install (just run in case you want to install dependencies, otherwise is not needed)
+```
+Telegram Bot
+
+```bash
+cd telegramBot
+./gradlew build
 ```
 
 ##### Compose docker containers

@@ -8,7 +8,7 @@ RUN chown -R $APPLICATION_USER /app
 
 USER $APPLICATION_USER
 
-COPY ./build/libs/covid19-grupo4-telegram-bot-0.0.1.jar /app/covid19-grupo4-telegram-bot-0.0.1.jar
+COPY ./build/libs/covid19-grupo4-telegram-bot.jar /app/covid19-grupo4-telegram-bot.jar
 WORKDIR /app
 
-CMD ["java", "-server", "-jar", "covid19-grupo4-telegram-bot-0.0.1.jar"]
+CMD ["java", "-server", "-jar", "covid19-grupo4-telegram-bot.jar"]
