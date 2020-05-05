@@ -37,7 +37,10 @@ data class CountryData(
 data class UserCountriesList(
     val name: String,
     val countries: List<String>
-)
+){
+    override fun toString(): String{
+        return "{\"name\": \"$name\", \"countries\": \"$countries\"}"
+}}
 
 data class User(
    val id: Int?,
@@ -45,4 +48,7 @@ data class User(
    val email: String?,
    val password: String?
    val countriesLists: List<UserCountriesList>?
-)
+){
+  override fun toString(): String{
+    return "{\"id\":$id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"
+}}
