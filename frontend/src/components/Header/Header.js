@@ -5,7 +5,8 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Fab
+  Fab,
+  Button
 } from "@material-ui/core";
 import {
   Menu as MenuIcon,
@@ -237,13 +238,15 @@ export default function Header(props) {
             <AccountIcon className={classes.profileMenuIcon} /> Profile
           </MenuItem>
           <div className={classes.profileMenuUser}>
-            <Typography
-              className={classes.profileMenuLink}
-              color="primary"
+            <Button
               onClick={() => signOut(userDispatch, props.history)}
+              classes={{ root: classes.button }}
+              variant="contained"
+              size="small"
+              color="secondary"
             >
               Sign Out
-            </Typography>
+            </Button>
           </div>
         </Menu>
       </Toolbar>
