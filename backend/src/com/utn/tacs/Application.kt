@@ -11,6 +11,14 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import com.utn.tacs.user.*
 import com.utn.tacs.rest.*
+import io.ktor.features.CORS
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import io.ktor.request.receive
+import io.ktor.request.receiveText
+
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -24,7 +32,7 @@ fun Application.module() {
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
-    install(Content Negotiation) {
+    install(ContentNegotiation) {
         gson {
         }
     }
@@ -44,9 +52,9 @@ fun Application.routes() {
         healthCheckRoutes()
         userRoutes()
         database()
-        createUser()
-        login()
     }
+    createUser()
+    login()
 }
 
 
@@ -77,34 +85,38 @@ fun Application.database() {
 }
 
 fun Application.createUser() {
-    route("/createUser"){
-        get {
-            val response = getUserFromDatabase("juan")
-            call.respond(response)
-        }
-        post {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
+    routing {
+        route("/createUser"){
+            get {
+                val response = getUserFromDatabase("juan")
+                call.respond(response)
+            }
+            post {
+                //Recibe el body en json como string
+                val text: String = call.receiveText()
 
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(),text)
+                val json = Json(JsonConfiguration.Stable)
+                val output = json.parse(User.serializer(),text)
 
-            call.respond(createUser(output));
+                call.respond(createUser(output));
+            }
         }
     }
 }
 
 fun Application.login() {
-    route("/login") {
-        get {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
+    routing {
+        route("/login") {
+            get {
+                //Recibe el body en json como string
+                val text: String = call.receiveText()
 
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(),text)
+                val json = Json(JsonConfiguration.Stable)
+                val output = json.parse(User.serializer(),text)
 
-            val response = getUserFromDatabase(output.name)
-            call.respond(response)
+                val response = getUserFromDatabase(output.name)
+                call.respond(response)
+            }
         }
     }
 }

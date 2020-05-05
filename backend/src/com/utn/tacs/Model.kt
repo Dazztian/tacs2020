@@ -1,6 +1,8 @@
 package com.utn.tacs
 
 import java.util.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 data class Location(
     val name: String,
@@ -34,6 +36,7 @@ data class CountryData(
     }
 }
 
+@Serializable
 data class UserCountriesList(
     val name: String,
     val countries: List<String>
@@ -42,12 +45,13 @@ data class UserCountriesList(
         return "{\"name\": \"$name\", \"countries\": \"$countries\"}"
 }}
 
+@Serializable
 data class User(
    val id: Int?,
    val name: String,
    val email: String?,
-   val password: String?
-   val countriesLists: List<UserCountriesList>?
+   val password: String?,
+   val countriesLists: List<UserCountriesList>
 ){
   override fun toString(): String{
     return "{\"id\":$id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"

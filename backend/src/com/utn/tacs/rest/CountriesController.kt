@@ -12,17 +12,17 @@ fun Route.countriesRoutes() {
             val lat = call.request.queryParameters["lat"]?.toDouble()
             val lon = call.request.queryParameters["lon"]?.toDouble()
             if (lat != null && lon != null) {
-                call.respond(getNearestCountries(lat, lon))
+                call.respond(getNearestCountries(lat, lon).map { it.countryregion })
             } else {
-                call.respond(getAllCountries())
+                call.respond(getAllCountries().map { it.countryregion })
             }
         }
         get("/tree") {
-            call.respond(getCountriesFromDatabase())
+            call.respond(getAllCountries())
         }
         get("/{iso2}") {
             val iso2: String = call.parameters["iso2"].toString()
-            call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
+            call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()).countryregion)
         }
     }
 }

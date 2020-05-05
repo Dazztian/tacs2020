@@ -16,12 +16,12 @@ fun getUserFromDatabase(unNombre: String): User {
     val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
     val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
     return gson.fromJson(
-        collection.find((Document("name", unNombre))).first().toJson(),userDataType
+        collection.find(Document("name", unNombre)).first().toJson(),userDataType
     )
 }
 
 
-fun createUser(unUser: User): String{
+fun createUser(user: User): User{
     try {
         val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
         val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
@@ -33,6 +33,6 @@ fun createUser(unUser: User): String{
         mongoClient!!.close()
     }
 
-    return getUserFromDatabase(unUser.name)
+    return getUserFromDatabase(user.name)
 }
 

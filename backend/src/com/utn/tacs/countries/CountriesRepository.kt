@@ -9,12 +9,12 @@ import org.bson.Document
 import com.utn.tacs.dao.*
 
 const val DB_MONGO_COUNTRIES_COLLECTION = "countries"
+val countryDataType = object : TypeToken<CountryData>() {}.type
 
 suspend fun getCountriesFromDatabase(): List<CountryData> {
     val result = ArrayList<CountryData>()
-    val countryDataType = object : TypeToken<CountryData>() {}.type
 
-    val db = mongoClient.getDatabase("tacs")
+    val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
     val collection: MongoCollection<Document> = db.getCollection(DB_MONGO_COUNTRIES_COLLECTION)
     collection.find().toList().forEach{
         result.add(
@@ -24,7 +24,7 @@ suspend fun getCountriesFromDatabase(): List<CountryData> {
 
     if (result.size.equals(0)) {
         val documents = ArrayList<Document>()
-        getCountriesLatest().forEach{
+        getCountriesLatestFromApi().forEach{
             documents.add(
                 Document.parse(it.toString())
             )
@@ -35,4 +35,12 @@ suspend fun getCountriesFromDatabase(): List<CountryData> {
     }
 
     return getCountriesFromDatabase()
+}
+
+suspend fun getCountryFromDatabase(iso2: String): CountryData {
+    val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
+    val collection: MongoCollection<Document> = db.getCollection(DB_MONGO_COUNTRIES_COLLECTION)
+    return gson.fromJson(
+        collection.find(Document("countryCode.iso2", iso2)).first().toJson(),countryDataType
+    ) ?: getCountryLatestByIsoCodeFromApi(iso2)
 }
