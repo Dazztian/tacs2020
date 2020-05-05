@@ -11,10 +11,10 @@ import "react-toastify/dist/ReactToastify.css";
 import useStyles from "./styles";
 
 // components
-import Widget from "../../components/Widget/Widget";
-import PageTitle from "../../components/PageTitle/PageTitle";
-import Notification from "../../components/Notification";
-import { Typography, Button } from "../../components/Wrappers/Wrappers";
+import Widget from "../../../components/Widget/Widget";
+import PageTitle from "../../../components/PageTitle/PageTitle";
+import Notification from "../../../components/Notification";
+import { Typography, Button } from "../../../components/Wrappers/Wrappers";
 
 const positions = [
   toast.POSITION.TOP_LEFT,

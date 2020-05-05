@@ -11,20 +11,20 @@ import classnames from "classnames";
 import useStyles from "./styles";
 
 // components
-import Header from "../Header";
-import Sidebar from "../Sidebar";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar/Sidebar";
 
 // pages
-import Dashboard from "../../pages/ejemplos/dashboard";
-import Typography from "../../pages/ejemplos/typography";
-import Notifications from "../../pages/ejemplos/notifications";
-import Maps from "../../pages/ejemplos/maps";
-import Tables from "../../pages/ejemplos/tables";
-import Icons from "../../pages/ejemplos/icons";
-import Charts from "../../pages/ejemplos/charts";
+import Dashboard from "../views/ejemplos/dashboard";
+import Typography from "../views/ejemplos/typography";
+import Notifications from "../views/ejemplos/notifications";
+import Maps from "../views/ejemplos/maps";
+import Tables from "../views/ejemplos/tables";
+import Icons from "../views/ejemplos/icons";
+import Charts from "../views/ejemplos/charts";
 
 // context
-import { useLayoutState } from "../../context/LayoutContext";
+import { useLayoutState } from "../context/LayoutContext";
 
 function Layout(props) {
   var classes = useStyles();
@@ -43,7 +43,7 @@ function Layout(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
-            <Redirect from="/user" to="/user/dashboard" />
+            <Redirect from="/app" to="/app/dashboard" />
             <Switch>
               <Route path="/app/dashboard" component={Dashboard} />
               <Route path="/app/typography" component={Typography} />

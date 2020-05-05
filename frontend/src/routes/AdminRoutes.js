@@ -8,23 +8,17 @@ import {
 import classnames from "classnames";
 
 // styles
-import useStyles from "./styles/privateRoutesStyles";
+import useStyles from "./styles";
 
 // components
-import Header from "../Header/Header";
-import Sidebar from "../Sidebar/Sidebar";
+import Header from "../components/Header/Header";
+import SidebarAdmin from "../components/Sidebar/SidebarAdmin";
 
 // pages
-import Dashboard from "../../pages/admin/dashboard/Dashboard";
-import Typography from "../../pages/admin/typography/Typography";
-import Notifications from "../../pages/admin/notifications/Notifications";
-import Maps from "../../pages/admin/maps/Maps";
-import Tables from "../../pages/admin/tables/Tables";
-import Icons from "../../pages/admin/icons/Icons";
-import Charts from "../../pages/admin/charts/Charts";
+import Dashboard from "../views/admin/dashboard/Dashboard";
 
 // context
-import { useLayoutState } from "../../context/LayoutContext";
+import { useLayoutState } from "../context/LayoutContext";
 
 function LayoutAdmin(props) {
   var classes = useStyles();
@@ -36,7 +30,7 @@ function LayoutAdmin(props) {
     <div className={classes.root}>
         <>
           <Header history={props.history} />
-          <Sidebar />
+          <SidebarAdmin />
           <div
             className={classnames(classes.content, {
               [classes.contentShift]: layoutState.isSidebarOpened,
@@ -46,17 +40,6 @@ function LayoutAdmin(props) {
             <Redirect from="/admin" to="/admin/dashboard" />
             <Switch>
               <Route path="/admin/dashboard" component={Dashboard} />
-              <Route path="/app/typography" component={Typography} />
-              <Route path="/app/tables" component={Tables} />
-              <Route path="/app/notifications" component={Notifications} />
-              <Route
-                exact
-                path="/app/ui"
-                render={() => <Redirect to="/app/ui/icons" />}
-              />
-              <Route path="/app/ui/maps" component={Maps} />
-              <Route path="/app/ui/icons" component={Icons} />
-              <Route path="/app/ui/charts" component={Charts} />
             </Switch>
           </div>
         </>

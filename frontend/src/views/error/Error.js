@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import classnames from "classnames";
 
 // styles
-import useStyles from "./styles";
+import useStyles from "./style";
 
 // logo
 import logo from "./logo.svg";

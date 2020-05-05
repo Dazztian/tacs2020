@@ -9,13 +9,13 @@ import {
 } from "react-router-dom";
 
 // Rutas de
-import Layout from "./Routes/Layout";
-import LayoutUser from "./Routes/UserRoutes";
-import LayoutAdmin from "./Routes/AdminRoutes";
+import Layout from "./routes/Layout";
+import LayoutUser from "./routes/UserRoutes";
+import LayoutAdmin from "./routes/AdminRoutes";
 
 // Vistas publicas
-import Error from "./Views/error/Error";
-import Login from "./Views/login/Login";
+import Error from "./views/error/Error";
+import Login from "./views/login/Login";
 
 // context
 import { useUserState } from "./context/UserContext";

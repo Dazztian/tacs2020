@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 
 // components
-import { Button } from "../../../../components/Wrappers";
+import { Button } from "../Wrappers";
 
 const states = {
   sent: "success",

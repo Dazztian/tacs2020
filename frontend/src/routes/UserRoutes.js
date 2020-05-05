@@ -8,14 +8,14 @@ import {
 import classnames from "classnames";
 
 // styles
-import useStyles from "./styles/privateRoutesStyles";
+import useStyles from "./styles";
 
 // components
 import Header from "../components/Header/Header";
 import SidebarUser from "../components/Sidebar/SidebarUser";
 
 // pages
-import Dashboard from "../views/user/Dashboard";
+import Dashboard from "../views/user/dashboard/Dashboard";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";

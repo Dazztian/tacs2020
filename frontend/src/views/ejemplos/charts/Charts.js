@@ -16,10 +16,10 @@ import {
 } from "recharts";
 
 // components
-import Widget from "../../components/Widget/Widget";
+import Widget from "../../../components/Widget/Widget";
 import ApexLineChart from "./components/ApexLineChart";
 import ApexHeatmap from "./components/ApexHeatmap";
-import PageTitle from "../../components/PageTitle/PageTitle";
+import PageTitle from "../../../components/PageTitle/PageTitle";
 
 const lineChartData = [
   {

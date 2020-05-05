@@ -9,8 +9,8 @@ import classnames from "classnames";
 import useStyles from "./styles";
 
 // components
-import Widget from "../../../../components/Widget";
-import { Typography } from "../../../../components/Wrappers";
+import Widget from "../Widget";
+import { Typography } from "../Wrappers";
 
 export default function BigStat(props) {
   var { product, total, color, registrations, bounce } = props;

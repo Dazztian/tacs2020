@@ -12,7 +12,7 @@ import * as Icons from "@material-ui/icons";
 import useStyles from "./styles";
 
 // components
-import PageTitle from "../../components/PageTitle/PageTitle";
+import PageTitle from "../../../components/PageTitle/PageTitle";
 
 
 // icons sets

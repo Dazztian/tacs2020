@@ -26,10 +26,10 @@ import useStyles from "./styles";
 
 // components
 import mock from "./mock";
-import Widget from "../../components/Widget";
-import PageTitle from "../../components/PageTitle";
-import { Typography } from "../../components/Wrappers";
-import Dot from "../../components/Sidebar/components/Dot";
+import Widget from "../../../components/Widget";
+import PageTitle from "../../../components/PageTitle";
+import { Typography } from "../../../components/Wrappers";
+import Dot from "../../../components/Sidebar/components/Dot";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
 
