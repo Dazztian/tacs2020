@@ -6,10 +6,11 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.utn.tacs.*
 import org.bson.Document
-import com.utn.tacs.dao.*
+import com.utn.tacs.utils.MongoClientGenerator
 
 const val DB_MONGO_COUNTRIES_COLLECTION = "countries"
 val countryDataType = object : TypeToken<CountryData>() {}.type
+val db = MongoClientGenerator.getDataBase()
 
 suspend fun getCountriesFromDatabase(): List<CountryData> {
     val result = ArrayList<CountryData>()

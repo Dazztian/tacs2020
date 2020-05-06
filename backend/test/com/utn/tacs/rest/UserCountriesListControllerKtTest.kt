@@ -1,15 +1,20 @@
 package com.utn.tacs.rest
 
+import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.module
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
 class UserCountriesListControllerKtTest {
+
+
+    private val userListRepository = mockk<UserListsRepository>()
 
     //TODO AGREGAR TESTS CON INFORMACION REAL
    /* @Test
@@ -23,20 +28,20 @@ class UserCountriesListControllerKtTest {
     }*/
 
     @Test
-    fun testApiCountriesListWithId() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Delete, "/api/user/countries/list/1/list1")) {
+    fun testApiCountriesListWithId() = withTestApplication({userCountriesListRoutes(userListRepository) })  {
+        with(handleRequest(HttpMethod.Delete, "/api/user/1/countries/list/1")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Borra una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Delete, "/api/user/countries/list/2222/NO_REAL_LIST")) {
+        with(handleRequest(HttpMethod.Delete, "/api/user/1/countries/list/NO_REAL_LIST")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Borra una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Patch, "/api/user/countries/list/1/list1")) {
+        with(handleRequest(HttpMethod.Patch, "/api/user/1/countries/list/1")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Modifica una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Patch, "/api/user/countries/list/2222/NO_REAL_LIST")) {
+        with(handleRequest(HttpMethod.Patch,  "/api/user/1/countries/list/NO_REAL_LIST")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Modifica una lista del usuario", response.content)
         }
@@ -44,11 +49,11 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testApiCountriesIdListTable() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Get, "/api/user/countries/list/table/id")) {
+        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
         }
-        with(handleRequest(HttpMethod.Get, "/api/user/countries/list/table/id")) {
+        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
         }

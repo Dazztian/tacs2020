@@ -6,11 +6,12 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.utn.tacs.User
 import org.bson.Document
-import com.utn.tacs.dao.*
+import com.utn.tacs.utils.MongoClientGenerator
 import com.utn.tacs.*
 
 const val DB_MONGO_USERS_COLLECTION = "users"
 val userDataType = object : TypeToken<User>() {}.type
+val db = MongoClientGenerator.getDataBase()
 
 fun getUserFromDatabase(name: String): User? {
     val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)

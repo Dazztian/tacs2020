@@ -1,6 +1,9 @@
 package com.utn.tacs
 
+import com.mongodb.MongoClient
+import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.rest.*
+import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -19,6 +22,7 @@ import io.ktor.routing.routing
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
+
     install(CORS) {
         method(HttpMethod.Post)
         method(HttpMethod.Get)
@@ -37,17 +41,14 @@ fun Application.module() {
             call.respond(error)
         }
     }
-
     routes()
 }
 
+
 fun Application.routes() {
-    //TODO verificar esto, no se bien donde colocar la base para poder usarla en los tests.
-    routing {
         healthCheckRoutes()
         countriesRoutes()
-        userCountriesListRoutes()
+        userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
         users()
         login()
-    }
 }

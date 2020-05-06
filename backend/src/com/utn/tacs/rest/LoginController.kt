@@ -13,38 +13,40 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
 
-fun Route.login() {
-    route("/api/login") {
-        get {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
+fun Application.login() {
+    routing {
+        route("/api/login") {
+            get {
+                //Recibe el body en json como string
+                val text: String = call.receiveText()
 
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(), text)
+                val json = Json(JsonConfiguration.Stable)
+                val output = json.parse(User.serializer(), text)
 
-            val response = getUserFromDatabase(output.name)
-            call.respond(response ?: HttpStatusCode.NotFound)
+                val response = getUserFromDatabase(output.name)
+                call.respond(response ?: HttpStatusCode.NotFound)
+            }
+            post {
+                call.respondText("login")
+            }
         }
-        post {
-            call.respondText("login")
+        route("/register") {
+            post {
+                call.respondText("register");
+            }
         }
-    }
-    route("/register") {
-        post {
-            call.respondText("register");
-        }
-    }
-    route("/login") {
+        route("/login") {
 
-    }
-    route("/auth/google") {
-        post {
-            call.respondText("Oauth");
         }
-    }
-    route("/logout") {
-        get {
-            call.respondText("logout")
+        route("/auth/google") {
+            post {
+                call.respondText("Oauth");
+            }
+        }
+        route("/logout") {
+            get {
+                call.respondText("logout")
+            }
         }
     }
 }

@@ -15,18 +15,20 @@ import io.ktor.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
-fun Route.users() {
-    route("api/user") {
-        get ("/{id}") {
-            val userId: Int = call.parameters["id"]?.toInt() ?: 0
-            call.respond(getUserFromDatabase(userId)?: HttpStatusCode.NotFound)
-        }
-        post {
-            //Recibe el body en json como string
-            val text: String = call.receiveText()
-            val json = Json(JsonConfiguration.Stable)
-            val output = json.parse(User.serializer(), text)
-            call.respond(createUser(output)?: HttpStatusCode.NotFound )
+fun Application.users() {
+    routing {
+        route("api/user") {
+            get ("/{id}") {
+                val userId: Int = call.parameters["id"]?.toInt() ?: 0
+                call.respond(getUserFromDatabase(userId)?: HttpStatusCode.NotFound)
+            }
+            post {
+                //Recibe el body en json como string
+                val text: String = call.receiveText()
+                val json = Json(JsonConfiguration.Stable)
+                val output = json.parse(User.serializer(), text)
+                call.respond(createUser(output)?: HttpStatusCode.NotFound )
+            }
         }
     }
 }
