@@ -1,15 +1,20 @@
 package com.utn.tacs.rest
 
+import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.module
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
 class UserCountriesListControllerKtTest {
+
+
+    private val userListRepository = mockk<UserListsRepository>()
 
     //TODO AGREGAR TESTS CON INFORMACION REAL
    /* @Test
@@ -23,7 +28,7 @@ class UserCountriesListControllerKtTest {
     }*/
 
     @Test
-    fun testApiCountriesListWithId() = withTestApplication(Application::module) {
+    fun testApiCountriesListWithId() = withTestApplication({userCountriesListRoutes(userListRepository) })  {
         with(handleRequest(HttpMethod.Delete, "/api/user/countries/list/1/list1")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Borra una lista del usuario", response.content)

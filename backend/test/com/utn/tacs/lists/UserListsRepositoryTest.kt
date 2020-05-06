@@ -3,10 +3,10 @@ package com.utn.tacs.lists
 
 import com.mongodb.MongoClient
 import com.utn.tacs.UserCountriesList
+import com.utn.tacs.utils.MongoClientGenerator
 import org.bson.Document
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.assertIterableEquals
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -25,9 +25,8 @@ class UserListsRepositoryTest {
     // TODO tal vez esto convenga convertirlo en una clase aparte y que genere todo lo necesario para todos los tests e ir llamandolo.
     @Before
     fun before() {
-        mongoContainer.start()
 
-        val mongoClient = MongoClient(mongoContainer.containerIpAddress, mongoContainer.getMappedPort(27017))
+        mongoContainer.start()
 
         val user: Document = Document()
         user["id"] = 1
@@ -45,6 +44,7 @@ class UserListsRepositoryTest {
         user2["countriesList"] = listOf(Document().append("name", "list3").append("countries", listOf("Country7", "Country8", "Country9")),
                 Document().append("name", "list4").append("countries", listOf("Country10", "Country11", "Country12")))
 
+        val mongoClient = MongoClient(mongoContainer.containerIpAddress, mongoContainer.getMappedPort(27017))
         mongoClient.getDatabase("test").getCollection("users").insertMany(mutableListOf(user, user2))
     }
 
