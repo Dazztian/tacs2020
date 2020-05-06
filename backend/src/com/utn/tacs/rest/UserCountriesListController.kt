@@ -9,14 +9,12 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import com.utn.tacs.dao.*
 
-
-val mongoClient = MongoClient("localhost", 27017)
-val userListsRepository = UserListsRepository(mongoClient, "tacs")
+val userListsRepository = UserListsRepository(db)
 
 fun Route.userCountriesListRoutes() {
-
-    route("/api/user/countries/{userId}") {
+    route("/api/user/{userId}/countries") {
         get {
             val userId: Int = call.parameters["userId"]!!.toInt()
             call.respond(userListsRepository.getUserLists(userId))
@@ -28,12 +26,12 @@ fun Route.userCountriesListRoutes() {
             call.respond(HttpStatusCode.OK)
         }
     }
-    route("/api/user/countries/list/table/{idList}") {
+    route("/api/user/{userId}/countries/list/table/{idList}") {
         get {
             call.respondText("Envia los datos e/m/r para una lista de paises");
         }
     }
-    route("/api/user/countries/list/{userId}/{idList}") {
+    route("/api/user/{userId}/countries/list/{idList}") {
         get {
             val userId: Int = call.parameters["userId"]!!.toInt()
             val listName: String = call.parameters["idList"].toString()

@@ -1,6 +1,5 @@
 package com.utn.tacs
 
-import com.mongodb.MongoClient
 import com.utn.tacs.rest.*
 import io.ktor.application.Application
 import io.ktor.application.call

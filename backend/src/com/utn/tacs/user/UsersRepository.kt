@@ -12,25 +12,27 @@ import com.utn.tacs.*
 const val DB_MONGO_USERS_COLLECTION = "users"
 val userDataType = object : TypeToken<User>() {}.type
 
-fun getUserFromDatabase(unNombre: String): User {
-    val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
+fun getUserFromDatabase(name: String): User? {
     val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
-    return gson.fromJson(
-        collection.find(Document("name", unNombre)).first().toJson(),userDataType
-    )
+    val document: Document? = collection.find(Document("name", name)).first()
+    return gson.fromJson(document?.toJson(), userDataType)
+}
+
+fun getUserFromDatabase(id: Int): User? {
+    val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
+    val document: Document? = collection.find(Document("id", id)).first()
+    return gson.fromJson(document?.toJson(), userDataType)
 }
 
 
-fun createUser(user: User): User{
+fun createUser(user: User): User? {
     try {
-        val db = mongoClient.getDatabase(DB_MONGO_DATABASE_NAME)
         val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
         collection.insertOne(Document.parse(user.toString()))
     } catch (e: MongoException) {
-        println("\n\nflaco hay un error\n\n")
         e.printStackTrace()
     } finally {
-        mongoClient!!.close()
+        //TODO agregarlo mongoClient!!.close()
     }
 
     return getUserFromDatabase(user.name)

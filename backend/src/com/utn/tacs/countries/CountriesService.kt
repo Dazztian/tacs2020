@@ -1,8 +1,9 @@
 package com.utn.tacs.countries
 
-import com.utn.tacs.maxDistance
 import com.utn.tacs.utils.isDistanceLowerThan
 import com.utn.tacs.*
+
+const val maxDistance = 2000.0
 
 suspend fun getAllCountries(): List<CountryData> {
     return getCountriesFromDatabase()

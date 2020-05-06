@@ -22,7 +22,7 @@ fun Route.countriesRoutes() {
         }
         get("/{iso2}") {
             val iso2: String = call.parameters["iso2"].toString()
-            call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()).countryregion)
+            call.respond(getCountryLatestByIsoCode(iso2.toUpperCase()))
         }
     }
 }

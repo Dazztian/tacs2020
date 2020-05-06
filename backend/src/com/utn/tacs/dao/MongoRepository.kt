@@ -1,7 +1,7 @@
 package com.utn.tacs.dao
 
 import com.mongodb.MongoClient
+import com.mongodb.client.MongoDatabase
 
-val mongoClient: MongoClient = MongoClient("172.17.0.2", 27017)
-
-const val DB_MONGO_DATABASE_NAME = "tacs"
+val mongoClient: MongoClient = MongoClient("172.21.0.3", 27017)
+val db: MongoDatabase = mongoClient.getDatabase("tacs")

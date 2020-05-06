@@ -12,7 +12,6 @@ import java.util.*
 val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
 const val onlyCountries = "onlyCountries=true"
-const val maxDistance = 2000.0
 
 suspend fun getCountriesLatestFromApi(): List<CountryData> {
     return getCountriesLatestFromApi("")
