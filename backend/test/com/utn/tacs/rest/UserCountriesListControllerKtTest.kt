@@ -29,19 +29,19 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testApiCountriesListWithId() = withTestApplication({userCountriesListRoutes(userListRepository) })  {
-        with(handleRequest(HttpMethod.Delete, "/api/user/countries/list/1/list1")) {
+        with(handleRequest(HttpMethod.Delete, "/api/user/1/countries/list/1")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Borra una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Delete, "/api/user/countries/list/2222/NO_REAL_LIST")) {
+        with(handleRequest(HttpMethod.Delete, "/api/user/1/countries/list/NO_REAL_LIST")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Borra una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Patch, "/api/user/countries/list/1/list1")) {
+        with(handleRequest(HttpMethod.Patch, "/api/user/1/countries/list/1")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Modifica una lista del usuario", response.content)
         }
-        with(handleRequest(HttpMethod.Patch, "/api/user/countries/list/2222/NO_REAL_LIST")) {
+        with(handleRequest(HttpMethod.Patch,  "/api/user/1/countries/list/NO_REAL_LIST")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Modifica una lista del usuario", response.content)
         }
@@ -49,11 +49,11 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testApiCountriesIdListTable() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Get, "/api/user/countries/list/table/id")) {
+        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
         }
-        with(handleRequest(HttpMethod.Get, "/api/user/countries/list/table/id")) {
+        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
         }

@@ -52,7 +52,7 @@ class UserListsRepositoryTest {
     fun testGetUserListsByUserId() {
         val mongoClient = MongoClient(mongoContainer.containerIpAddress, mongoContainer.getMappedPort(27017))
 
-        val repo = UserListsRepository(mongoClient, "test")
+        val repo = UserListsRepository(mongoClient.getDatabase("test"))
 
         val expected1 = listOf(UserCountriesList("list1", listOf("Country1", "Country2", "Country3")), UserCountriesList("list2", listOf("Country4", "Country5", "Country6")))
         val expected2 = listOf(UserCountriesList("list3", listOf("Country7", "Country8", "Country9")), UserCountriesList("list4", listOf("Country10", "Country11", "Country12")))
@@ -67,7 +67,7 @@ class UserListsRepositoryTest {
     fun testGetUserListsByUserIdAndName() {
         val mongoClient = MongoClient(mongoContainer.containerIpAddress, mongoContainer.getMappedPort(27017))
 
-        val repo = UserListsRepository(mongoClient, "test")
+        val repo = UserListsRepository(mongoClient.getDatabase("test"))
 
         val expected = listOf(UserCountriesList("list4", listOf("Country10", "Country11", "Country12")))
 
@@ -80,7 +80,7 @@ class UserListsRepositoryTest {
     fun testCreateUserList() {
         val mongoClient = MongoClient(mongoContainer.containerIpAddress, mongoContainer.getMappedPort(27017))
 
-        val repo = UserListsRepository(mongoClient, "test")
+        val repo = UserListsRepository(mongoClient.getDatabase("test"))
 
         //Before this user 1 has only 2 lists.
         repo.createUserList(1, "new_list", listOf("Country13", "Country14"))

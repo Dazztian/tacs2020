@@ -12,7 +12,7 @@ import io.ktor.routing.*
 
 fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository) {
     routing {
-        route("/api/user/countries/{userId}") {
+        route("/api/user/{userId}/countries") {
             get {
                 val userId: Int = call.parameters["userId"]!!.toInt()
                 call.respond(userListsRepository.getUserLists(userId))
@@ -24,23 +24,22 @@ fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository
                 call.respond(HttpStatusCode.OK)
             }
         }
-        route("/api/user/countries/list/table/{idList}") {
+        route("/api/user/{userId}/countries/list/table/{idList}") {
             get {
                 call.respondText("Envia los datos e/m/r para una lista de paises");
             }
         }
-        route("/api/user/countries/list/{userId}/{idList}") {
+        route("/api/user/{userId}/countries/list/{idList}") {
             get {
                 val userId: Int = call.parameters["userId"]!!.toInt()
                 val listName: String = call.parameters["idList"].toString()
                 call.respond(userListsRepository.getUserLists(userId, listName))
             }
-
             delete {
-                call.respondText("Borra una lista del usuario");
+                call.respondText("Borra una lista del usuario")
             }
             patch {
-                call.respondText("Modifica una lista del usuario");
+                call.respondText("Modifica una lista del usuario")
             }
         }
     }

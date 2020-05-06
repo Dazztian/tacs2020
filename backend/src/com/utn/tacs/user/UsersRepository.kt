@@ -1,53 +1,41 @@
 package com.utn.tacs.user
 
+import com.google.gson.reflect.TypeToken
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.utn.tacs.User
 import org.bson.Document
+import com.utn.tacs.utils.MongoClientGenerator
+import com.utn.tacs.*
 
-fun getUserFromDatabase(unNombre: String): String {
+const val DB_MONGO_USERS_COLLECTION = "users"
+val userDataType = object : TypeToken<User>() {}.type
+val db = MongoClientGenerator.getDataBase()
 
-    var mongoClient = MongoClient("127.0.0.1", 27017)
-    val db = mongoClient.getDatabase("testDB")
-    val users: MongoCollection<Document> = db.getCollection("user")
-    val user = users.find(Document("name", unNombre)).first()
-    return user.toJson()
+fun getUserFromDatabase(name: String): User? {
+    val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
+    val document: Document? = collection.find(Document("name", name)).first()
+    return gson.fromJson(document?.toJson(), userDataType)
 }
 
-fun getUserById(id: Int): String {
-
-    var mongoClient = MongoClient("127.0.0.1", 27017)
-    val db = mongoClient.getDatabase("testDB")
-    val users: MongoCollection<Document> = db.getCollection("user")
-    val user = users.find(Document("id", id)).first()
-    return user.toJson()
+fun getUserFromDatabase(id: Int): User? {
+    val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
+    val document: Document? = collection.find(Document("id", id)).first()
+    return gson.fromJson(document?.toJson(), userDataType)
 }
 
 
-fun createUser(user: User): String{
-
-    var mongoClient = MongoClient("localhost", 27017)
+fun createUser(user: User): User? {
     try {
-
-        val db = mongoClient.getDatabase("testDB")
-        val tbl = db.getCollection("user")
-
-        val document = Document()
-
-
-        document["name"] = user.name
-        document["email"] = user.email
-        document["password"] = user.password
-
-        tbl.insertOne(document)
-
+        val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
+        collection.insertOne(Document.parse(user.toString()))
     } catch (e: MongoException) {
-        println("\n\nflaco hay un error\n\n")
         e.printStackTrace()
     } finally {
-        mongoClient!!.close()
+        //TODO agregarlo mongoClient!!.close()
     }
 
     return getUserFromDatabase(user.name)
 }
+

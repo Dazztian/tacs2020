@@ -1,5 +1,6 @@
 package com.utn.tacs
 
+import java.util.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
@@ -16,6 +17,7 @@ data class User(
     }
 }
 
+@Serializable
 data class Location(
         val name: String,
         val lat: Double,
@@ -26,6 +28,7 @@ data class Location(
     }
 }
 
+@Serializable
 data class CountryCode(
         val iso2: String,
         val iso3: String
@@ -35,6 +38,7 @@ data class CountryCode(
     }
 }
 
+@Serializable
 data class CountryData(
         val countryregion: String,
         val lastupdate: String,
@@ -58,6 +62,3 @@ data class UserCountriesList(
         return "{\"name\": \"$name\", \"countries\": \"$countries\"}"
     }
 }
-
-
-

@@ -48,10 +48,7 @@ fun Application.module() {
 fun Application.routes() {
         healthCheckRoutes()
         countriesRoutes()
-        userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getMongoClient(), "tacs"))
+        userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
         users()
         login()
-
 }
-
-

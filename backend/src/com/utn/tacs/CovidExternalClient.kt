@@ -12,13 +12,12 @@ import java.util.*
 val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
 const val onlyCountries = "onlyCountries=true"
-const val maxDistance = 2000.0
 
-suspend fun getCountriesLatest(): List<CountryData> {
-    return getCountriesLatest("")
+suspend fun getCountriesLatestFromApi(): List<CountryData> {
+    return getCountriesLatestFromApi("")
 }
 
-suspend fun getCountriesLatest(queryParams: String): List<CountryData> {
+suspend fun getCountriesLatestFromApi(queryParams: String): List<CountryData> {
     return HttpClient().use { client ->
         val jsonData: String? = client.get(apiEntryPoint + "latest?" + onlyCountries + queryParams)
         val countryArray = object : TypeToken<ArrayList<CountryData>>() {}.type
@@ -26,9 +25,9 @@ suspend fun getCountriesLatest(queryParams: String): List<CountryData> {
     }
 }
 
-suspend fun getCountriesLatest(isoCodes2: List<String>): List<CountryData> {
-    val result = ArrayList<CountryData>();
-    for (countryData in getCountriesLatest()) {
+suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<CountryData> {
+    val result = ArrayList<CountryData>()
+    for (countryData in getCountriesLatestFromApi()) {
         try {
             if (isoCodes2.contains(countryData.countrycode.iso2)) {
                 result.add(countryData)
@@ -39,20 +38,11 @@ suspend fun getCountriesLatest(isoCodes2: List<String>): List<CountryData> {
     return result
 }
 
-suspend fun getCountryLatestByIsoCode(iso2: String): CountryData {
+suspend fun getCountryLatestByIsoCodeFromApi(iso2: String): CountryData {
     try {
-        return getCountriesLatest("&iso2=$iso2")[0]
+        return getCountriesLatestFromApi("&iso2=$iso2")[0]
     } catch (e: IndexOutOfBoundsException) {
         throw kotlin.IllegalArgumentException("There was no country with iso2 code $iso2")
     }
-}
-
-//We will consider that nearest countries are the one that are 3000km from latitude and long
-suspend fun getNearestCountries(lat: Double, lon: Double): List<String> {
-    return getCountriesLatest().filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }.map { it.countryregion }
-}
-
-suspend fun getAllCountries(): List<String> {
-    return getCountriesLatest().map { it.countryregion }
 }
 

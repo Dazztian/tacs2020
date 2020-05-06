@@ -2,21 +2,20 @@ package com.utn.tacs.lists
 
 import com.google.gson.reflect.TypeToken
 import com.mongodb.MongoClient
+import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters.*
 import com.mongodb.client.model.Updates
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.gson
 import org.bson.Document
 
-
 data class UserListWrapper(
         val countriesList: List<UserCountriesList>
 )
 
-class UserListsRepository(private val mongoClient: MongoClient, private val database: String) {
+class UserListsRepository(private val db: MongoDatabase) {
 
     private fun getUserListsAsDocument(userId: Int): Document? {
-        val db = mongoClient.getDatabase(database)
         return db.getCollection("users").find(eq("id", userId))
                 .projection(Document("countriesList", 1).append("_id", 0)).first()
     }
@@ -41,9 +40,9 @@ class UserListsRepository(private val mongoClient: MongoClient, private val data
      * This creates a list when the user does not have one with that name.
      * */
     fun createUserList(userId: Int, name: String, countries: List<String>) {
-        val db = mongoClient.getDatabase(database)
         val countriesToAdd = Document().append("name", name).append("countries", countries)
-        db.getCollection("users").updateOne(and(eq("id", userId), ne("countriesList.name", name)), Updates.addToSet("countriesList", countriesToAdd))
+        db.getCollection("users").
+            updateOne(and(eq("id", userId), ne("countriesList.name", name)), Updates.addToSet("countriesList", countriesToAdd))
     }
 
     /**
