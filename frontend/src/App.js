@@ -29,8 +29,8 @@ export default function App() {
       <Switch>
         <PublicRoute exact path="/" />
         <Route path="/app" component={Layout} />
-        <PrivateRoute path="/user" component={LayoutUser} />
-        <PrivateRoute path="/admin" component={LayoutAdmin} />
+        <PrivateRouteUser path="/user" />
+        <PrivateRouteAdmin path="/admin" />
         <PublicRoute path="/login" />
         <Route component={Error} />
       </Switch>
@@ -38,14 +38,48 @@ export default function App() {
   );                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
   // #######################################################################
 
-  function PrivateRoute({ children, ...rest }) {
+  function PrivateRouteAdmin({ children, ...rest }) {
     return (
       <Route
         {...rest}
         render={props =>
-          true ? (
-            false ? (
+          isAuthenticated ? (
+            isAdmin ? (
               React.createElement(LayoutAdmin, props)
+            ) : (
+              <Redirect
+                to={{
+                  pathname: "/user",
+                  state: { from: props.location }
+                }}
+              />
+            )
+          ) : (
+            <Redirect
+              to={{
+                pathname: "/login",
+                state: { from: props.location }
+              }}
+            />
+          )
+        }
+      />
+    );
+  }
+
+  function PrivateRouteUser({ children, ...rest }) {
+    return (
+      <Route
+        {...rest}
+        render={props =>
+          isAuthenticated ? (
+            isAdmin ? (
+              <Redirect
+                to={{
+                  pathname: "/admin",
+                  state: { from: props.location }
+                }}
+              />
             ) : (
               React.createElement(LayoutUser, props)
             )

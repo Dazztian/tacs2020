@@ -8,7 +8,7 @@ export default makeStyles(theme => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#90caf9",
+    backgroundColor: "#c5e1a5",
     position: "absolute",
     top: 0,
     left: 0,

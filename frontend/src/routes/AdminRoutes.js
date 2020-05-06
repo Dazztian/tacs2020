@@ -40,6 +40,8 @@ function LayoutAdmin(props) {
             <Redirect from="/admin" to="/admin/dashboard" />
             <Switch>
               <Route path="/admin/dashboard" component={Dashboard} />
+              <Route path="/admin/usersearch" component={Dashboard} />
+              <Route path="/admin/countries" component={Dashboard} />
             </Switch>
           </div>
         </>
