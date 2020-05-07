@@ -23,18 +23,9 @@ class ApplicationTest {
         }
     }
 
-
-    @Test
-    fun testRegister() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Post, "/register")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("register", response.content)
-        }
-    }
-
     @Test
     fun testLogin() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Post, "/login")) {
+        with(handleRequest(HttpMethod.Post, "/api/login")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("login", response.content)
         }
