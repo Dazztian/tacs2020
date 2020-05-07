@@ -1,5 +1,6 @@
 package com.utn.tacs.rest
 
+import com.google.gson.reflect.TypeToken
 import com.utn.tacs.CountryData
 import com.utn.tacs.HttpBinError
 import com.utn.tacs.gson
@@ -17,9 +18,20 @@ class CountriesControllerKtTest {
     @Test
     fun testApiCountriesLocation() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=-34&lon=-64")) {
+            val expectedResponse = listOf(
+                CountryResponse("Argentina"),
+                CountryResponse("Bolivia"),
+                CountryResponse("Brazil"),
+                CountryResponse("Chile"),
+                CountryResponse("Paraguay"),
+                CountryResponse("Peru"),
+                CountryResponse("Uruguay")
+            ).toString()
+
             assertEquals(HttpStatusCode.OK, response.status())
-            val data = gson.fromJson(response.content, Array<String>::class.java).asList().toString()
-            assertEquals("[Argentina, Bolivia, Brazil, Chile, Paraguay, Peru, Uruguay]", data)
+            val data = gson.fromJson(response.content, Array<CountryResponse>::class.java).asList().toString()
+
+            assertEquals(expectedResponse, data)
         }
 
         with(handleRequest(HttpMethod.Get, "/api/countries/?lat=-3333&lon=4000")) {

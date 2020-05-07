@@ -10,6 +10,9 @@ import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
 
+data class CountryResponse(
+    val countryregion: String
+)
 
 fun Application.countriesRoutes() {
     routing {
@@ -18,9 +21,9 @@ fun Application.countriesRoutes() {
                 val lat = call.request.queryParameters["lat"]?.toDouble()
                 val lon = call.request.queryParameters["lon"]?.toDouble()
                 if (lat != null && lon != null) {
-                    call.respond(getNearestCountries(lat, lon).map { it.countryregion })
+                    call.respond(getNearestCountries(lat, lon).map { CountryResponse(it.countryregion)})
                 } else {
-                    call.respond(getAllCountries().map { it.countryregion })
+                    call.respond(getAllCountries().map { CountryResponse(it.countryregion)})
                 }
             }
             get("/tree") {

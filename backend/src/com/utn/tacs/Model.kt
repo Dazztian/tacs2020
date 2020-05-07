@@ -6,14 +6,18 @@ import kotlinx.serialization.json.*
 
 @Serializable
 data class User(
-        val id: Int?,
+        val _id: Int = 0,
         val name: String,
         val email: String?,
         val password: String?,
         val countriesLists: List<UserCountriesList>?
 ) {
     override fun toString(): String {
-        return "{\"id\":$id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"
+        return "{\"_id\":$_id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"
+    }
+
+    public fun getId():Int {
+        return _id
     }
 }
 

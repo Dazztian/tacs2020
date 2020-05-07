@@ -30,14 +30,6 @@ fun Application.login() {
                 call.respondText("login")
             }
         }
-        route("/register") {
-            post {
-                call.respondText("register");
-            }
-        }
-        route("/login") {
-
-        }
         route("/auth/google") {
             post {
                 call.respondText("Oauth");
