@@ -1,24 +1,28 @@
 package com.utn.tacs
 
-import java.util.*
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.ContextualSerialization
+import kotlinx.serialization.Serializable
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import java.time.Instant
 
 @Serializable
 data class User(
-        val _id: Int = 0,
         val name: String,
         val email: String?,
         val password: String?,
-        val countriesLists: List<UserCountriesList>?
+        @ContextualSerialization
+        val _id: Id<User> = newId(),
+        @ContextualSerialization
+        val creationDate: Instant? = null
 ) {
     override fun toString(): String {
-        return "{\"_id\":$_id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"
+        return "{\"_id\":$_id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"creationDate\": $creationDate}"
     }
 
-    public fun getId():Int {
-        return _id
-    }
+    constructor(name: String) : this(name, null, null, newId())
+    constructor(name: String, email: String, password: String) : this(name, email, password, newId())
+    constructor(_id: Id<User>, name: String) : this(name, null, null, _id)
 }
 
 @Serializable
@@ -59,10 +63,23 @@ data class CountryData(
 
 @Serializable
 data class UserCountriesList(
+        @ContextualSerialization
+        val _id: Id<UserCountriesList> = newId(),
+        @ContextualSerialization
+        val userId: Id<User>,
         val name: String,
-        val countries: List<String>
+        val countries: MutableSet<String>
 ) {
     override fun toString(): String {
-        return "{\"name\": \"$name\", \"countries\": \"$countries\"}"
+        return "{\"userId\": \"$userId\", \"name\": \"$name\", \"countries\": \"$countries\"}"
     }
+
+    constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries)
+    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf())
 }
+
+@Serializable
+data class UserCountriesListModificationRequest(
+        val name: String?,
+        val countries: MutableSet<String>?
+)

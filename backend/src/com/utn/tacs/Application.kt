@@ -1,8 +1,8 @@
 package com.utn.tacs
 
-import com.mongodb.MongoClient
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.rest.*
+import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -15,7 +15,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.routing.routing
 
 
 //Changed the package to work with intellij.
@@ -49,6 +48,6 @@ fun Application.routes() {
         healthCheckRoutes()
         countriesRoutes()
         userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
-        users()
-        login()
+        users(UsersRepository(MongoClientGenerator.getDataBase()))
+        login(UsersRepository(MongoClientGenerator.getDataBase()))
 }

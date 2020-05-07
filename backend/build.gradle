@@ -41,7 +41,6 @@ dependencies {
     implementation "io.ktor:ktor-client-cio:$ktor_version"
     implementation "com.google.code.gson:gson:$gson_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "org.mongodb:mongodb-driver:$mongo_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib_version"
     testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
@@ -52,6 +51,7 @@ dependencies {
     testCompile "org.testcontainers:testcontainers:$test_containers_version"
     testCompile "org.testcontainers:junit-jupiter:$test_containers_version"
     testImplementation "io.mockk:mockk:$mockk_version"
+    implementation 'org.litote.kmongo:kmongo:4.0.0'
 }
 
 shadowJar {

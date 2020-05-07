@@ -1,52 +1,96 @@
 package com.utn.tacs.lists
 
-import com.google.gson.reflect.TypeToken
-import com.mongodb.MongoClient
+import com.mongodb.DuplicateKeyException
+import com.mongodb.MongoException
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.Filters.*
-import com.mongodb.client.model.Updates
+import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
-import com.utn.tacs.gson
-import org.bson.Document
+import org.bson.types.ObjectId
+import org.litote.kmongo.*
+import org.litote.kmongo.id.toId
 
-data class UserListWrapper(
-        val countriesList: List<UserCountriesList>
-)
 
-class UserListsRepository(private val db: MongoDatabase) {
+class UserListsRepository(private val database: MongoDatabase) {
 
-    private fun getUserListsAsDocument(userId: Int): Document? {
-        return db.getCollection("users").find(eq("id", userId))
-                .projection(Document("countriesList", 1).append("_id", 0)).first()
+    fun getUserLists(userId: Id<User>): List<UserCountriesList> {
+        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::userId eq userId).toList()
     }
 
-    fun getUserLists(userId: Int): List<UserCountriesList> {
-        val userCountryListType = object : TypeToken<UserListWrapper>() {}.type
-        val lists = getUserListsAsDocument(userId)
-        return if (lists != null) {
-            val result: UserListWrapper = gson.fromJson(lists.toJson(), userCountryListType)
-            result.countriesList
-        } else {
-            emptyList()
-        }
+    fun getUserLists(userId: String): List<UserCountriesList> {
+        return getUserLists(userId.toId())
     }
 
-    fun getUserLists(userId: Int, name: String): List<UserCountriesList> {
-        return getUserLists(userId).filter { ucl -> ucl.name == name }
+    fun getUserList(userId: Id<User>, name: String): UserCountriesList? {
+        return database.getCollection<UserCountriesList>("userCountriesList").findOne(UserCountriesList::userId eq userId, UserCountriesList::name eq name)
     }
 
-    //Should sent something that confirms the insert, or shows that it failed.
+
+    fun getUserList(userId: String, name: String): UserCountriesList? {
+        return getUserList(userId.toId(), name)
+    }
+
     /**
      * This creates a list when the user does not have one with that name.
      * */
-    fun createUserList(userId: Int, name: String, countries: List<String>) {
-        val countriesToAdd = Document().append("name", name).append("countries", countries)
-        db.getCollection("users").
-            updateOne(and(eq("id", userId), ne("countriesList.name", name)), Updates.addToSet("countriesList", countriesToAdd))
+    //TODO when creating the database, we should add an index to name + userId
+    // db.usercountriesList.createIndex( { "userId": 1, "name": 1 } )
+    fun createUserList(userList: UserCountriesList): Id<UserCountriesList>? {
+        return try {
+            (database.getCollection<UserCountriesList>().insertOne(userList).insertedId as ObjectId?)?.toId()
+        } catch (e: DuplicateKeyException) {
+            null
+        } catch (e: MongoException) {
+            null
+        }
     }
 
     /**
-     * This method adds countries to the list when they are not in there.
-     * */
-    fun addCountriesToUserList(userId: Int, name: String, countries: List<String>) {}
+     * Deletes a UserCountriesList.
+     * @return
+     *      True when delete is correct
+     *      False when delete is not correct
+     *      null when object was not found.
+     */
+    fun delete(userId: String, name: String): Boolean? {
+        return getUserList(userId, name)?.let { database.getCollection<UserCountriesList>().deleteOneById(it._id).wasAcknowledged() }
+    }
+
+
+    fun doUpdate(userId: String, name: String, newName: String, countriesToAdd: MutableSet<String>): Id<UserCountriesList>? {
+        return getUserList(userId, name)?.let {
+            countriesToAdd.addAll(it.countries)
+            (database.getCollection<UserCountriesList>().updateOneById(it._id, set(UserCountriesList::name setTo newName,
+                    UserCountriesList::countries setTo countriesToAdd)).upsertedId as ObjectId?)?.toId()
+        }
+
+    }
+
+    fun doUpdate(userId: String, name: String, countriesToAdd: MutableSet<String>): Id<UserCountriesList>? {
+        return getUserList(userId, name)?.let {
+            (database.getCollection<UserCountriesList>().updateOneById(it._id, UserCountriesList::countries addToSet countriesToAdd)
+                    .upsertedId as ObjectId?)?.toId()
+        }
+    }
+
+    fun doUpdate(userId: String, name: String, newName: String): Id<UserCountriesList>? {
+        return getUserList(userId, name)?.let {
+            (database.getCollection<UserCountriesList>()
+                    .updateOneById(it._id, set(UserCountriesList::name setTo newName)).upsertedId as ObjectId?)?.toId()
+        }
+
+    }
+
+    fun update(userId: String, name: String, newName: String?, countriesToAdd: MutableSet<String>?): Id<UserCountriesList>? {
+        return if (newName != null && countriesToAdd != null) {
+            doUpdate(userId, name, newName, countriesToAdd)
+        } else if (newName != null) {
+            doUpdate(userId, name, newName)
+        } else if (countriesToAdd != null) {
+            doUpdate(userId, name, countriesToAdd)
+        } else {
+            null
+        }
+    }
+
+
 }
