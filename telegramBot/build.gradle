@@ -9,6 +9,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         /*I liked this plugin, this transforms all in a very big fat jar. Can be removed and done manually.*/
         classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     }
 }
 
@@ -53,7 +54,10 @@ dependencies {
     implementation "org.mongodb:mongodb-driver:$mongo_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib_version"
     testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
     compile 'com.github.kotlin-telegram-bot:kotlin-telegram-bot:master'
+    compile 'com.github.paniaton:tacs2020:master' //Para tener las clases del back
 }
 
 shadowJar {
@@ -61,7 +65,3 @@ shadowJar {
     classifier = null
     archiveVersion = null
 }
-
-// Use the following Gradle tasks to run your application:
-// :runReleaseExecutableMingw - without debug symbols
-// :runDebugExecutableMingw - with debug symbols

@@ -4,22 +4,23 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.dispatcher.command
-import com.github.kotlintelegrambot.dispatcher.inlineQuery
-import com.github.kotlintelegrambot.dispatcher.text
 import com.github.kotlintelegrambot.entities.ChatAction.UPLOAD_PHOTO
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
-import com.github.kotlintelegrambot.entities.KeyboardButton
-import com.github.kotlintelegrambot.entities.KeyboardReplyMarkup
 import com.github.kotlintelegrambot.entities.ParseMode.HTML
-import com.github.kotlintelegrambot.entities.ReplyMarkup
 import com.github.kotlintelegrambot.network.fold
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 fun main(args: Array<String>) {
     val bot = bot {
         token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
+        val gson = Gson()
+        val telegramParser = TelegramMessageParser()
 
         dispatch {
             command("start") { bot, update->
@@ -31,6 +32,37 @@ fun main(args: Array<String>) {
                 })
             }
 
+            // DATABASE
+            command("db"){ bot, update->
+                val url = URL("http://localhost:8080/api/countries/tree")
+
+                val connection = url.openConnection() as HttpURLConnection
+                val response = connection.inputStream.bufferedReader().readText()
+
+                val dataList :Array<CountryData> = gson.fromJson(response, object : TypeToken<Array<CountryData>>() {}.type)
+
+                dataList.forEachIndexed  { _, data ->
+                    val result = bot.sendMessage(
+                            chatId = update.message!!.chat.id,
+                            text = data.toString()
+                    )
+                }
+            }
+            command("iso") { bot, update, arg->
+                val url = URL("http://localhost:8080/api/countries/"+arg.joinToString(separator = ""))
+
+                val connection = url.openConnection() as HttpURLConnection
+                val response = connection.inputStream.bufferedReader().readText()
+
+                val countryData :CountryData = gson.fromJson(response, object : TypeToken<CountryData>(){}.type)
+
+                bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = telegramParser.parse(countryData)
+                )
+            }
+
+            //  TABLA HARDCODEADA
             command("tabla") { bot, update->
                 val a = "<pre>\n" +
                         "|    Pais   | Infectados | Muertos | Curados |\n" +
@@ -105,6 +137,8 @@ fun main(args: Array<String>) {
                     )
                 }
             }
+
+            //  IMAGE TEST
             command("photo") { bot, update->
                 bot.sendChatAction(chatId = update.message!!.chat.id, action = UPLOAD_PHOTO)
                 val result = bot.sendPhoto(chatId = update.message!!.chat.id, photo = File(System.getProperty("user.dir")+"\\cat.jpg"))
