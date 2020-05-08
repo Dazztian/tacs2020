@@ -45,7 +45,7 @@ fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository
             delete {
                 val userId: String = call.parameters["userId"]!!.toString()
                 val listName: String = call.parameters["name"].toString()
-                val response = userListsRepository.delete(userId, listName)
+                val response = userListsRepository.delete(userId.toId(), listName)
 
                 if (response != null && response) {
                     call.respond(HttpStatusCode.Accepted)
@@ -62,7 +62,7 @@ fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository
 
                 val request = call.receive<UserCountriesListModificationRequest>()
 
-                val response = userListsRepository.update(userId, listName, request.name, request.countries)
+                val response = userListsRepository.update(userId.toId(), listName, request.name, request.countries)
 
                 if (response != null) {
                     call.respond(HttpStatusCode.Accepted, response)
