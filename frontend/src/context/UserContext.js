@@ -5,7 +5,7 @@ var UserDispatchContext = React.createContext();
 
 function userReducer(state, action) {
   switch (action.type) {
-    case "LOGIN_SUCCESS":
+    case "LOGIN_SUCCESS": 
       return { ...state, isAuthenticated: true };
     case "SIGN_OUT_SUCCESS":
       return { ...state, isAuthenticated: false };
@@ -59,8 +59,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
       setError(null)
       setIsLoading(false)
       dispatch({ type: 'LOGIN_SUCCESS' })
-
-      history.push('/app/dashboard')
+      history.push('/user/dashboard')
     }, 2000);
   } else {
     dispatch({ type: "LOGIN_FAILURE" });

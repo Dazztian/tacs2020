@@ -30,7 +30,7 @@ import {
 } from "../../context/LayoutContext";
 
 const structure = [
-  { id: 0, label: "Dashboard", link: "/user/dashboard", icon: <HomeIcon /> },
+  { id: 0, label: "Dashboard", link: "/admin/dashboard", icon: <HomeIcon /> },
   {
     id: 1,
     label: "Typography",
