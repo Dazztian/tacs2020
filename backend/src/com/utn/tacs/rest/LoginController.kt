@@ -1,5 +1,7 @@
 package com.utn.tacs.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.utn.tacs.User
 import com.utn.tacs.user.UsersRepository
 import io.ktor.application.Application
@@ -23,8 +25,7 @@ fun Application.login(usersRepository: UsersRepository) {
                 //Recibe el body en json como string
                 val text: String = call.receiveText()
 
-                val json = Json(JsonConfiguration.Stable)
-                val output = json.parse(User.serializer(), text)
+                val output: User = jacksonObjectMapper().readValue(text)
 
                 val response = usersRepository.getUserByName(output.name)
                 call.respond(response ?: HttpStatusCode.NotFound)

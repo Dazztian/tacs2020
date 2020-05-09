@@ -1,8 +1,3 @@
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.utn.tacs.CountryData
-import com.utn.tacs.HttpBinError
-import com.utn.tacs.gson
 import com.utn.tacs.module
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod

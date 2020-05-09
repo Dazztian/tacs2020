@@ -1,35 +1,32 @@
 package com.utn.tacs
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.utn.tacs.utils.isDistanceLowerThan
+
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import java.lang.NullPointerException
 import java.util.*
 
-val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
 const val onlyCountries = "onlyCountries=true"
 
-suspend fun getCountriesLatestFromApi(): List<CountryData> {
+suspend fun getCountriesLatestFromApi(): List<Country> {
     return getCountriesLatestFromApi("")
 }
 
-suspend fun getCountriesLatestFromApi(queryParams: String): List<CountryData> {
+suspend fun getCountriesLatestFromApi(queryParams: String): List<Country> {
     return HttpClient().use { client ->
-        val jsonData: String? = client.get(apiEntryPoint + "latest?" + onlyCountries + queryParams)
-        val countryArray = object : TypeToken<ArrayList<CountryData>>() {}.type
-        gson.fromJson(jsonData, countryArray)
+        //This needs to be done because the api returns as html text, not json type, so ktor can not automagically parse it.
+        val jsonData: String = client.get(apiEntryPoint + "latest?" + onlyCountries + queryParams)
+        jacksonObjectMapper().readValue(jsonData)
     }
 }
 
-suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<CountryData> {
-    val result = ArrayList<CountryData>()
+suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<Country> {
+    val result = ArrayList<Country>()
     for (countryData in getCountriesLatestFromApi()) {
         try {
-            if (isoCodes2.contains(countryData.countrycode.iso2)) {
+            if (isoCodes2.contains(countryData.countrycode?.iso2)) {
                 result.add(countryData)
             }
         } catch (e: NullPointerException) {
@@ -38,7 +35,7 @@ suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<CountryData
     return result
 }
 
-suspend fun getCountryLatestByIsoCodeFromApi(iso2: String): CountryData {
+suspend fun getCountryLatestByIsoCodeFromApi(iso2: String): Country {
     try {
         return getCountriesLatestFromApi("&iso2=$iso2")[0]
     } catch (e: IndexOutOfBoundsException) {

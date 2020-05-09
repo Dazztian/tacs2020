@@ -44,6 +44,10 @@ class UserListsRepository(private val database: MongoDatabase) {
         }
     }
 
+    fun createUserList(userId: Id<User>, name: String, countries: MutableSet<String>): Id<UserCountriesList>? {
+        return createUserList(UserCountriesList(userId, name, countries))
+    }
+
 
     /**
      * Deletes a UserCountriesList.
