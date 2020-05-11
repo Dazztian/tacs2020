@@ -1,52 +1,102 @@
 package com.utn.tacs.lists
 
-import com.google.gson.reflect.TypeToken
-import com.mongodb.MongoClient
+import com.mongodb.MongoException
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.Filters.*
-import com.mongodb.client.model.Updates
+import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
-import com.utn.tacs.gson
-import org.bson.Document
+import com.utn.tacs.utils.getLogger
+import org.litote.kmongo.*
 
-data class UserListWrapper(
-        val countriesList: List<UserCountriesList>
-)
 
-class UserListsRepository(private val db: MongoDatabase) {
+class UserListsRepository(private val database: MongoDatabase) {
 
-    private fun getUserListsAsDocument(userId: Int): Document? {
-        return db.getCollection("users").find(eq("id", userId))
-                .projection(Document("countriesList", 1).append("_id", 0)).first()
+    private val logger = getLogger()
+
+    fun getUserLists(userId: Id<User>): List<UserCountriesList> {
+        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::userId eq userId).toList()
     }
 
-    fun getUserLists(userId: Int): List<UserCountriesList> {
-        val userCountryListType = object : TypeToken<UserListWrapper>() {}.type
-        val lists = getUserListsAsDocument(userId)
-        return if (lists != null) {
-            val result: UserListWrapper = gson.fromJson(lists.toJson(), userCountryListType)
-            result.countriesList
-        } else {
-            emptyList()
+    fun getUserLists(userId: String): List<UserCountriesList> {
+        return getUserLists(userId.toId())
+    }
+
+    fun getUserList(userId: Id<User>, name: String): UserCountriesList? {
+        return database.getCollection<UserCountriesList>("userCountriesList").findOne(UserCountriesList::userId eq userId, UserCountriesList::name eq name)
+    }
+
+
+    fun getUserList(userId: String, name: String): UserCountriesList? {
+        return getUserList(userId.toId(), name)
+    }
+
+    /**
+     * This creates a list when the user does not have one with that name.
+     * We return the userList _id because if it was correctly added the id will be the same.
+     * */
+    fun createUserList(userList: UserCountriesList): Id<UserCountriesList>? {
+        return try {
+            database.getCollection<UserCountriesList>().insertOne(userList)
+            logger.info("User country list ${userList.name} creation completed.")
+            return userList._id
+        } catch (e: MongoException) {
+            logger.error("Creation failed with exception:", e)
+            null
         }
     }
 
-    fun getUserLists(userId: Int, name: String): List<UserCountriesList> {
-        return getUserLists(userId).filter { ucl -> ucl.name == name }
+    fun createUserList(userId: Id<User>, name: String, countries: MutableSet<String>): Id<UserCountriesList>? {
+        return createUserList(UserCountriesList(userId, name, countries))
     }
 
-    //Should sent something that confirms the insert, or shows that it failed.
-    /**
-     * This creates a list when the user does not have one with that name.
-     * */
-    fun createUserList(userId: Int, name: String, countries: List<String>) {
-        val countriesToAdd = Document().append("name", name).append("countries", countries)
-        db.getCollection("users").
-            updateOne(and(eq("id", userId), ne("countriesList.name", name)), Updates.addToSet("countriesList", countriesToAdd))
-    }
 
     /**
-     * This method adds countries to the list when they are not in there.
-     * */
-    fun addCountriesToUserList(userId: Int, name: String, countries: List<String>) {}
+     * Deletes a UserCountriesList.
+     * @return
+     *      True when delete is correct
+     *      False when delete is not correct
+     *      null when object was not found.
+     */
+    fun delete(userId: Id<User>, name: String): Boolean? {
+        return getUserList(userId, name)?.let {
+            logger.info("User found, trying to delete...")
+            val deleted = database.getCollection<UserCountriesList>().deleteOneById(it._id)
+            logger.info("Delete status: $deleted")
+            deleted.wasAcknowledged()
+        }
+    }
+
+
+    fun doUpdate(userId: Id<User>, name: String, newName: String, countriesToAdd: MutableSet<String>): Id<UserCountriesList>? {
+        return getUserList(userId, name)?.let {
+            countriesToAdd.addAll(it.countries)
+            database.getCollection<UserCountriesList>().findOneAndUpdate(UserCountriesList::_id eq it._id, set(UserCountriesList::name setTo newName, UserCountriesList::countries setTo countriesToAdd))?._id
+        }
+    }
+
+    fun doUpdate(userId: Id<User>, name: String, countriesToAdd: MutableSet<String>): Id<UserCountriesList>? {
+        return doUpdate(userId, name, name, countriesToAdd)
+    }
+
+    fun doUpdate(userId: Id<User>, name: String, newName: String): Id<UserCountriesList>? {
+        return doUpdate(userId, name, newName, mutableSetOf())
+    }
+
+    fun update(userId: Id<User>, name: String, newName: String?, countriesToAdd: MutableSet<String>?): Id<UserCountriesList>? {
+        logger.info("Starting update process...")
+        return if (newName != null && countriesToAdd != null) {
+            logger.info("Going to update name and countries...")
+            doUpdate(userId, name, newName, countriesToAdd)
+        } else if (newName != null) {
+            logger.info("Going to update name...")
+            doUpdate(userId, name, newName)
+        } else if (countriesToAdd != null) {
+            logger.info("Going to update countries...")
+            doUpdate(userId, name, countriesToAdd)
+        } else {
+            logger.info("Can not update to null values...")
+            null
+        }
+    }
+
+
 }

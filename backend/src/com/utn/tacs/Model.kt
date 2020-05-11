@@ -1,68 +1,65 @@
 package com.utn.tacs
 
-import java.util.*
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.ContextualSerialization
+import kotlinx.serialization.Serializable
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import java.time.Instant
 
-@Serializable
 data class User(
-        val _id: Int = 0,
         val name: String,
         val email: String?,
         val password: String?,
-        val countriesLists: List<UserCountriesList>?
+        @ContextualSerialization
+        val _id: Id<User> = newId(),
+        @ContextualSerialization
+        val creationDate: Instant? = null
 ) {
-    override fun toString(): String {
-        return "{\"_id\":$_id, \"name\":\"$name\", \"email\":\"$email\", \"password\":\"$password\", \"countriesLists\": $countriesLists}"
-    }
-
-    public fun getId():Int {
-        return _id
-    }
+    constructor(name: String) : this(name, null, null, newId())
+    constructor(name: String, email: String, password: String) : this(name, email, password, newId())
+    constructor(_id: Id<User>, name: String) : this(name, null, null, _id)
 }
 
 @Serializable
 data class Location(
-        val name: String,
         val lat: Double,
         val lng: Double
-) {
-    override fun toString(): String {
-        return "{ \"name\":\"$name\", \"lat\": $lat, \"lng\": $lng}"
-    }
-}
+)
 
 @Serializable
 data class CountryCode(
         val iso2: String,
         val iso3: String
-) {
-    override fun toString(): String {
-        return "{ \"iso2\": \"$iso2\", \"iso3\": \"$iso3\"}"
-    }
-}
+)
 
-@Serializable
-data class CountryData(
+data class Country(
+        @ContextualSerialization
+        val _id: Id<Country>?,
         val countryregion: String,
         val lastupdate: String,
         val location: Location,
-        val countrycode: CountryCode,
+        val countrycode: CountryCode?,
         val confirmed: Int,
         val deaths: Int,
         val recovered: Int
 ) {
-    override fun toString(): String {
-        return "{\"countryregion\": \"$countryregion\", \"lastupdate\" : \"$lastupdate \", \"location\" : $location, \"countrycode\":$countrycode, \"confirmed\": $confirmed, \"deaths\":$deaths, \"recovered\": $recovered}"
-    }
+    constructor(countryregion: String, lastupdate: String, location: Location, countrycode: CountryCode?, confirmed: Int, deaths: Int, recovered: Int) :
+            this(newId(), countryregion, lastupdate, location, countrycode, confirmed, deaths, recovered)
 }
 
-@Serializable
 data class UserCountriesList(
+        @ContextualSerialization
+        val _id: Id<UserCountriesList>,
+        @ContextualSerialization
+        val userId: Id<User>,
         val name: String,
-        val countries: List<String>
+        val countries: MutableSet<String>
 ) {
-    override fun toString(): String {
-        return "{\"name\": \"$name\", \"countries\": \"$countries\"}"
-    }
+    constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries)
+    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf())
 }
+
+data class UserCountriesListModificationRequest(
+        val name: String?,
+        val countries: MutableSet<String>?
+)

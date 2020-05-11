@@ -1,48 +1,35 @@
 package com.utn.tacs.user
 
-import com.google.gson.reflect.TypeToken
-import com.mongodb.MongoClient
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import com.utn.tacs.User
-import org.bson.Document
-import com.utn.tacs.utils.MongoClientGenerator
-import com.utn.tacs.*
+import org.bson.types.ObjectId
+import org.litote.kmongo.*
+import org.litote.kmongo.id.toId
+import org.litote.kmongo.util.idValue
+
 
 const val DB_MONGO_USERS_COLLECTION = "users"
-val userDataType = object : TypeToken<User>() {}.type
-val db = MongoClientGenerator.getDataBase()
 
-fun getUserFromDatabase(name: String): User? {
-    val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
-    val document: Document? = collection.find(Document("name", name)).first()
-    return gson.fromJson(document?.toJson(), userDataType)
-}
+class UsersRepository(private val database: MongoDatabase) {
 
-fun getUserFromDatabase(id: Int): User? {
-    val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
-    val document: Document? = collection.find(Document("_id", id)).first()
-    return gson.fromJson(document?.toJson(), userDataType)
-}
-
-fun createUser(user: User): User? {
-    var id = 1
-    try {
-        val collection = db.getCollection(DB_MONGO_USERS_COLLECTION)
-        val lastDocument: Document? = collection.find().sort( Document("_id", -1)).limit(1).first()
-        val lastUser: User? = gson.fromJson(lastDocument?.toJson(), userDataType)
-        if (null != lastUser) {
-            id = lastUser.getId() + 1
-        }
-        collection.insertOne(
-            Document.parse(User(id, user.name, user.email, user.password, user.countriesLists).toString())
-        )
-    } catch (e: MongoException) {
-        e.printStackTrace()
-    } finally {
-        //TODO agregarlo mongoClient!!.close()
+    fun getUserByName(name: String): User? {
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::name eq name)
     }
 
-    return getUserFromDatabase(id)
-}
+    fun getUserById(id: Id<User>): User? {
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id)
+    }
 
+    fun getUserById(id: String): User? {
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id.toId())
+    }
+
+    fun createUser(user: User): Id<User>? {
+        try {
+            return (database.getCollection<User>(DB_MONGO_USERS_COLLECTION).insertOne(user).idValue as ObjectId?)?.toId()
+        } catch (e: MongoException) {
+            throw e
+        }
+    }
+}
