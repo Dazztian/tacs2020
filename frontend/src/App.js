@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -19,6 +20,37 @@ import Login from "./views/login/Login";
 
 // context
 import { useUserState } from "./context/UserContext";
+=======
+import React from 'react';
+import {StyleSheet, Text,View} from "react-native-web";
+import Home from './screens/Home'
+import CreateUser from './screens/CreateUser'
+import Login from './screens/Login'
+import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+
+export default function App(){
+    return(
+        <Router>
+            <div className="container">
+                <h1>BARRA DE NAVEGACION...</h1>
+                <Link to="/logout" className="btn btn-dark" activeClassName="active">
+                    LOGOUT
+                </Link>
+                <hr/>
+                <Switch>
+                    <Route path="/signUp">
+                        <CreateUser/>
+                    </Route>
+                    <Route path="/" exact>
+                        <Login/>
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
+
+    )
+}
+>>>>>>> 203bb33ba6e02f62fe7053198acd340af10f0eb6
 
 export default function App() {
   // global

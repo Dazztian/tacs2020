@@ -2,8 +2,9 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
-    
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         /*I liked this plugin, this transforms all in a very big fat jar. Can be removed and done manually.*/
@@ -15,55 +16,52 @@ buildscript {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: 'kotlinx-serialization'
+
 
 group 'com.utn.tacs'
-version '0.0.1'
-mainClassName = "io.ktor.server.netty.EngineMain"
-
-
-sourceSets {
-    main.kotlin.srcDirs = [ 'src' ]
-    main.resources.srcDirs = [ 'resources' ]
-    test.kotlin.srcDirs = [ 'test' ]
-}
+mainClassName = "com.utn.tacs.MainKt"
 
 repositories {
     jcenter()
     mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+kotlin {
+    // For ARM, should be changed to iosArm32 or iosArm64
+    // For Linux, should be changed to e.g. linuxX64
+    // For MacOS, should be changed to e.g. macosX64
+    // For Windows, should be changed to e.g. mingwX64
+    sourceSets {
+        // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
+        // in gradle.properties file and re-import your project in IDE.
+        mingwTest {
+        }
+
+        sourceSets {
+            main.kotlin.srcDirs = [ 'src' ]
+        }
+    }
 }
 
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "io.ktor:ktor-jackson:$ktor_version"
-    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-gson:$ktor_version"
     implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "com.google.code.gson:gson:$gson_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "org.mongodb:mongodb-driver:$mongo_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_stdlib_version"
     testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
-    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
-    testCompile "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
-    testCompile "org.testcontainers:testcontainers:$test_containers_version"
-    testCompile "org.testcontainers:junit-jupiter:$test_containers_version"
-    testImplementation "io.mockk:mockk:$mockk_version"
-    implementation "org.litote.kmongo:kmongo:$kmongo_version"
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_version"
+    compile 'com.github.kotlin-telegram-bot:kotlin-telegram-bot:master'
+    compile 'com.github.paniaton:tacs2020:master' //Para tener las clases del back
 }
 
 shadowJar {
-    archiveBaseName = 'covid19-grupo3'
+    archiveBaseName = 'covid19-grupo4-telegram-bot'
     classifier = null
     archiveVersion = null
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
 }

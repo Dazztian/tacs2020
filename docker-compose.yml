@@ -13,6 +13,11 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       
+  telegram-bot:
+    build: ./telegramBot
+    ports:
+      - "8082:8082"
+      
   mongodb_container:
     container_name: mongoDB
     image: mongo:latest

@@ -1,110 +1,72 @@
 package com.utn.tacs
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.SerializationFeature
+
+import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.rest.*
+import com.utn.tacs.user.UsersRepository
+import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.client.HttpClient
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
-import io.ktor.gson.gson
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.jackson
 import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.*
+import org.litote.kmongo.id.jackson.IdJacksonModule
+
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
-    install(ContentNegotiation) {
-        gson {
-        }
+
+
+    install(DefaultHeaders)
+    install(CORS) {
+        method(HttpMethod.Post)
+        method(HttpMethod.Get)
+        header(HttpHeaders.Accept)
+        anyHost()
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
     }
+
+    contentNegotiator()
+
     install(StatusPages) {
         exception<Throwable> { cause ->
             val error = HttpBinError(code = HttpStatusCode.InternalServerError, request = call.request.local.uri, message = cause.toString(), cause = cause)
             call.respond(error)
         }
     }
-    countries()
-    database()
+
+
+    routes()
 }
 
-fun Application.countries() {
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
+fun Application.contentNegotiator(){
+    install(ContentNegotiation) {
+        jackson {
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            setDefaultPrettyPrinter(DefaultPrettyPrinter())
+            registerModule(IdJacksonModule())
 
-        route("/api/countries") {
-            get {
-                val lat = call.request.queryParameters["lat"]?.toDouble()
-                val lon = call.request.queryParameters["lon"]?.toDouble()
-                if (lat != null && lon != null) {
-                    call.respond(getNearestCountries(lat, lon));
-                } else {
-                    call.respond(getAllCountries());
-                }
-            }
-        }
-        //Returns a country latest information based on iso2 code.
-        route("/api/countries/{iso2}") {
-            get {
-                val iso2: String = call.parameters["iso2"].toString()
-                call.respond(   getCountryLatestByIsoCode(iso2.toUpperCase()))
-            }
-        }
-        route("/api/countries/list") {
-            get {
-                call.respondText("Retorna las listas del usuario");
-            }
-            post {
-                call.respondText("Guarda una nueva listas del usuario");
-            }
-        }
-        route("/api/countries/list/{idList}") {
-            delete {
-                call.respondText("Borra una lista del usuario");
-            }
-            patch {
-                call.respondText("Modifica una lista del usuario");
-            }
-        }
-        route("/api/countries/list/{idList}/table") {
-            get {
-                call.respondText("Envia los datos e/m/r para una lista de paises");
-            }
         }
     }
 }
-
-fun Application.database() {
-    routing {
-        route("/register") {
-            post {
-                call.respondText("register");
-            }
-        }
-        route("/login") {
-            post {
-                call.respondText("login");
-            }
-        }
-        route("/auth/google") {
-            post {
-                call.respondText("Oauth");
-            }
-        }
-        route("/logout") {
-            get {
-                call.respondText("logout");
-            }
-
-        }
-        route("/database") {
-            get {
-                val response = getCountriesFromDatabase()
-                call.respond(response)
-            }
-        }
-    }
+fun Application.routes() {
+    healthCheckRoutes()
+    countriesRoutes()
+    userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
+    users(UsersRepository(MongoClientGenerator.getDataBase()))
+    login(UsersRepository(MongoClientGenerator.getDataBase()))
 }
