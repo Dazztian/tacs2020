@@ -18,7 +18,7 @@ Frontend
 
 ```bash
 cd frontend
-./npm install (just run in case you want to install dependencies, otherwise is not needed)
+./yarn install (just run in case you want to install dependencies, for testing purposes, otherwise is not needed)
 ```
 Telegram Bot
 

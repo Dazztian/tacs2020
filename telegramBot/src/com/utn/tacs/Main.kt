@@ -8,37 +8,22 @@ import com.github.kotlintelegrambot.entities.ChatAction.UPLOAD_PHOTO
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.ParseMode.HTML
-import com.github.kotlintelegrambot.network.fold
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.utn.tacs.handlers.addStartCommands
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 fun main(args: Array<String>) {
     val bot = bot {
         token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
-        val gson = Gson()
-        val telegramParser = TelegramMessageParser()
 
+        addStartCommands(updater)
         dispatch {
-            command("start") { bot, update->
-                val result = bot.sendMessage(chatId = update.message!!.chat.id, text = "Hi there!")
-                result.fold({
-                    // do something here with the response
-                },{
-                    // do something with the error
-                })
-            }
 
             // DATABASE
             command("db"){ bot, update->
-                val url = URL("http://localhost:8080/api/countries/tree")
-
-                val connection = url.openConnection() as HttpURLConnection
-                val response = connection.inputStream.bufferedReader().readText()
-
+                val response = getResponse(URL("http://localhost:8080/api/countries/tree"))
                 val dataList :Array<CountryData> = gson.fromJson(response, object : TypeToken<Array<CountryData>>() {}.type)
 
                 dataList.forEachIndexed  { _, data ->
@@ -48,17 +33,13 @@ fun main(args: Array<String>) {
                     )
                 }
             }
-            command("iso") { bot, update, arg->
-                val url = URL("http://localhost:8080/api/countries/"+arg.joinToString(separator = ""))
-
-                val connection = url.openConnection() as HttpURLConnection
-                val response = connection.inputStream.bufferedReader().readText()
-
+            command("iso") { bot, update, args ->
+                val response = getResponse(URL("http://localhost:8080/api/countries/"+args.joinToString(separator = "")))
                 val countryData :CountryData = gson.fromJson(response, object : TypeToken<CountryData>(){}.type)
 
                 bot.sendMessage(
                         chatId = update.message!!.chat.id,
-                        text = telegramParser.parse(countryData)
+                        text = TelegramMessageParser().parse(countryData)
                 )
             }
 
@@ -83,7 +64,6 @@ fun main(args: Array<String>) {
 
             }
             command("paises") { bot, update->
-
                 val result = bot.sendMessage(
                     chatId = update.message!!.chat.id,
                     text = "Paises:",
@@ -147,4 +127,9 @@ fun main(args: Array<String>) {
         }
     }
     bot.startPolling()
+}
+
+fun getResponse(url : URL) :String{
+    val connection = url.openConnection() as HttpURLConnection
+    return connection.inputStream.bufferedReader().readText()
 }
