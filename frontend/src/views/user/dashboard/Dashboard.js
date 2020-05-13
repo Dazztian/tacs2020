@@ -35,7 +35,7 @@ import BigStat from "../../../components/BigStat/BigStat";
 
 const mainChartData = getMainChartData();
 const PieChartData = [
-  { name: "Group A", value: 400, color: "primary" },
+  { name: "Group A", value: 666, color: "primary" },
   { name: "Group B", value: 300, color: "secondary" },
   { name: "Group C", value: 300, color: "warning" },
   { name: "Group D", value: 200, color: "success" },
