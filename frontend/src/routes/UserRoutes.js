@@ -16,6 +16,7 @@ import SidebarUser from "../components/Sidebar/SidebarUser";
 
 // pages
 import Dashboard from "../views/user/dashboard/Dashboard";
+import Listas from "../views/user/listas/Listas";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -37,13 +38,14 @@ function LayoutUser(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
-            <Redirect from="/user" to="/user/dashboard" />
+            {/*<Redirect from="/user" to="/user/dashboard" />*/}
             <Switch>
               <Route path="/user/dashboard" component={Dashboard} />
               <Route path="/user/createlists" />
               <Route path="/user/editlists" />
               <Route path="/user/deletelists" />
               <Route path="/user/liststats" />
+              <Route path="/user/listas" component={Listas} />
               <Route path="/user/perfil" />
             </Switch>
           </div>
