@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {StyleSheet, Text, View, Modal} from "react-native-web";
 import {TextInput, Button} from 'react-native-paper'
 import { Container } from '@material-ui/core';
@@ -22,6 +22,8 @@ import PageTitle from "../../../components/PageTitle/PageTitle";
 */
 
 
+
+/*
 const Listas = ()=>{
 
     var nuevoArray = []
@@ -49,8 +51,42 @@ const Listas = ()=>{
             window.alert(err)
       })
     }
+*/
 
-  
+const Listas = ()=>{
+
+    const [unArray,setUnArray] = useState([])
+    const [loading,setLoading] = useState(false)
+    const [count,setCount] = useState(0)
+    //esta funcion podria ir definida en el archivo api.js
+    const submitData = async ()=>{
+        try{
+        let res = await fetch("http://localhost:8080/api/countries",{
+            method:"GET",
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        let elemento = await res.json()
+        let nuevoArray = await elemento.map( (item) => {        
+                                    nuevoArray.push([
+                                        item.countryregion,
+                                        item._id]
+                                    );
+                                })
+        setUnArray(nuevoArray)
+        }
+        catch(err) {
+            console.log(err)
+            window.alert(err)
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        submitData()
+        setLoading(false)
+    }, [count]);
 
 
 const datatableData = [
@@ -64,31 +100,27 @@ const data2 = [
     ["Angola","5ebab361a5e1ec7c169b9ffe"]
 ]    
 
-const data3= submitData
-
-
-    return(
+return(
         <>
-         <Button style={styles.botones} mode="contained" theme={theme}
-                    onPress={()=>submitData()}>
-                Obtener Lista de países
-            </Button>       
-            <MUIDataTable
-        title="Employee List"
-        data={datatableData}
-        columns={["Name", "Company", "City", "State"]}
-        options={{
-          filterType: "checkbox",
-        }}
-      />
-          <MUIDataTable
-        title="FILTRADO"
-        data={unArray}
-        columns={["id", "countryregion"]}
-        options={{
-          filterType: "checkbox",
-        }}
-         />
+        <Button style={styles.botones} 
+                mode="contained" 
+                theme={theme}
+                onPress={() => setCount(count+1)}>
+            Obtener Lista de países
+        </Button>       
+        <MUIDataTable
+            title="Employee List"
+            data={datatableData}
+            columns={["Name", "Company", "City", "State"]}
+            options={{ filterType: "checkbox", }}
+        />
+        {loading} ? <div>loading...poner una ruedita girando</div> :
+        <MUIDataTable
+            title="FILTRADO"
+            data={unArray}
+            columns={["id", "countryregion"]}
+            options={{ filterType: "checkbox", }}
+        />
     </>
     )
 
