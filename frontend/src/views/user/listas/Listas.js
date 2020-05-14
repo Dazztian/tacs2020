@@ -7,7 +7,7 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
 
-
+   
 
 /*
 .then( elemento =>{ //elemento es el json con todos los registros
@@ -54,7 +54,7 @@ const Listas = ()=>{
 */
 
 const Listas = ()=>{
-
+    
     const [unArray,setUnArray] = useState([])
     const [loading,setLoading] = useState(false)
     const [count,setCount] = useState(0)
@@ -68,13 +68,18 @@ const Listas = ()=>{
             }
         })
         let elemento = await res.json()
-        let nuevoArray = await elemento.map( (item) => {        
-                                    nuevoArray.push([
-                                        item.countryregion,
-                                        item._id]
-                                    );
-                                })
-        setUnArray(nuevoArray)
+
+        let promArray = []
+        elemento.forEach( item => {        
+            promArray.push([
+                item.countryregion,
+                item._id]
+            );
+        })
+        let resultArray = await Promise.all(promArray)
+
+        setUnArray(resultArray)
+
         }
         catch(err) {
             console.log(err)
