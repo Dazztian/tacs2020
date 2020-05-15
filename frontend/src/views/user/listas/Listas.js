@@ -69,13 +69,10 @@ const Listas = ()=>{
         })
         let elemento = await res.json()
 
-        let promArray = []
-        elemento.forEach( item => {        
-            promArray.push([
-                item.countryregion,
-                item._id]
-            );
+        let promArray = elemento.map( item => {        
+            return [ item.countryregion, item._id]
         })
+        
         let resultArray = await Promise.all(promArray)
 
         setUnArray(resultArray)
