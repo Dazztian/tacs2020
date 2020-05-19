@@ -6,6 +6,8 @@ import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.Update
 import com.github.kotlintelegrambot.updater.Updater
+import com.utn.tacs.createCallbackQueryHandler
+import com.utn.tacs.createCommandHandler
 
 fun startButtons() = InlineKeyboardMarkup(
                         listOf(
@@ -31,14 +33,15 @@ fun addStartCommands(updater :Updater){
                                 "(Ejemplo: /login user pass)"
                 )
             },
-            CommandHandler("login") { bot, update, args->
+            createCommandHandler("up") { _, _ ->},
+            createCommandHandler("login") { bot, update, args->
                 if(args.size != 2){
                     bot.sendMessage(
                         chatId = update.message!!.chat.id,
                         text = "Escriba el comando /login seguido de su usuario y contraseña\n" +
                                 "(Ejemplo: /login user pass)"
                     )
-                    return@CommandHandler
+                    return@createCommandHandler
                 }
 
                 bot.sendMessage(
@@ -47,7 +50,8 @@ fun addStartCommands(updater :Updater){
                     replyMarkup = startButtons()
                 )
             },
-            CallbackQueryHandler("startCallBackQuery") { bot, update ->
+
+            createCallbackQueryHandler("startCallBackQuery") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
                     bot.sendMessage(chatId = chatId,
@@ -55,7 +59,7 @@ fun addStartCommands(updater :Updater){
                                     replyMarkup = startButtons())
                 }
             },
-            CallbackQueryHandler("MisListas") { bot, update ->
+            createCallbackQueryHandler("MisListas") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
@@ -71,13 +75,13 @@ fun addStartCommands(updater :Updater){
                     )
                 }
             },
-            CallbackQueryHandler("Logout") { bot, update ->
+            createCallbackQueryHandler("Logout") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
                     bot.sendMessage(
-                        chatId = chatId,
-                        text = "Logout"
+                            chatId = chatId,
+                            text = "Logout"
                     )
                 }
             }

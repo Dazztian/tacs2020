@@ -20,7 +20,6 @@ fun main(args: Array<String>) {
 
         addStartCommands(updater)
         dispatch {
-
             // DATABASE
             command("db"){ bot, update->
                 val response = getResponse(URL("http://localhost:8080/api/countries/tree"))
@@ -129,7 +128,25 @@ fun main(args: Array<String>) {
     bot.startPolling()
 }
 
+
+//Returns if server is running
+fun healthCheck() : Boolean{
+    try {
+        HttpURLConnection.setFollowRedirects(false)
+        val con = URL("http://localhost:8080/").openConnection()
+        con.connectTimeout = 5000 //set timeout to 5 seconds
+
+        return (con.inputStream.bufferedReader().readText() == "Application running");
+    }catch (exc :Exception) {
+        return false
+    }
+}
+//Returns the response of the connection
 fun getResponse(url : URL) :String{
-    val connection = url.openConnection() as HttpURLConnection
-    return connection.inputStream.bufferedReader().readText()
+    return try {
+        val connection = url.openConnection() as HttpURLConnection
+        connection.inputStream.bufferedReader().readText()
+    }catch (exc : Exception){
+        exc.toString()
+    }
 }
