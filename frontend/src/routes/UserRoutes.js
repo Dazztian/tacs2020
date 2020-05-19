@@ -17,6 +17,7 @@ import SidebarUser from "../components/Sidebar/SidebarUser";
 // pages
 import Dashboard from "../views/user/dashboard/Dashboard";
 import Listas from "../views/user/listas/Listas";
+import Graficos from "../views/user/graficos/Graficos";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -46,6 +47,7 @@ function LayoutUser(props) {
               <Route path="/user/deletelists" />
               <Route path="/user/liststats" />
               <Route path="/user/listas" component={Listas} />
+              <Route path="/user/graficos" component={Graficos} />
               <Route path="/user/perfil" />
             </Switch>
           </div>
