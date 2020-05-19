@@ -7,52 +7,6 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
 
-   
-
-/*
-.then( elemento =>{ //elemento es el json con todos los registros
-            elemento.map( (item)=>{        
-                nuevoArray.push([
-                     item.countryregion,
-                     item._id]
-                 );
-            })
-            //window.alert(JSON.stringify(nuevoArray.slice(1, 5)))
-        })
-*/
-
-
-
-/*
-const Listas = ()=>{
-
-    var nuevoArray = []
-
-    const [unArray,setUnArray] = useState([])
-    
-    const submitData = ()=>{
-        fetch("http://localhost:8080/api/countries",{
-            method:"GET",
-            headers:{
-              'Content-Type': 'application/json'
-            }
-        })
-        .then(res=>res.json()) 
-        .then( elemento =>{ //elemento es el json con todos los registros
-            elemento.map( (item)=>{        
-                nuevoArray.push([
-                     item.countryregion,
-                     item._id]
-                 );
-            })
-        })
-        .then( ()=> setUnArray(nuevoArray))
-        .catch(err=>{
-            window.alert(err)
-      })
-    }
-*/
-
 const Listas = ()=>{
     
     const [unArray,setUnArray] = useState([])
@@ -88,39 +42,15 @@ const Listas = ()=>{
         setLoading(true)
         submitData()
         setLoading(false)
-    }, [count]);
-
-
-const datatableData = [
-    ["Joe James", "Example Inc.", "Yonkers", "NY"],
-    ["John Walsh", "Example Inc.", "Hartford", "CT"]
-    ]
-const data2 = [
-    ["Albania","5ebab361a5e1ec7c169b9ffb"],
-    ["Algeria","5ebab361a5e1ec7c169b9ffc"],
-    ["Andorra","5ebab361a5e1ec7c169b9ffd"],
-    ["Angola","5ebab361a5e1ec7c169b9ffe"]
-]    
+    }, [count]);    
 
 return(
-        <>
-        <Button style={styles.botones} 
-                mode="contained" 
-                theme={theme}
-                onPress={() => setCount(count+1)}>
-            Obtener Lista de países
-        </Button>       
-        <MUIDataTable
-            title="Employee List"
-            data={datatableData}
-            columns={["Name", "Company", "City", "State"]}
-            options={{ filterType: "checkbox", }}
-        />
+    <>
         {loading} ? <div>loading...poner una ruedita girando</div> :
         <MUIDataTable
             title="FILTRADO"
             data={unArray}
-            columns={["id", "countryregion"]}
+            columns={["countryregion", "id"]}
             options={{ filterType: "checkbox", }}
         />
     </>
