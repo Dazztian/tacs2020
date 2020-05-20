@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState, useEffect} from 'react'
 import {
   Grid,
   LinearProgress,
@@ -8,6 +8,9 @@ import {
 } from "@material-ui/core";
 import ApexCharts from "react-apexcharts";
 import { useTheme } from "@material-ui/styles";
+import Widget from "../../../components/Widget";
+import { Typography } from "../../../components/Wrappers";
+import Dot from "../../../components/Sidebar/components/Dot";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -23,12 +26,66 @@ import {
 } from "recharts";
 
 
-
+// styles
+import useStyles from "../dashboard/styles";
 
 
 const Graficos = ()=>{
 
+    const [unArray,setUnArray] = useState([])
+    const [loading,setLoading] = useState(false)
+    const [count,setCount] = useState(0)
+    //esta funcion podria ir definida en el archivo api.js
+    const submitData = async ()=>{
+        try{
+        let res = await fetch("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/timeseries?iso2=US&onlyCountries=true",{
+            method:"GET",
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        let elemento = await res.json()
+        
+        {/* En este formato me devuelve los datos el fetch
+          Timeseries: [
+            {
+                day: 1,
+                date: 2/2/2020,
+                confirmed: 2,
+                deaths: 34,
+                recovered: 5
+             }
+             ......
+         ]*/}
+
+        let promArray = elemento.map( item => {        
+            return [ item.day, item.date, item.confirmed, item.deaths, item.recovered]
+        })
+        
+        let resultArray = await Promise.all(promArray)
+
+        setUnArray(resultArray)
+
+        }
+        catch(err) {
+            console.log(err)
+            window.alert(err)
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        submitData()
+        setLoading(false)
+    }, [count]);    
+
+
     var theme = useTheme();
+    var classes = useStyles();
+
+    // local
+  var [mainChartState, setMainChartState] = useState("monthly");
+
   
 
 const data = [
@@ -65,63 +122,127 @@ const series = [
       name: "series2",
       data: [11, 32, 45, 32, 34, 52, 41],
     },
+    {
+      name: "series3",
+      data: [7, 48, 12, 32, 63, 8, 72],
+    },
   ];
 
+//datos del 1er grafico
 const mainChartData = getMainChartData();
 
 return(
     <>
-<ResponsiveContainer width="100%" minWidth={500} height={350}>
-              <ComposedChart
-                margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
-                data={mainChartData}
-              >
-                <YAxis
-                  ticks={[0, 2500, 5000, 7500]}
-                  tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
-                  stroke={theme.palette.text.hint + "80"}
-                  tickLine={false}
-                />
-                <XAxis
-                  tickFormatter={i => i + 1}
-                  tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
-                  stroke={theme.palette.text.hint + "80"}
-                  tickLine={false}
-                />
-                <Area
-                  type="natural"
-                  dataKey="desktop"
-                  fill={theme.palette.background.light}
-                  strokeWidth={0}
-                  activeDot={false}
-                />
-                <Line
-                  type="natural"
-                  dataKey="mobile"
-                  stroke={theme.palette.primary.main}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={false}
-                />
-                <Line
-                  type="linear"
-                  dataKey="tablet"
-                  stroke={theme.palette.warning.main}
-                  strokeWidth={2}
-                  dot={{
-                    stroke: theme.palette.warning.dark,
-                    strokeWidth: 2,
-                    fill: theme.palette.warning.main,
-                  }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
+    <Grid item xs={12}>
+    <Widget
+      bodyClass={classes.mainChartBody}
+      header={
+        <div className={classes.mainChartHeader}>
+          <Typography
+            variant="h5"
+            color="text"
+            colorBrightness="secondary"
+          >
+            COVID-19 CASUALTIES
+          </Typography>
+          <div className={classes.mainChartHeaderLabels}>
+            <div className={classes.mainChartHeaderLabel}>
+              <Dot color="warning" />
+              <Typography className={classes.mainChartLegentElement}>
+                Pais3
+              </Typography>
+            </div>
+            <div className={classes.mainChartHeaderLabel}>
+              <Dot color="primary" />
+              <Typography className={classes.mainChartLegentElement}>
+                Pais2
+              </Typography>
+            </div>
+            <div className={classes.mainChartHeaderLabel}>
+              <Dot color="primary" />
+              <Typography className={classes.mainChartLegentElement}>
+                Pais1
+              </Typography>
+            </div>
+          </div>
+          <Select
+            value={mainChartState}
+            onChange={e => setMainChartState(e.target.value)}
+            input={
+              <OutlinedInput
+                labelWidth={0}
+                classes={{
+                  notchedOutline: classes.mainChartSelectRoot,
+                  input: classes.mainChartSelect,
+                }}
+              />
+            }
+            autoWidth
+          >
+            <MenuItem value="Muertos">Muertos</MenuItem>
+            <MenuItem value="Confirmados">Confirmados</MenuItem>
+            <MenuItem value="Recuperados">Recuperados</MenuItem>
+          </Select>
+        </div>
+      }
+    >
+      <ResponsiveContainer width="100%" minWidth={500} height={350}>
+        <ComposedChart
+          margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
+          data={mainChartData}
+        >
+          <YAxis
+            ticks={[0, 25, 50, 75, 100]}
+            tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
+            stroke={theme.palette.text.hint + "80"}
+            tickLine={false}
+          />
+          <XAxis
+            tickFormatter={i => i+1 }
+            tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
+            stroke={theme.palette.text.hint + "80"}
+            tickLine={false}
+          />
+          <Area
+            type="natural"
+            dataKey="desktop"
+            fill={theme.palette.background.light}
+            strokeWidth={0}
+            activeDot={false}
+          />
+          <Line
+            type="linear"
+            dataKey="mobile"
+            stroke={theme.palette.primary.main}
+            strokeWidth={2}
+            dot={false}
+            activeDot={false}
+          />
+          <Line
+            type="linear"
+            dataKey="tablet"
+            stroke={theme.palette.warning.main}
+            strokeWidth={2}
+            dot={{
+              stroke: theme.palette.warning.dark,
+              strokeWidth: 2,
+              fill: theme.palette.warning.main,
+            }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </Widget>
+  </Grid>
+  <Grid item xs={12}>
+    <Widget>
             <ApexCharts
             options={themeOptions(theme)}
             series={series}
             type="area"
             height={350}
             />
+    </Widget>
+  </Grid>
             </>
 )
 
@@ -155,15 +276,15 @@ function getRandomData(length, min, max, multiplier = 10, maxDiff = 10) {
 
 function getMainChartData() {
     var resultArray = [];
-    var tablet = getRandomData(31, 3500, 6500, 7500, 1000);
-    var desktop = getRandomData(31, 1500, 7500, 7500, 1500);
-    var mobile = getRandomData(31, 1500, 7500, 7500, 1500);
+    var tablet = [{value:48},{value:96},{value:48},{value5:14}]//getRandomData(31, 350, 6500, 7500, 1000);
+    var desktop = [{value:14},{value:48},{value:48},{value:79}]//getRandomData(31, 1500, 7500, 7500, 1500);
+    var mobile = [{value:14},{value:42},{value:48},{value:48}]//getRandomData(31, 1500, 7500, 7500, 1500);
   
     for (let i = 0; i < tablet.length; i++) {
       resultArray.push({
-        tablet: tablet[i].value,
-        desktop: desktop[i].value,
-        mobile: mobile[i].value,
+        tablet: tablet[i].value, //pais1: valor
+        desktop: desktop[i].value, //pais2: valor
+        mobile: mobile[i].value, //pais3: valor
       });
     }
   
