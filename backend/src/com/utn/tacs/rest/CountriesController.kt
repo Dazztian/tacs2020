@@ -30,9 +30,6 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
-            get("/tree") {
-                call.respond(countriesService.getAllCountries())
-            }
             get("/{iso2}") {
                 val iso2: String = call.parameters["iso2"].toString()
                 call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
