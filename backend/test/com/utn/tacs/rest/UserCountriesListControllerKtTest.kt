@@ -39,7 +39,6 @@ class UserCountriesListControllerKtTest {
     fun before() {
         ucl1 = UserCountriesList("userId1".toId(), "TEST", mutableSetOf("TEST_COUNTRY"))
         ucl2 = UserCountriesList("userId2".toId(), "TEST_2", mutableSetOf("COUNTRY_1", "country_2", "CoUnTrY_3"))
-
         ucl3 = UserCountriesList("userId3".toId(), "TEST_3", mutableSetOf("COUNTRY_1"))
         ucl4 = UserCountriesList("userId3".toId(), "TEST_4", mutableSetOf("country_2"))
         ucl5 = UserCountriesList("userId3".toId(), "TEST_5", mutableSetOf("CoUnTrY_3"))
@@ -55,7 +54,8 @@ class UserCountriesListControllerKtTest {
                     "  \"_id\" : \"${ucl1._id}\",\n" +
                     "  \"userId\" : \"${ucl1.userId}\",\n" +
                     "  \"name\" : \"${ucl1.name}\",\n" +
-                    "  \"countries\" : [ ${ucl1.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl1.countries.joinToString { "\"${it}\"" }} ],\n" +
+                    "  \"creationDate\" : \"${ucl1.creationDate}\"\n" +
                     "} ]", response.content)
         }
 
@@ -74,18 +74,21 @@ class UserCountriesListControllerKtTest {
                     "  \"_id\" : \"${ucl3._id}\",\n" +
                     "  \"userId\" : \"${ucl3.userId}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ],\n" +
+                    "  \"creationDate\" : \"${ucl3.creationDate}\"\n" +
                     "}," +
                     " {\n" +
                     "  \"_id\" : \"${ucl4._id}\",\n" +
                     "  \"userId\" : \"${ucl4.userId}\",\n" +
                     "  \"name\" : \"${ucl4.name}\",\n" +
-                    "  \"countries\" : [ ${ucl4.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl4.countries.joinToString { "\"${it}\"" }} ],\n" +
+                    "  \"creationDate\" : \"${ucl4.creationDate}\"\n" +
                     "}, {\n" +
                     "  \"_id\" : \"${ucl5._id}\",\n" +
                     "  \"userId\" : \"${ucl5.userId}\",\n" +
                     "  \"name\" : \"${ucl5.name}\",\n" +
-                    "  \"countries\" : [ ${ucl5.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl5.countries.joinToString { "\"${it}\"" }} ],\n" +
+                    "  \"creationDate\" : \"${ucl5.creationDate}\"\n" +
                     "} ]", response.content)
         }
     }
@@ -131,7 +134,8 @@ class UserCountriesListControllerKtTest {
                     "  \"_id\" : \"${ucl3._id}\",\n" +
                     "  \"userId\" : \"${ucl3.userId}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ],\n" +
+                    "  \"creationDate\" : \"${ucl3.creationDate}\"\n" +
                     "}", response.content)
         }
         every { userListRepository.getUserList(ucl3.userId.toString(), "TEST_NO_EXISTS") } returns null
