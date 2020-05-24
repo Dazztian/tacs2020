@@ -6,6 +6,7 @@ import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.utils.getLogger
 import org.litote.kmongo.*
+import java.time.LocalDate
 
 
 class UserListsRepository(private val database: MongoDatabase) {
@@ -24,9 +25,24 @@ class UserListsRepository(private val database: MongoDatabase) {
         return database.getCollection<UserCountriesList>("userCountriesList").findOne(UserCountriesList::userId eq userId, UserCountriesList::name eq name)
     }
 
+    fun getUserList(userListId: Id<UserCountriesList>): UserCountriesList? {
+        return database.getCollection<UserCountriesList>("userCountriesList").findOneById(userListId)
+    }
 
     fun getUserList(userId: String, name: String): UserCountriesList? {
         return getUserList(userId.toId(), name)
+    }
+
+    fun getUserListsByCreationDate(startDate: LocalDate, endDate: LocalDate): List<UserCountriesList> {
+        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::creationDate gte startDate.toString(), UserCountriesList::creationDate lte endDate.toString()).toList()
+    }
+
+    fun getCount(): Long {
+        return database.getCollection<UserCountriesList>("userCountriesList").countDocuments()
+    }
+
+    fun getAllThatContains(country: String): List<UserCountriesList> {
+        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::countries contains country).toList()
     }
 
     /**

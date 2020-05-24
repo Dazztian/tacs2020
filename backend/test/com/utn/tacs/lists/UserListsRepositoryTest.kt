@@ -9,18 +9,61 @@ import org.bson.Document
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
-import org.litote.kmongo.Id
-import org.litote.kmongo.KMongo
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.newId
+import org.litote.kmongo.*
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import kotlin.test.*
+import java.time.LocalDate
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 
 @Testcontainers
 class UserListsRepositoryTest {
+
+    @Test
+    fun testGetUserListByUserListId() {
+        val repo = UserListsRepository(mongoDatabase)
+
+        assertEquals(userCountryList1, repo.getUserList(userCountryList1._id))
+        assertNull(repo.getUserList("NON_EXISTENT_ID".toId()))
+    }
+
+    @Test
+    fun testGetUserListsByCreationDate() {
+        val repo = UserListsRepository(mongoDatabase)
+
+        val result = repo.getUserListsByCreationDate(LocalDate.parse("2020-05-20"), LocalDate.parse("2020-05-24"))
+        assertEquals(4, result.size)
+        assertTrue(result.containsAll(listOf(userCountryList1, userCountryList2, userCountryList3, userCountryList4)))
+
+        val result2 = repo.getUserListsByCreationDate(LocalDate.parse("2020-05-23"), LocalDate.parse("2020-05-23"))
+        assertEquals(1, result2.size)
+        assertTrue(result.contains(userCountryList1))
+
+        val result3 = repo.getUserListsByCreationDate(LocalDate.parse("2020-09-23"), LocalDate.parse("2020-05-23"))
+        assertEquals(0, result3.size)
+    }
+
+    @Test
+    fun testGetCount() {
+        val repo = UserListsRepository(mongoDatabase)
+        assertEquals(4, repo.getCount())
+    }
+
+    @Test
+    fun testGetAllThatContains(){
+        val repo = UserListsRepository(mongoDatabase)
+
+        val result = repo.getAllThatContains("Country1")
+        assertEquals(1, result.size)
+        assertTrue(result.contains(userCountryList1))
+
+        val result2 = repo.getAllThatContains("NON_EXISTENT")
+        assertEquals(0, result2.size)
+    }
 
     @Test
     fun testGetUserListsByUserId() {
@@ -121,11 +164,11 @@ class UserListsRepositoryTest {
     fun testDoUpdateNameAndCountries() {
         val repo = UserListsRepository(mongoDatabase)
 
-        val idCreated = repo.createUserList(UserCountriesList(userId1, "list_before_update", mutableSetOf("Country1", "Country2")))
+        val idCreated = repo.createUserList(UserCountriesList(userId1, "list_before_update", mutableSetOf("Country22", "Country23")))
 
         val sizeBeforeUpdate = repo.getUserLists(userId1).size
 
-        val response = repo.doUpdate(userId1, "list_before_update", "list_after_update", mutableSetOf("Country3"))
+        val response = repo.doUpdate(userId1, "list_before_update", "list_after_update", mutableSetOf("Country33"))
 
         assertEquals(idCreated, response)
         assertEquals(sizeBeforeUpdate, repo.getUserLists(userId1).size)
@@ -133,7 +176,7 @@ class UserListsRepositoryTest {
         val updated = repo.getUserList(userId1, "list_after_update")
 
         assertNotNull(updated)
-        assertEquals(mutableSetOf("Country1", "Country2", "Country3"), updated.countries)
+        assertEquals(mutableSetOf("Country22", "Country23", "Country33"), updated.countries)
         assertEquals("list_after_update", updated.name)
         assertEquals(idCreated, updated._id)
 
@@ -143,11 +186,11 @@ class UserListsRepositoryTest {
     fun testDoUpdateNameButNotCountriesWhenTheyAreTheSame() {
         val repo = UserListsRepository(mongoDatabase)
 
-        val idCreated = repo.createUserList(UserCountriesList(userId1, "list_before_update_2", mutableSetOf("Country1", "Country2")))
+        val idCreated = repo.createUserList(UserCountriesList(userId1, "list_before_update_2", mutableSetOf("Country22", "Country23")))
 
         val sizeBeforeUpdate = repo.getUserLists(userId1).size
 
-        val response = repo.doUpdate(userId1, "list_before_update_2", "list_after_update_2", mutableSetOf("Country1", "Country2"))
+        val response = repo.doUpdate(userId1, "list_before_update_2", "list_after_update_2", mutableSetOf("Country22", "Country23"))
 
         assertEquals(idCreated, response)
         assertEquals(sizeBeforeUpdate, repo.getUserLists(userId1).size)
@@ -155,7 +198,7 @@ class UserListsRepositoryTest {
         val updated = repo.getUserList(userId1, "list_after_update_2")
 
         assertNotNull(updated)
-        assertEquals(mutableSetOf("Country1", "Country2"), updated.countries)
+        assertEquals(mutableSetOf("Country22", "Country23"), updated.countries)
         assertEquals("list_after_update_2", updated.name)
         assertEquals(idCreated, updated._id)
     }
@@ -164,7 +207,7 @@ class UserListsRepositoryTest {
     fun testDoUpdateOnlyName() {
         val repo = UserListsRepository(mongoDatabase)
 
-        val idCreated = repo.createUserList(UserCountriesList(userId2, "list_to_update_name", mutableSetOf("Country1", "Country2")))
+        val idCreated = repo.createUserList(UserCountriesList(userId2, "list_to_update_name", mutableSetOf("Country22", "Country23")))
 
         val sizeBeforeUpdate = repo.getUserLists(userId2).size
 
@@ -176,7 +219,7 @@ class UserListsRepositoryTest {
         val updated = repo.getUserList(userId2, "list_name_updated")
 
         assertNotNull(updated)
-        assertEquals(mutableSetOf("Country1", "Country2"), updated.countries)
+        assertEquals(mutableSetOf("Country22", "Country23"), updated.countries)
         assertEquals("list_name_updated", updated.name)
         assertEquals(idCreated, updated._id)
     }
@@ -185,11 +228,11 @@ class UserListsRepositoryTest {
     fun testDoUpdateOnlyCountries() {
         val repo = UserListsRepository(mongoDatabase)
 
-        val idCreated = repo.createUserList(UserCountriesList(userId2, "list_to_update_countries", mutableSetOf("Country1", "Country2")))
+        val idCreated = repo.createUserList(UserCountriesList(userId2, "list_to_update_countries", mutableSetOf("Country22", "Country23")))
 
         val sizeBeforeUpdate = repo.getUserLists(userId2).size
 
-        val response = repo.doUpdate(userId2, "list_to_update_countries", mutableSetOf("Country1", "Country2", "Country3", "Country4"))
+        val response = repo.doUpdate(userId2, "list_to_update_countries", mutableSetOf("Country22", "Country23", "Country24", "Country25"))
 
         assertEquals(idCreated, response)
         assertEquals(sizeBeforeUpdate, repo.getUserLists(userId2).size)
@@ -197,7 +240,7 @@ class UserListsRepositoryTest {
         val updated = repo.getUserList(userId2, "list_to_update_countries")
 
         assertNotNull(updated)
-        assertEquals(mutableSetOf("Country1", "Country2", "Country3", "Country4"), updated.countries)
+        assertEquals(mutableSetOf("Country22", "Country23", "Country24", "Country25"), updated.countries)
         assertEquals("list_to_update_countries", updated.name)
         assertEquals(idCreated, updated._id)
     }
@@ -253,13 +296,13 @@ class UserListsRepositoryTest {
             userId1 = newId()
             userId2 = newId()
 
-            userCountryList1 = UserCountriesList(userId1, "list1", mutableSetOf("Country1", "Country2", "Country3"))
+            userCountryList1 = UserCountriesList(userId1, "list1", mutableSetOf("Country1", "Country2", "Country3"), LocalDate.parse("2020-05-23"))
 
-            userCountryList2 = UserCountriesList(userId1, "list2", mutableSetOf("Country4", "Country5", "Country6"))
+            userCountryList2 = UserCountriesList(userId1, "list2", mutableSetOf("Country4", "Country5", "Country6"), LocalDate.parse("2020-05-22"))
 
-            userCountryList3 = UserCountriesList(userId2, "list3", mutableSetOf("Country7", "Country8", "Country9"))
+            userCountryList3 = UserCountriesList(userId2, "list3", mutableSetOf("Country7", "Country8", "Country9"), LocalDate.parse("2020-05-21"))
 
-            userCountryList4 = UserCountriesList(userId2, "list4", mutableSetOf("Country10", "Country11", "Country12"))
+            userCountryList4 = UserCountriesList(userId2, "list4", mutableSetOf("Country10", "Country11", "Country12"), LocalDate.parse("2020-05-20"))
 
 
             mongoDatabase = KMongo.createClient("mongodb://${mongoContainer.containerIpAddress}:${mongoContainer.getMappedPort(27017)}").getDatabase("test")

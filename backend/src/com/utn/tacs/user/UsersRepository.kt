@@ -14,15 +14,15 @@ const val DB_MONGO_USERS_COLLECTION = "users"
 class UsersRepository(private val database: MongoDatabase) {
 
     fun getUserByName(name: String): User? {
-        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::name eq name)
+        return database.getCollection<User>().findOne(User::name eq name)
     }
 
     fun getUserById(id: Id<User>): User? {
-        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id)
+        return database.getCollection<User>().findOneById(id)
     }
 
     fun getUserById(id: String): User? {
-        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id.toId())
+        return getUserById(id.toId())
     }
 
     fun getUserByEmailAndPass(email: String, password: String): User? {
@@ -37,6 +37,7 @@ class UsersRepository(private val database: MongoDatabase) {
         try {
             database.getCollection<User>(DB_MONGO_USERS_COLLECTION).insertOne(user)
             val userId: Id<User> = user._id
+            val aa = getUserById(userId)
             return getUserById(userId)
         } catch (e: MongoException) {
             throw e
