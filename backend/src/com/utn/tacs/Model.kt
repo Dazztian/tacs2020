@@ -13,11 +13,12 @@ data class User(
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
-        val creationDate: Instant? = null
+        val creationDate: Instant? = null,
+        val country: String
 ) {
-    constructor(name: String) : this(name, null, null, newId())
-    constructor(name: String, email: String, password: String) : this(name, email, password, newId())
-    constructor(_id: Id<User>, name: String) : this(name, null, null, _id)
+        constructor(name: String) : this(name, null, null, newId(), null, "")
+        constructor(name: String, email: String, password: String, country: String) : this(name, email, password, newId(), null, country)
+        constructor(_id: Id<User>, name: String) : this(name, null, null, _id, null, "")
 }
 
 @Serializable
@@ -63,3 +64,30 @@ data class UserCountriesListModificationRequest(
         val name: String?,
         val countries: MutableSet<String>?
 )
+
+data class LoginRequest(
+        val user: String,
+        val password: String
+)
+
+data class SignUpRequest(
+        val name: String,
+        val email: String,
+        val password: String,
+        val country: String
+)
+
+data class SignUpResponse(
+        val user: User,
+        val token: String
+)
+
+data class UserAccount(
+        @ContextualSerialization
+        val _id: Id<UserAccount> = newId(),
+        @ContextualSerialization
+        val userId: Id<User>,
+        val token: String
+) {
+        constructor(userId: Id<User>, token: String): this(newId(), userId, token)
+}

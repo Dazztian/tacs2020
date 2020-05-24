@@ -7,7 +7,7 @@ import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
 import org.litote.kmongo.util.idValue
-
+import java.lang.Exception
 
 const val DB_MONGO_USERS_COLLECTION = "users"
 
@@ -25,9 +25,19 @@ class UsersRepository(private val database: MongoDatabase) {
         return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id.toId())
     }
 
-    fun createUser(user: User): Id<User>? {
+    fun getUserByEmailAndPass(email: String, password: String): User? {
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::email eq email, User::password eq password)
+    }
+
+    fun getUserByEmail(email: String): User? {
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::email eq email)
+    }
+
+    fun createUser(user: User): User? {
         try {
-            return (database.getCollection<User>(DB_MONGO_USERS_COLLECTION).insertOne(user).idValue as ObjectId?)?.toId()
+            database.getCollection<User>(DB_MONGO_USERS_COLLECTION).insertOne(user)
+            val userId: Id<User> = user._id
+            return getUserById(userId)
         } catch (e: MongoException) {
             throw e
         }

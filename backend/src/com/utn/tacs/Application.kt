@@ -3,6 +3,8 @@ package com.utn.tacs
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.utn.tacs.account.AccountRepository
+import com.utn.tacs.account.AccountService
 import com.utn.tacs.countries.CountriesRepository
 import com.utn.tacs.countries.CountriesService
 
@@ -65,9 +67,11 @@ fun Application.contentNegotiator(){
     }
 }
 fun Application.routes() {
+    val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
+
     healthCheckRoutes()
     countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
     userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
-    users(UsersRepository(MongoClientGenerator.getDataBase()))
-    login(UsersRepository(MongoClientGenerator.getDataBase()))
+    users(usersRepository)
+    login(usersRepository, AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase())))
 }
