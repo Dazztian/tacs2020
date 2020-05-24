@@ -18,7 +18,7 @@ class UsersRepository(private val database: MongoDatabase) {
     }
 
     fun getUserById(id: Id<User>): User? {
-        return database.getCollection<User>().findOneById(id)
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::_id eq id)
     }
 
     fun getUserById(id: String): User? {
