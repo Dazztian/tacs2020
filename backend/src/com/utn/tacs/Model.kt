@@ -111,3 +111,19 @@ data class UserListComparision(
         val userCountryList2: UserCountriesList,
         val sharedCountries: Set<String>
 )
+
+data class TelegramUser(
+        val telegramId: String,
+        val username: String?,
+        val password: String?
+)
+
+data class TelegramSession(
+        @ContextualSerialization
+        val _id: Id<TelegramSession> = newId(),
+        @ContextualSerialization
+        val userId: Id<User>,
+        val telegramId: String
+){
+    constructor(userId: Id<User>, telegramId: String): this(newId(), userId, telegramId)
+}

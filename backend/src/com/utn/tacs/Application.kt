@@ -1,6 +1,5 @@
 package com.utn.tacs
 
-import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.utn.tacs.account.AccountRepository
@@ -11,12 +10,12 @@ import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
+import com.utn.tacs.telegram.TelegramRepository
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.client.HttpClient
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
@@ -75,4 +74,5 @@ fun Application.routes() {
     users(usersRepository)
     login(usersRepository, AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase())))
     adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), UserListsRepository(MongoClientGenerator.getDataBase())))
+    telegram(usersRepository, TelegramRepository(MongoClientGenerator.getDataBase()))
 }
