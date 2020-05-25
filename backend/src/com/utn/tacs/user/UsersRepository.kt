@@ -14,7 +14,7 @@ const val DB_MONGO_USERS_COLLECTION = "users"
 class UsersRepository(private val database: MongoDatabase) {
 
     fun getUserByName(name: String): User? {
-        return database.getCollection<User>().findOne(User::name eq name)
+        return database.getCollection<User>(DB_MONGO_USERS_COLLECTION).findOne(User::name eq name)
     }
 
     fun getUserById(id: Id<User>): User? {
