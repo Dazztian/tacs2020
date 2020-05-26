@@ -14,6 +14,7 @@ import com.utn.tacs.rest.*
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.client.HttpClient
@@ -26,6 +27,9 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.util.pipeline.PipelineInterceptor
+import io.ktor.util.pipeline.PipelinePhase
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
 
@@ -66,6 +70,7 @@ fun Application.contentNegotiator() {
         }
     }
 }
+
 fun Application.routes() {
     val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
 

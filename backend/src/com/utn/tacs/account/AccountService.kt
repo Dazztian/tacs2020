@@ -1,9 +1,6 @@
 package com.utn.tacs.account
 
-import com.utn.tacs.SignUpRequest
-import com.utn.tacs.SignUpResponse
-import com.utn.tacs.User
-import com.utn.tacs.UserAccount
+import com.utn.tacs.*
 import com.utn.tacs.user.UsersRepository
 import java.lang.Exception
 
@@ -21,7 +18,14 @@ class AccountService(private val usersRepository: UsersRepository, private val a
         return user.password ?: user.name
     }
 
-    fun signUp(signUpRequest: SignUpRequest): SignUpResponse? {
+    fun logIn(loginRequest: LoginRequest): LoginResponse? {
+        val user: User = usersRepository.getUserByEmailAndPass(loginRequest.email, loginRequest.password) ?: return null
+        val userAccount = accountRepository.getUserAccount(user)
+            ?: accountRepository.createUserAccount(UserAccount(user._id, generateToken(user))) ?: return null
+        return LoginResponse(user, userAccount.token)
+    }
+
+    fun signUp(signUpRequest: SignUpRequest): LoginResponse? {
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
             return null
         }
@@ -30,6 +34,6 @@ class AccountService(private val usersRepository: UsersRepository, private val a
             User(signUpRequest.name.trim().toLowerCase(), signUpRequest.email.trim().toLowerCase(), signUpRequest.password, signUpRequest.country.trim().toLowerCase())
         ) ?: throw Exception("user not created")
 
-        return SignUpResponse(user, accountRepository.createUserAccount(UserAccount(user._id, generateToken(user)))!!.token)
+        return LoginResponse(user, accountRepository.createUserAccount(UserAccount(user._id, generateToken(user)))!!.token)
     }
 }

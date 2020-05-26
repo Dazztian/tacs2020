@@ -37,7 +37,6 @@ class UsersRepository(private val database: MongoDatabase) {
         try {
             database.getCollection<User>(DB_MONGO_USERS_COLLECTION).insertOne(user)
             val userId: Id<User> = user._id
-            val aa = getUserById(userId)
             return getUserById(userId)
         } catch (e: MongoException) {
             throw e

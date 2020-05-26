@@ -25,14 +25,9 @@ import kotlinx.serialization.json.JsonConfiguration
 fun Application.login(usersRepository: UsersRepository, accountService: AccountService) {
     routing {
         route("/api/login") {
-            get {
-                //Recibe el body en json como string
-                val text: String = call.receiveText()
-
-                val output: User = jacksonObjectMapper().readValue(text)
-
-                val response = usersRepository.getUserByName(output.name)
-                call.respond(response ?: HttpStatusCode.NotFound)
+            post {
+                val loginData = call.receive<LoginRequest>()
+                call.respond(accountService.logIn(loginData) ?: HttpStatusCode.Unauthorized)
             }
         }
         route("/api/signup") {

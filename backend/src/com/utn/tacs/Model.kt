@@ -45,12 +45,17 @@ data class Country(
         val countrycode: CountryCode?,
         val confirmed: Int,
         val deaths: Int,
-        val recovered: Int
+        val recovered: Int,
+        var timeseries: List<TimeSerie>? = listOf()
+)
 
-) {
-    constructor(countryregion: String, lastupdate: String, location: Location, countrycode: CountryCode?, confirmed: Int, deaths: Int, recovered: Int) :
-            this(newId(), countryregion, lastupdate, location, countrycode, confirmed, deaths, recovered)
-}
+data class TimeSerie(
+        val number: Int,
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int,
+        val date: String
+)
 
 data class UserCountriesList(
         @ContextualSerialization
@@ -74,7 +79,7 @@ data class UserCountriesListModificationRequest(
 )
 
 data class LoginRequest(
-        val user: String,
+        val email: String,
         val password: String
 )
 
@@ -85,7 +90,7 @@ data class SignUpRequest(
         val country: String
 )
 
-data class SignUpResponse(
+data class LoginResponse(
         val user: User,
         val token: String
 )
