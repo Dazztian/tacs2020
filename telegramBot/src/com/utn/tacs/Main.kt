@@ -1,16 +1,11 @@
 package com.utn.tacs
 
+import com.github.kittinunf.fuel.Fuel
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
-import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.dispatcher.command
-import com.github.kotlintelegrambot.entities.ChatAction.UPLOAD_PHOTO
-import com.github.kotlintelegrambot.entities.InlineKeyboardButton
-import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
-import com.github.kotlintelegrambot.entities.ParseMode.HTML
-import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import com.utn.tacs.handlers.addStartCommands
-import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -20,7 +15,15 @@ fun main(args: Array<String>) {
 
         addStartCommands(updater)
         dispatch {
+            /*command("asd") { bot, update->
+                val result = bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = update.message!!.from!!.id.toString()
+                )
+            }*/
+
             // DATABASE
+            /*
             command("db"){ bot, update->
                 val response = getResponse(URL("http://localhost:8080/api/countries/tree"))
                 val dataList :Array<CountryData> = gson.fromJson(response, object : TypeToken<Array<CountryData>>() {}.type)
@@ -41,6 +44,7 @@ fun main(args: Array<String>) {
                         text = TelegramMessageParser().parse(countryData)
                 )
             }
+
 
             //  TABLA HARDCODEADA
             command("tabla") { bot, update->
@@ -123,6 +127,7 @@ fun main(args: Array<String>) {
                 val result = bot.sendPhoto(chatId = update.message!!.chat.id, photo = File(System.getProperty("user.dir")+"\\cat.jpg"))
                 bot.sendMessage(chatId = update.message!!.chat.id, text = "sent")
             }
+             */
         }
     }
     bot.startPolling()
@@ -131,22 +136,44 @@ fun main(args: Array<String>) {
 
 //Returns if server is running
 fun healthCheck() : Boolean{
-    try {
+    return try {
         HttpURLConnection.setFollowRedirects(false)
         val con = URL("http://localhost:8080/").openConnection()
         con.connectTimeout = 5000 //set timeout to 5 seconds
 
-        return (con.inputStream.bufferedReader().readText() == "Application running");
-    }catch (exc :Exception) {
-        return false
+        (con.inputStream.bufferedReader().readText() == "Application running");
+    } catch (exc :Exception) {
+        false
     }
 }
-//Returns the response of the connection
-fun getResponse(url : URL) :String{
+
+//Returns if telegram user has an active session
+fun isLoggedIn(telegramUserId :String) :Boolean{
     return try {
-        val connection = url.openConnection() as HttpURLConnection
-        connection.inputStream.bufferedReader().readText()
-    }catch (exc : Exception){
-        exc.toString()
+        val (request, response, result) = Fuel.get("http://localhost:8080/api/telegram?id=$telegramUserId")
+            .responseString()
+
+        //val (payload, _) = result // payload is a String
+        //val responseJson = payload.toString()
+
+        response.statusCode == 200
+    } catch (exc :Exception) {
+        false
     }
 }
+
+/*
+fun isLoggedIn2(telegramUserId :String) :Boolean{
+    return try {
+        val (request, response, result) = Fuel.post("http://localhost:8080/api/telegram")
+            .body(Gson().toJson(TelegramUser(telegramUserId, null, null)).toString())
+            .responseString()
+
+        //val (payload, _) = result // payload is a String
+        //val responseJson = payload.toString()
+
+        response.statusCode == 200
+    } catch (exc :Exception) {
+        false
+    }
+}*/

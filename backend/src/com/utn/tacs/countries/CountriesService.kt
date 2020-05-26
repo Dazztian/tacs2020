@@ -23,8 +23,10 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
             throw kotlin.IllegalArgumentException("There was no country with iso2 code $iso2")
         }
     }
+
+    suspend fun getCountryTimesSeries(iso2: String): Country {
+        val country = getCountryLatestByIsoCode(iso2)
+        country.timeseries = getCountryTimeSeriesFromApi("iso2=$iso2")
+        return country
+    }
 }
-
-
-
-

@@ -14,13 +14,14 @@ data class User(
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
-        val creationDate: Instant? = null
+        val creationDate: Instant? = null,
+        val country: String?
 ) {
-    constructor(name: String) : this(name, null, null, newId())
-    constructor(name: String, email: String, password: String) : this(name, email, password, newId())
-    constructor(_id: Id<User>, name: String) : this(name, null, null, _id)
-    constructor(_id: Id<User>, name: String, email:String, password:String) : this(name, email, password, _id)
-
+        constructor(name: String) : this(name, null, null, newId(), null, null)
+        constructor(name: String, email: String, password: String, country: String) : this(name, email, password, newId(), null, country)
+        constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
+        constructor(_id: Id<User>, name: String) : this(name, null, null, _id, null, null)
+        constructor(_id: Id<User>, name: String, email:String, password:String) : this(name, email, password, _id, null, null)
 }
 
 @Serializable
@@ -44,12 +45,17 @@ data class Country(
         val countrycode: CountryCode?,
         val confirmed: Int,
         val deaths: Int,
-        val recovered: Int
+        val recovered: Int,
+        var timeseries: List<TimeSerie>? = listOf()
+)
 
-) {
-    constructor(countryregion: String, lastupdate: String, location: Location, countrycode: CountryCode?, confirmed: Int, deaths: Int, recovered: Int) :
-            this(newId(), countryregion, lastupdate, location, countrycode, confirmed, deaths, recovered)
-}
+data class TimeSerie(
+        val number: Int,
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int,
+        val date: String
+)
 
 data class UserCountriesList(
         @ContextualSerialization
@@ -72,6 +78,37 @@ data class UserCountriesListModificationRequest(
         val countries: MutableSet<String>?
 )
 
+data class LoginRequest(
+        val email: String,
+        val password: String
+)
+
+data class SignUpRequest(
+        val name: String,
+        val email: String,
+        val password: String,
+        val country: String
+)
+
+data class LoginResponse(
+        val user: User,
+        val token: String
+)
+
+data class LogOutRequest(
+    val token: String
+)
+
+data class UserAccount(
+        @ContextualSerialization
+        val _id: Id<UserAccount> = newId(),
+        @ContextualSerialization
+        val userId: Id<User>,
+        val token: String
+) {
+        constructor(userId: Id<User>, token: String): this(newId(), userId, token)
+}
+
 data class UserData(
         val user: User,
         val listsQuantity: Int,
@@ -83,3 +120,19 @@ data class UserListComparision(
         val userCountryList2: UserCountriesList,
         val sharedCountries: Set<String>
 )
+
+data class TelegramUser(
+        val telegramId: String,
+        val username: String?,
+        val password: String?
+)
+
+data class TelegramSession(
+        @ContextualSerialization
+        val _id: Id<TelegramSession> = newId(),
+        @ContextualSerialization
+        val userId: Id<User>,
+        val telegramId: String
+){
+    constructor(userId: Id<User>, telegramId: String): this(newId(), userId, telegramId)
+}

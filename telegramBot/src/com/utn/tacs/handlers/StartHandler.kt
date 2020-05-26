@@ -1,13 +1,12 @@
 package com.utn.tacs.handlers
 
-import com.github.kotlintelegrambot.dispatcher.handlers.CallbackQueryHandler
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.Update
 import com.github.kotlintelegrambot.updater.Updater
+import com.utn.tacs.commandHandlerLogin
 import com.utn.tacs.createCallbackQueryHandler
-import com.utn.tacs.createCommandHandler
 
 fun startButtons() = InlineKeyboardMarkup(
                         listOf(
@@ -23,33 +22,43 @@ fun startMessageCallBackQuery(update :Update) = startMessageBuilder(update.callb
 fun loginText(update :Update) = startMessageBuilder(update.message!!.from?.firstName ?: "errorName")
 fun startMessageBuilder(firstName :String) = "Bienvenido $firstName!"
 
+const val startText = "Bienvenido al bot de Telegram del grupo 4 de TACS 2020!\n\n" +
+                    "Para iniciar escriba el comando /login seguido de su usuario y contraseña\n" +
+                    "(Ejemplo: /login user pass)"
+
+const val textoLoginIncorrecto = "Usuario o contraseña es incorrecta"
+
 fun addStartCommands(updater :Updater){
     listOf(
             CommandHandler("start") { bot, update->
                 bot.sendMessage(
                         chatId = update.message!!.chat.id,
-                        text = "Bienvenido al bot de Telegram del grupo 4 de TACS 2020!\n\n" +
-                                "Para iniciar escriba el comando /login seguido de su usuario y contraseña\n" +
-                                "(Ejemplo: /login user pass)"
+                        text = startText
                 )
             },
-            createCommandHandler("up") { _, _ ->},
-            createCommandHandler("login") { bot, update, args->
+            CommandHandler("login", commandHandlerLogin { bot, update, args->
                 if(args.size != 2){
                     bot.sendMessage(
                         chatId = update.message!!.chat.id,
                         text = "Escriba el comando /login seguido de su usuario y contraseña\n" +
                                 "(Ejemplo: /login user pass)"
                     )
-                    return@createCommandHandler
+                    return@commandHandlerLogin
                 }
 
-                bot.sendMessage(
-                    chatId = update.message!!.chat.id,
-                    text = loginText(update),
-                    replyMarkup = startButtons()
-                )
-            },
+                if(login(args[0], args[1]))
+                    bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = loginText(update),
+                        replyMarkup = startButtons()
+                    )
+                else
+                    bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = textoLoginIncorrecto
+                    )
+
+            }),
 
             createCallbackQueryHandler("startCallBackQuery") { bot, update ->
                 update.callbackQuery?.let {
@@ -79,11 +88,25 @@ fun addStartCommands(updater :Updater){
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
-                    bot.sendMessage(
+                    if(logout())
+                        bot.sendMessage(
                             chatId = chatId,
-                            text = "Logout"
-                    )
+                            text = "Logout exitoso!\n$startText",
+                            replyMarkup = startButtons()
+                        )
+                    else
+                        bot.sendMessage(
+                            chatId = chatId,
+                            text = "Error al procesar la solicitud"
+                        )
                 }
             }
     ).forEach{updater.dispatcher.addHandler(it)}
+}
+
+fun login(username :String, password :String) :Boolean{
+    return false
+}
+fun logout() :Boolean{
+    return false
 }

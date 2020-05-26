@@ -11,6 +11,7 @@ import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.util.pipeline.intercept
 
 
 fun Application.countriesRoutes(countriesService: CountriesService) {
@@ -19,23 +20,26 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
     routing {
         route("/api/countries") {
             get {
-                try{ val lat = call.request.queryParameters["lat"]?.toDouble()
+                try{
+                    val lat = call.request.queryParameters["lat"]?.toDouble()
                     val lon = call.request.queryParameters["lon"]?.toDouble()
                     if (lat != null && lon != null) {
                         call.respond(countriesService.getNearestCountries(lat, lon))
                     } else {
                         call.respond(countriesService.getAllCountries())
-                    } } catch (e: Exception){
+                    }
+                } catch (e: Exception){
                     logger.error("Parameters where not correct...", e)
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
-            get("/tree") {
-                call.respond(countriesService.getAllCountries())
-            }
             get("/{iso2}") {
                 val iso2: String = call.parameters["iso2"].toString()
                 call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
+            }
+            get("/{iso2}/timeseries") {
+                val iso2: String = call.parameters["iso2"].toString()
+                call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase()))
             }
         }
     }
