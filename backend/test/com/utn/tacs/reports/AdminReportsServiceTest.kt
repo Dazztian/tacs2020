@@ -6,6 +6,7 @@ import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.UserData
 import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.user.USERS_COLLECTION_NAME
 import com.utn.tacs.user.UsersRepository
 import org.bson.Document
 import org.junit.AfterClass
@@ -154,7 +155,7 @@ class AdminReportsServiceTest {
             val index = Document("name", 1).append("userId", 1)
             mongoDatabase.getCollection("userCountriesList").createIndex(index, IndexOptions().unique(true))
 
-            mongoDatabase.getCollection<User>().insertMany(mutableListOf(user1, user2))
+            mongoDatabase.getCollection<User>(USERS_COLLECTION_NAME).insertMany(mutableListOf(user1, user2))
             mongoDatabase.getCollection<UserCountriesList>().insertMany(mutableListOf(userCountryList1, userCountryList2, userCountryList3, userCountryList4))
 
             userListRepository = UserListsRepository(mongoDatabase)
