@@ -44,7 +44,7 @@ fun Application.login(accountService: AccountService) {
         }
         route("/auth/google") {
             post {
-                call.respondText("Oauth");
+                call.respondText("Oauth")
             }
         }
         route("api/logout") {
@@ -54,7 +54,7 @@ fun Application.login(accountService: AccountService) {
                     accountService.logOut(LogOutRequest(authorizationHeader.split(" ").get(1)))
                     call.respond(HttpStatusCode.OK)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.Unauthorized)
                 }
             }
         }
