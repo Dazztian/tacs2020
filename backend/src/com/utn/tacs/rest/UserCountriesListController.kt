@@ -10,6 +10,8 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import org.bson.types.ObjectId
+import org.litote.kmongo.id.toId
 import org.litote.kmongo.toId
 
 val logger = getLogger()
@@ -26,7 +28,7 @@ fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository
                 val userId: String = call.parameters["userId"]!!.toString()
                 try {
                     val request = call.receive<UserCountriesListModificationRequest>()
-                    val response = userListsRepository.createUserList(userId.toId(), request.name!!, request.countries!!)
+                    val response = userListsRepository.createUserList(ObjectId(userId).toId(), request.name!!, request.countries!!)
                     if (response != null) {
                         call.respond(HttpStatusCode.Created, response.toString())
                     } else {

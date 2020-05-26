@@ -60,6 +60,7 @@ dependencies {
     compile 'com.github.paniaton:tacs2020:master-SNAPSHOT' //Para tener las clases del back
     implementation 'com.github.kittinunf.fuel:fuel:2.2.2'
     compile 'org.litote.kmongo:kmongo-id:4.0.1'
+    implementation 'com.beust:klaxon:5.0.1'
 }
 
 shadowJar {

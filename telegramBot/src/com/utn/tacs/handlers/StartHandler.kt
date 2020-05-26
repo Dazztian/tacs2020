@@ -5,8 +5,7 @@ import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.Update
 import com.github.kotlintelegrambot.updater.Updater
-import com.utn.tacs.commandHandlerLogin
-import com.utn.tacs.createCallbackQueryHandler
+import com.utn.tacs.*
 
 fun startButtons() = InlineKeyboardMarkup(
                         listOf(
@@ -27,26 +26,34 @@ const val startText = "Bienvenido al bot de Telegram del grupo 4 de TACS 2020!\n
                     "(Ejemplo: /login user pass)"
 
 const val textoLoginIncorrecto = "Usuario o contraseña es incorrecta"
+const val textoLoginHelp = "Escriba el comando /login seguido de su usuario y contraseña\n" +
+                            "(Ejemplo: /login user pass)"
 
 fun addStartCommands(updater :Updater){
     listOf(
             CommandHandler("start") { bot, update->
-                bot.sendMessage(
+                if(healthCheck() && isLoggedIn(update.message!!.from!!.id.toString()))
+                    bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = loginText(update),
+                        replyMarkup = startButtons()
+                    )
+                else
+                    bot.sendMessage(
                         chatId = update.message!!.chat.id,
                         text = startText
-                )
+                    )
             },
             CommandHandler("login", commandHandlerLogin { bot, update, args->
                 if(args.size != 2){
                     bot.sendMessage(
                         chatId = update.message!!.chat.id,
-                        text = "Escriba el comando /login seguido de su usuario y contraseña\n" +
-                                "(Ejemplo: /login user pass)"
+                        text = textoLoginHelp
                     )
                     return@commandHandlerLogin
                 }
 
-                if(login(args[0], args[1]))
+                if(login(args[0], args[1], update.message!!.from!!.id.toString()))
                     bot.sendMessage(
                         chatId = update.message!!.chat.id,
                         text = loginText(update),
@@ -60,7 +67,7 @@ fun addStartCommands(updater :Updater){
 
             }),
 
-            createCallbackQueryHandler("startCallBackQuery") { bot, update ->
+            createCallbackQueryHandler("Inicio") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
                     bot.sendMessage(chatId = chatId,
@@ -72,41 +79,44 @@ fun addStartCommands(updater :Updater){
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
+                    countryLists(update.callbackQuery?.message!!.chat.id.toString())?.
+                    forEach { l ->
+                        bot.sendMessage(
+                            chatId = chatId,
+                            text = l.name +"\nPaises: ${l.countries.size}"
+                        )
+                    }
+
                     bot.sendMessage(
                         chatId = chatId,
-                        text = "Listas: ",
+                        text = "Volver a inicio",
                         replyMarkup = InlineKeyboardMarkup(
                             listOf(
                                 listOf(
-                                    InlineKeyboardButton(text = "Volver", callbackData = "startCallBackQuery")
-                                ))
-                        )
-                    )
+                                    InlineKeyboardButton(text = "Volver", callbackData = "Inicio")
+                                ))))
                 }
             },
             createCallbackQueryHandler("Logout") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
-                    if(logout())
+                    if(logout(update.callbackQuery?.message!!.chat.id.toString())) {
                         bot.sendMessage(
                             chatId = chatId,
-                            text = "Logout exitoso!\n$startText",
-                            replyMarkup = startButtons()
+                            text = "Logout exitoso!"
                         )
-                    else
+                        bot.sendMessage(
+                            chatId = chatId,
+                            text = startText
+                        )
+                    } else {
                         bot.sendMessage(
                             chatId = chatId,
                             text = "Error al procesar la solicitud"
                         )
+                    }
                 }
             }
     ).forEach{updater.dispatcher.addHandler(it)}
-}
-
-fun login(username :String, password :String) :Boolean{
-    return false
-}
-fun logout() :Boolean{
-    return false
 }

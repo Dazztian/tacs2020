@@ -1,26 +1,22 @@
 package com.utn.tacs
 
-import com.github.kittinunf.fuel.Fuel
 import com.github.kotlintelegrambot.bot
-import com.github.kotlintelegrambot.dispatch
-import com.github.kotlintelegrambot.dispatcher.command
-import com.google.gson.Gson
 import com.utn.tacs.handlers.addStartCommands
-import java.net.HttpURLConnection
-import java.net.URL
 
 fun main(args: Array<String>) {
     val bot = bot {
         token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
 
         addStartCommands(updater)
-        dispatch {
-            /*command("asd") { bot, update->
-                val result = bot.sendMessage(
+        /*dispatch {
+            command("a") { bot, update->
+                val a = update.message!!.from!!.id.toString()
+
+                /*bot.sendMessage(
                     chatId = update.message!!.chat.id,
-                    text = update.message!!.from!!.id.toString()
-                )
-            }*/
+                    text = "End\n$responseJson"
+                )*/
+            }
 
             // DATABASE
             /*
@@ -128,52 +124,7 @@ fun main(args: Array<String>) {
                 bot.sendMessage(chatId = update.message!!.chat.id, text = "sent")
             }
              */
-        }
+        }*/
     }
     bot.startPolling()
 }
-
-
-//Returns if server is running
-fun healthCheck() : Boolean{
-    return try {
-        HttpURLConnection.setFollowRedirects(false)
-        val con = URL("http://localhost:8080/").openConnection()
-        con.connectTimeout = 5000 //set timeout to 5 seconds
-
-        (con.inputStream.bufferedReader().readText() == "Application running");
-    } catch (exc :Exception) {
-        false
-    }
-}
-
-//Returns if telegram user has an active session
-fun isLoggedIn(telegramUserId :String) :Boolean{
-    return try {
-        val (request, response, result) = Fuel.get("http://localhost:8080/api/telegram?id=$telegramUserId")
-            .responseString()
-
-        //val (payload, _) = result // payload is a String
-        //val responseJson = payload.toString()
-
-        response.statusCode == 200
-    } catch (exc :Exception) {
-        false
-    }
-}
-
-/*
-fun isLoggedIn2(telegramUserId :String) :Boolean{
-    return try {
-        val (request, response, result) = Fuel.post("http://localhost:8080/api/telegram")
-            .body(Gson().toJson(TelegramUser(telegramUserId, null, null)).toString())
-            .responseString()
-
-        //val (payload, _) = result // payload is a String
-        //val responseJson = payload.toString()
-
-        response.statusCode == 200
-    } catch (exc :Exception) {
-        false
-    }
-}*/
