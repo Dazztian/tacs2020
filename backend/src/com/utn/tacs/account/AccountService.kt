@@ -3,11 +3,14 @@ package com.utn.tacs.account
 import com.utn.tacs.*
 import com.utn.tacs.user.UsersRepository
 import java.lang.Exception
+import java.security.MessageDigest
+import java.math.BigInteger
 
 class AccountService(private val usersRepository: UsersRepository, private val accountRepository: AccountRepository) {
 
-    public fun validateToken(authorizationHeader: String) {
-
+    public fun getUserByToken(token: String): User? {
+        val userAccount = accountRepository.getUserAccount(token) ?: return null
+        return usersRepository.getUserById(userAccount.userId)
     }
 
     private fun encriptPassword(password: String): String {
@@ -15,7 +18,9 @@ class AccountService(private val usersRepository: UsersRepository, private val a
     }
 
     private fun generateToken(user: User): String {
-        return user.password ?: user.name
+        return (String.format("%032x", BigInteger(1, MessageDigest.getInstance("SHA-256").digest(user.email.toByteArray(Charsets.UTF_8))))
+                + String.format("%032x", BigInteger(1, MessageDigest.getInstance("SHA-256").digest(user.password.toByteArray(Charsets.UTF_8))))
+                + String.format("%032x", BigInteger(1, MessageDigest.getInstance("SHA-256").digest(user.name.toByteArray(Charsets.UTF_8)))))
     }
 
     fun logIn(loginRequest: LoginRequest): LoginResponse? {
