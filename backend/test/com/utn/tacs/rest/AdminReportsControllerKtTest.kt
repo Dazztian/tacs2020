@@ -65,7 +65,8 @@ class AdminReportsControllerKtTest {
                     "    \"email\" : \"${user1.email}\",\n" +
                     "    \"password\" : \"${user1.password}\",\n" +
                     "    \"_id\" : \"${user1._id}\",\n" +
-                    "    \"creationDate\" : null\n" +
+                    "    \"creationDate\" : null,\n" +
+                    "    \"country\" : null\n" +
                     "  },\n" +
                     "  \"listsQuantity\" : 3,\n" +
                     "  \"countriesTotal\" : 5\n" +
@@ -83,7 +84,8 @@ class AdminReportsControllerKtTest {
                     "    \"email\" : \"${user2.email}\",\n" +
                     "    \"password\" : \"${user2.password}\",\n" +
                     "    \"_id\" : \"${user2._id}\",\n" +
-                    "    \"creationDate\" : null\n" +
+                    "    \"creationDate\" : null,\n" +
+                    "    \"country\" : null\n" +
                     "  },\n" +
                     "  \"listsQuantity\" : 0,\n" +
                     "  \"countriesTotal\" : 0\n" +
