@@ -2,6 +2,7 @@ package com.utn.tacs.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.utn.tacs.LogOutRequest
 import com.utn.tacs.User
 import com.utn.tacs.LoginRequest
 import com.utn.tacs.SignUpRequest
@@ -22,7 +23,7 @@ import io.ktor.routing.routing
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
-fun Application.login(usersRepository: UsersRepository, accountService: AccountService) {
+fun Application.login(accountService: AccountService) {
     routing {
         route("/api/login") {
             post {
@@ -46,9 +47,15 @@ fun Application.login(usersRepository: UsersRepository, accountService: AccountS
                 call.respondText("Oauth");
             }
         }
-        route("/logout") {
+        route("api/logout") {
             post {
-                call.respondText("logout")
+                val authorizationHeader: String = call.request.header("Authorization") ?: ""
+                try {
+                    accountService.logOut(LogOutRequest(authorizationHeader.split(" ").get(1)))
+                    call.respond(HttpStatusCode.OK)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
     }

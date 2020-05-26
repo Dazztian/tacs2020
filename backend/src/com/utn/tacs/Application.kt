@@ -77,7 +77,7 @@ fun Application.routes() {
     countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
     userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
     users(usersRepository)
-    login(usersRepository, AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase())))
+    login(AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase())))
     adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), UserListsRepository(MongoClientGenerator.getDataBase())))
     telegram(usersRepository, TelegramRepository(MongoClientGenerator.getDataBase()))
 }

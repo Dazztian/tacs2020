@@ -95,6 +95,10 @@ data class LoginResponse(
         val token: String
 )
 
+data class LogOutRequest(
+    val token: String
+)
+
 data class UserAccount(
         @ContextualSerialization
         val _id: Id<UserAccount> = newId(),

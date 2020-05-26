@@ -25,6 +25,11 @@ class AccountService(private val usersRepository: UsersRepository, private val a
         return LoginResponse(user, userAccount.token)
     }
 
+    fun logOut(logOutRequest: LogOutRequest) {
+        val userAccount = accountRepository.getUserAccount(logOutRequest.token) ?: throw Exception("session Expired")
+        accountRepository.removeUserAccount(userAccount)
+    }
+
     fun signUp(signUpRequest: SignUpRequest): LoginResponse? {
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
             return null
