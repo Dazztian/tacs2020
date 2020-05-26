@@ -15,6 +15,11 @@ import io.ktor.routing.*
 fun Application.telegram(usersRepository: UsersRepository, telegramRepository: TelegramRepository) {
     routing {
         route("/api/telegram") {
+            get {
+                val telegramUser = TelegramUser(call.parameters["id"]!!, null, null)
+
+                call.respond(telegramRepository.getTelegramSession(telegramUser) ?: HttpStatusCode.NotFound)
+            }
             post {
                 val telegramUser: TelegramUser = jacksonObjectMapper().readValue(call.receiveText())
                 if(telegramUser.username == null || telegramUser.password == null) {
@@ -28,11 +33,6 @@ fun Application.telegram(usersRepository: UsersRepository, telegramRepository: T
                         else -> call.respond(telegramRepository.createNewTelegramSession(user, telegramUser) ?: HttpStatusCode.Conflict)
                     }
                 }
-            }
-            get {
-                val telegramUser: TelegramUser = jacksonObjectMapper().readValue(call.receiveText())
-
-                call.respond(telegramRepository.getTelegramSession(telegramUser) ?: HttpStatusCode.NotFound)
             }
             delete {
                 val telegramUser: TelegramUser = jacksonObjectMapper().readValue(call.receiveText())
