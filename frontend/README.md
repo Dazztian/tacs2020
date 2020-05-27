@@ -1,8 +1,8 @@
-#Probar el front
+# Probar el front
 1. yarn install
 2. npm start
 
-#Para ingresar como usuario 
+# Para ingresar como usuario 
 ```
 Username: user
 Password: user
@@ -13,7 +13,7 @@ En principio el **home** del usuario se va a usar para mostrar el estado de los 
 
 **Stats** esta destinado a mostrar las estadisticas de la lista a seleccionar
 
-#Para ingresar como admin
+# Para ingresar como admin
 ```
 Username: admin
 Password: admin
