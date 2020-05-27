@@ -2,13 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Drawer, IconButton, List } from "@material-ui/core";
 import {
   Home as HomeIcon,
-  NotificationsNone as NotificationsIcon,
-  FormatSize as TypographyIcon,
-  FilterNone as UIElementsIcon,
-  BorderAll as TableIcon,
-  QuestionAnswer as SupportIcon,
-  LibraryBooks as LibraryIcon,
-  HelpOutline as FAQIcon,
+  List as Lists,
+  Equalizer as TableIcon,
   ArrowBack as ArrowBackIcon,
 } from "@material-ui/icons";
 import { useTheme } from "@material-ui/styles";
@@ -30,7 +25,7 @@ import {
 } from "../../context/LayoutContext";
 
 const structure = [
-  { id: 0, label: "Dashboard", link: "/user/dashboard", icon: <HomeIcon /> },
+  { id: 0, label: "Home", link: "/user/home", icon: <HomeIcon /> },
   {
     id: 1,
     label: "Lists",
@@ -38,7 +33,8 @@ const structure = [
       { label: "Create", link: "/user/createlists" },
       { label: "Edit", link: "/user/editlists" },
       { label: "Delete", link: "/user/deletelists" },
-    ],
+    ], 
+    icon: <Lists />
   },
   { id: 2, label: "Stats", link: "/user/liststats", icon: <TableIcon /> },
 ];
