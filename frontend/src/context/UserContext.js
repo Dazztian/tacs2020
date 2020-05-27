@@ -93,7 +93,7 @@ function createNewUser (dispatch, login, password, history, setIsLoading, setErr
 
       localStorage.setItem('id_token', 1)
       localStorage.setItem('tracker_country', 'Argentina')
-      localStorage.setItem('tracker_name', 'Nacho Scocco')
+      localStorage.setItem('tracker_name', 'Jose Perez')
       setTimeout(() => {
         dispatch({ type: 'LOGIN_USER_SUCCESS' })
         history.push('/user/home')
