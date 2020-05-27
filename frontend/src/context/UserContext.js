@@ -83,7 +83,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
   }
 }
 
-function createNewUser (dispatch, login, password, history, setIsLoading, setError){
+function createNewUser (dispatch, nameValue, login, password, history, setIsLoading, setError){
   setError(false);
   setIsLoading(true);
 
@@ -93,7 +93,7 @@ function createNewUser (dispatch, login, password, history, setIsLoading, setErr
 
       localStorage.setItem('id_token', 1)
       localStorage.setItem('tracker_country', 'Argentina')
-      localStorage.setItem('tracker_name', 'Jose Perez')
+      localStorage.setItem('tracker_name', nameValue)
       setTimeout(() => {
         dispatch({ type: 'LOGIN_USER_SUCCESS' })
         history.push('/user/home')

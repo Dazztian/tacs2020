@@ -75,7 +75,7 @@ function Login(props) {
               </div>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -153,7 +153,7 @@ function Login(props) {
               </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -209,6 +209,7 @@ function Login(props) {
                     onClick={() =>
                       createNewUser(
                         userDispatch,
+                        nameValue,
                         loginValue,
                         passwordValue,
                         props.history,
