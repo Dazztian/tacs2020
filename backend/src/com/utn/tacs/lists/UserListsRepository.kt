@@ -5,7 +5,9 @@ import com.mongodb.client.MongoDatabase
 import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.utils.getLogger
+import org.bson.types.ObjectId
 import org.litote.kmongo.*
+import org.litote.kmongo.id.toId
 import java.time.LocalDate
 
 
@@ -18,7 +20,7 @@ class UserListsRepository(private val database: MongoDatabase) {
     }
 
     fun getUserLists(userId: String): List<UserCountriesList> {
-        return getUserLists(userId.toId())
+        return getUserLists(ObjectId(userId).toId())
     }
 
     fun getUserList(userId: Id<User>, name: String): UserCountriesList? {
@@ -30,7 +32,7 @@ class UserListsRepository(private val database: MongoDatabase) {
     }
 
     fun getUserList(userId: String, name: String): UserCountriesList? {
-        return getUserList(userId.toId(), name)
+        return getUserList(ObjectId(userId).toId(), name)
     }
 
     fun getUserListsByCreationDate(startDate: LocalDate, endDate: LocalDate): List<UserCountriesList> {

@@ -53,6 +53,7 @@ dependencies {
     testImplementation "io.mockk:mockk:$mockk_version"
     implementation "org.litote.kmongo:kmongo:$kmongo_version"
     implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_version"
+    compile group: 'org.json', name: 'json', version: '20090211'
 }
 
 shadowJar {

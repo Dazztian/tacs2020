@@ -57,7 +57,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
     compile 'com.github.kotlin-telegram-bot:kotlin-telegram-bot:master'
-    compile 'com.github.paniaton:tacs2020:master' //Para tener las clases del back
+    compile 'com.github.paniaton:tacs2020:master-SNAPSHOT' //Para tener las clases del back
+    implementation 'com.github.kittinunf.fuel:fuel:2.2.2'
+    compile 'org.litote.kmongo:kmongo-id:4.0.1'
+    implementation 'com.beust:klaxon:5.0.1'
 }
 
 shadowJar {

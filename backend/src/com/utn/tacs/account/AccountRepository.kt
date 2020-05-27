@@ -15,6 +15,18 @@ class AccountRepository(private val database: MongoDatabase) {
         return database.getCollection<UserAccount>(DB_MONGO_ACCOUNTS_COLLECTION).findOne(UserAccount::_id eq id)
     }
 
+    fun getUserAccount(user: User): UserAccount? {
+        return database.getCollection<UserAccount>(DB_MONGO_ACCOUNTS_COLLECTION).findOne(UserAccount::userId eq user._id)
+    }
+
+    fun getUserAccount(token: String): UserAccount? {
+        return database.getCollection<UserAccount>(DB_MONGO_ACCOUNTS_COLLECTION).findOne(UserAccount::token eq token)
+    }
+
+    fun removeUserAccount(userAccount: UserAccount) {
+        database.getCollection<UserAccount>(DB_MONGO_ACCOUNTS_COLLECTION).deleteOne(UserAccount::_id eq userAccount._id)
+    }
+
     fun createUserAccount(userAccount: UserAccount): UserAccount? {
         try {
             database.getCollection<UserAccount>(DB_MONGO_ACCOUNTS_COLLECTION).insertOne(userAccount)

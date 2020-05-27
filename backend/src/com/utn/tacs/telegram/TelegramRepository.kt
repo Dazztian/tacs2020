@@ -7,9 +7,12 @@ import com.mongodb.client.model.Filters
 import com.utn.tacs.TelegramSession
 import com.utn.tacs.TelegramUser
 import com.utn.tacs.User
+import org.bson.types.ObjectId
+import org.litote.kmongo.Id
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.id.toId
 
 const val DB_MONGO_TELEGRAM_SESSION_COLLECTION = "TelegramSession"
 
@@ -40,4 +43,7 @@ class TelegramRepository(private val database: MongoDatabase) {
             throw e
         }
     }
+    fun getUserId(telegramId: String): TelegramSession? =
+            database.getCollection<TelegramSession>(DB_MONGO_TELEGRAM_SESSION_COLLECTION)
+                    .findOne(TelegramSession::telegramId eq telegramId)
 }

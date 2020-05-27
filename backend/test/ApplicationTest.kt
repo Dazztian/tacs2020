@@ -18,14 +18,14 @@ class ApplicationTest {
         }
     }
 
-    @Test
+ /*   @Test
     fun testLogin() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Post, "/api/login")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("login", response.content)
         }
     }
-
+*/
     @Test
     fun testAuthGoogle() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Post, "/auth/google")) {
@@ -34,6 +34,7 @@ class ApplicationTest {
         }
     }
 
+/*
     @Test
     fun testLogout() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/logout")) {
@@ -41,6 +42,7 @@ class ApplicationTest {
             assertEquals("logout", response.content)
         }
     }
+*/
 
 
 }
