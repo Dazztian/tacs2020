@@ -10,17 +10,17 @@ import java.time.LocalDate
 data class User(
         val name: String,
         val email: String,
-        val password: String?,
+        val password: String,
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
         val creationDate: Instant? = null,
         val country: String?
 ) {
-        constructor(name: String) : this(name, "", null, newId(), null, null)
+        constructor(name: String) : this(name, "", "", newId(), null, null)
         constructor(name: String, email: String, password: String, country: String) : this(name, email, password, newId(), null, country)
         constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
-        constructor(_id: Id<User>, name: String) : this(name, "", null, _id, null, null)
+        constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)
         constructor(_id: Id<User>, name: String, email:String, password:String) : this(name, email, password, _id, null, null)
 }
 

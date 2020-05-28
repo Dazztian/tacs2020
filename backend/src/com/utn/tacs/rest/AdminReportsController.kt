@@ -14,7 +14,6 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.LocalDate
 
-
 fun Application.adminReports(adminReportsService: AdminReportsService) {
     routing {
         route("/api/admin/report/info/{userId}") {

@@ -12,6 +12,7 @@ import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
 import com.utn.tacs.telegram.TelegramRepository
 import com.utn.tacs.user.UsersRepository
+import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -72,12 +73,13 @@ fun Application.contentNegotiator() {
 
 fun Application.routes() {
     val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
+    val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()))
 
     healthCheckRoutes()
     countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
     userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
-    users(usersRepository)
-    login(AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase())))
+    users(UsersService(usersRepository))
+    login(accountService)
     adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), UserListsRepository(MongoClientGenerator.getDataBase())))
     telegram(usersRepository, UserListsRepository(MongoClientGenerator.getDataBase()), TelegramRepository(MongoClientGenerator.getDataBase()))
 }
