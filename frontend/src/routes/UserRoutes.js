@@ -37,9 +37,9 @@ function LayoutUser(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
-            <Redirect from="/user" to="/user/dashboard" />
+            <Redirect from="/user" to="/user/home" />
             <Switch>
-              <Route path="/user/dashboard" component={Dashboard} />
+              <Route path="/user/home" component={Dashboard} />
               <Route path="/user/createlists" />
               <Route path="/user/editlists" />
               <Route path="/user/deletelists" />

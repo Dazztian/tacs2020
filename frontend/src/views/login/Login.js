@@ -20,7 +20,7 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-import { useUserDispatch, loginUser } from "../../context/UserContext";
+import { useUserDispatch, loginUser, createNewUser } from "../../context/UserContext";
 
 function Login(props) {
   var classes = useStyles();
@@ -75,7 +75,7 @@ function Login(props) {
               </div>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -153,7 +153,7 @@ function Login(props) {
               </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -207,8 +207,9 @@ function Login(props) {
                 ) : (
                   <Button
                     onClick={() =>
-                      loginUser(
+                      createNewUser(
                         userDispatch,
+                        nameValue,
                         loginValue,
                         passwordValue,
                         props.history,

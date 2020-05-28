@@ -226,17 +226,9 @@ export default function Header(props) {
         >
           <div className={classes.profileMenuUser}>
             <Typography variant="h4" weight="medium">
-              Nombre & Apellido
+              {localStorage.getItem("tracker_name")}
             </Typography>
           </div>
-          <MenuItem
-            className={classNames(
-              classes.profileMenuItem,
-              classes.headerMenuItem,
-            )}
-          >
-            <AccountIcon className={classes.profileMenuIcon} /> Profile
-          </MenuItem>
           <div className={classes.profileMenuUser}>
             <Button
               onClick={() => signOut(userDispatch, props.history)}

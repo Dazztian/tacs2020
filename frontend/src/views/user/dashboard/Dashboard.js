@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Grid,
-  LinearProgress,
   Select,
   OutlinedInput,
   MenuItem,
@@ -30,15 +29,12 @@ import Widget from "../../../components/Widget";
 import PageTitle from "../../../components/PageTitle";
 import { Typography } from "../../../components/Wrappers";
 import Dot from "../../../components/Sidebar/components/Dot";
-import Table from "../../../components/Table/Table";
-import BigStat from "../../../components/BigStat/BigStat";
 
 const mainChartData = getMainChartData();
 const PieChartData = [
-  { name: "Group A", value: 400, color: "primary" },
-  { name: "Group B", value: 300, color: "secondary" },
-  { name: "Group C", value: 300, color: "warning" },
-  { name: "Group D", value: 200, color: "success" },
+  { name: "Fatal", value: 10, color: "secondary" },
+  { name: "Infected", value: 1000, color: "warning" },
+  { name: "Recovered", value: 200, color: "success" },
 ];
 
 export default function Dashboard(props) {
@@ -50,11 +46,11 @@ export default function Dashboard(props) {
 
   return (
     <>
-      <PageTitle title="Dashboard"/>
+      <PageTitle title="Near you"/>
       <Grid container spacing={4}>
         <Grid item lg={3} md={4} sm={6} xs={12}>
           <Widget
-            title="Visits Today"
+            title="New cases"
             upperTitle
             bodyClass={classes.fullHeightBody}
             className={classes.card}
@@ -98,7 +94,7 @@ export default function Dashboard(props) {
               </Grid>
               <Grid item>
                 <Typography color="text" colorBrightness="secondary">
-                  Sign Out
+                  False positive
                 </Typography>
                 <Typography size="md">32</Typography>
               </Grid>
@@ -113,70 +109,7 @@ export default function Dashboard(props) {
         </Grid>
         <Grid item lg={3} md={8} sm={6} xs={12}>
           <Widget
-            title="App Performance"
-            upperTitle
-            className={classes.card}
-            bodyClass={classes.fullHeightBody}
-          >
-            <div className={classes.performanceLegendWrapper}>
-              <div className={classes.legendElement}>
-                <Dot color="warning" />
-                <Typography
-                  color="text"
-                  colorBrightness="secondary"
-                  className={classes.legendElementText}
-                >
-                  Integration
-                </Typography>
-              </div>
-              <div className={classes.legendElement}>
-                <Dot color="primary" />
-                <Typography
-                  color="text"
-                  colorBrightness="secondary"
-                  className={classes.legendElementText}
-                >
-                  SDK
-                </Typography>
-              </div>
-            </div>
-            <div className={classes.progressSection}>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                Integration
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={30}
-                classes={{ barColorPrimary: classes.progressBar }}
-                className={classes.progress}
-              />
-            </div>
-            <div>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                SDK
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={55}
-                classes={{ barColorPrimary: classes.progressBar }}
-                className={classes.progress}
-              />
-            </div>
-          </Widget>
-        </Grid>
-        <Grid item lg={3} md={8} sm={6} xs={12}>
-          <Widget
-            title="Server Overview"
+            title="Overview"
             upperTitle
             className={classes.card}
             bodyClass={classes.fullHeightBody}
@@ -187,7 +120,7 @@ export default function Dashboard(props) {
                 colorBrightness="secondary"
                 className={classes.serverOverviewElementText}
               >
-                60% / 37°С / 3.3 Ghz
+                Fatal
               </Typography>
               <div className={classes.serverOverviewElementChartWrapper}>
                 <ResponsiveContainer height={50} width="99%">
@@ -210,7 +143,7 @@ export default function Dashboard(props) {
                 colorBrightness="secondary"
                 className={classes.serverOverviewElementText}
               >
-                54% / 31°С / 3.3 Ghz
+                Recovered
               </Typography>
               <div className={classes.serverOverviewElementChartWrapper}>
                 <ResponsiveContainer height={50} width="99%">
@@ -233,7 +166,7 @@ export default function Dashboard(props) {
                 colorBrightness="secondary"
                 className={classes.serverOverviewElementText}
               >
-                57% / 21°С / 3.3 Ghz
+                Infected
               </Typography>
               <div className={classes.serverOverviewElementChartWrapper}>
                 <ResponsiveContainer height={50} width="99%">
@@ -252,8 +185,8 @@ export default function Dashboard(props) {
             </div>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Revenue Breakdown" upperTitle className={classes.card}>
+        <Grid item lg={5} md={7} sm={8} xs={12}>
+          <Widget title="Totals" upperTitle className={classes.card}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
@@ -302,25 +235,25 @@ export default function Dashboard(props) {
                   color="text"
                   colorBrightness="secondary"
                 >
-                  Daily Line Chart
+                  Evolution Chart
                 </Typography>
                 <div className={classes.mainChartHeaderLabels}>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="warning" />
                     <Typography className={classes.mainChartLegentElement}>
-                      Tablet
+                      A
                     </Typography>
                   </div>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="primary" />
                     <Typography className={classes.mainChartLegentElement}>
-                      Mobile
+                      B
                     </Typography>
                   </div>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="primary" />
                     <Typography className={classes.mainChartLegentElement}>
-                      Desktop
+                      C
                     </Typography>
                   </div>
                 </div>
@@ -392,21 +325,7 @@ export default function Dashboard(props) {
             </ResponsiveContainer>
           </Widget>
         </Grid>
-        {mock.bigStat.map(stat => (
-          <Grid item md={4} sm={6} xs={12} key={stat.product}>
-            <BigStat {...stat} />
-          </Grid>
-        ))}
-        <Grid item xs={12}>
-          <Widget
-            title="Support Requests"
-            upperTitle
-            noBodyPadding
-            bodyClass={classes.tableWidget}
-          >
-            <Table data={mock.table} />
-          </Widget>
-        </Grid>
+
       </Grid>
     </>
   );
