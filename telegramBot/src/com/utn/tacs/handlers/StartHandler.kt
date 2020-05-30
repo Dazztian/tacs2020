@@ -11,7 +11,7 @@ fun startButtons() = InlineKeyboardMarkup(
                         listOf(
                             listOf(
                                 InlineKeyboardButton("Mis listas", callbackData = "MisListas"),
-                                InlineKeyboardButton("Listas", callbackData = "Listas")
+                                InlineKeyboardButton("Paises", callbackData = "Paises")
                             ),
                             listOf(
                                 InlineKeyboardButton(text = "Logout", callbackData = "Logout")
@@ -21,7 +21,7 @@ fun startMessageCallBackQuery(update :Update) = startMessageBuilder(update.callb
 fun loginText(update :Update) = startMessageBuilder(update.message!!.from?.firstName ?: "errorName")
 fun startMessageBuilder(firstName :String) = "Bienvenido $firstName!"
 
-const val startText = "Bienvenido al bot de Telegram del grupo 4 de TACS 2020!\n\n" +
+const val startText = "Bienvenido al bot de Telegram del grupo 4 de TACS 2020!  \uD83D\uDCBB\n\n" +
                     "Para iniciar escriba el comando /login seguido de su usuario y contraseña\n" +
                     "(Ejemplo: /login user pass)"
 
@@ -31,73 +31,69 @@ const val textoLoginHelp = "Escriba el comando /login seguido de su usuario y co
 
 fun addStartCommands(updater :Updater){
     listOf(
-            CommandHandler("start") { bot, update->
-                if(healthCheck() && isLoggedIn(update.message!!.from!!.id.toString()))
-                    bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = loginText(update),
-                        replyMarkup = startButtons()
-                    )
-                else
-                    bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = startText
-                    )
-            },
-            CommandHandler("login", commandHandlerLogin { bot, update, args->
-                if(args.size != 2){
-                    bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = textoLoginHelp
-                    )
-                    return@commandHandlerLogin
-                }
+        CommandHandler("start") { bot, update->
+            if(healthCheck() && isLoggedIn(update.message!!.from!!.id.toString()))
+                bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = loginText(update),
+                    replyMarkup = startButtons()
+                )
+            else
+                bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = startText
+                )
+        },
+        CommandHandler("login", commandHandlerLogin { bot, update, args->
+            if(args.size != 2){
+                bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = textoLoginHelp
+                )
+                return@commandHandlerLogin
+            }
 
-                if(login(args[0], args[1], update.message!!.from!!.id.toString()))
-                    bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = loginText(update),
-                        replyMarkup = startButtons()
-                    )
-                else
-                    bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = textoLoginIncorrecto
-                    )
+            if(login(args[0], args[1], update.message!!.from!!.id.toString()))
+                bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = loginText(update),
+                    replyMarkup = startButtons()
+                )
+            else
+                bot.sendMessage(
+                    chatId = update.message!!.chat.id,
+                    text = textoLoginIncorrecto
+                )
 
-            }),
-
-            createCallbackQueryHandler("Inicio") { bot, update ->
-                update.callbackQuery?.let {
-                    val chatId = it.message!!.chat.id
-                    bot.sendMessage(chatId = chatId,
-                                    text = startMessageCallBackQuery(update),
-                                    replyMarkup = startButtons())
-                }
-            },
-            createCallbackQueryHandler("MisListas") { bot, update ->
-                update.callbackQuery?.let {
-                    val chatId = it.message!!.chat.id
-
-                    countryLists(update.callbackQuery?.message!!.chat.id.toString())?.
-                    forEach { l ->
-                        bot.sendMessage(
-                            chatId = chatId,
-                            text = l.name +"\nPaises: ${l.countries.size}"
-                        )
-                    }
-
-                    bot.sendMessage(
+        }),
+        createCommandHandler("logout") { bot, update->
+            val chatId = update.message!!.chat.id
+            if(logout(update.message!!.from!!.id.toString())) {
+                bot.sendMessage(
                         chatId = chatId,
-                        text = "Volver a inicio",
-                        replyMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                listOf(
-                                    InlineKeyboardButton(text = "Volver", callbackData = "Inicio")
-                                ))))
-                }
-            },
-            createCallbackQueryHandler("Logout") { bot, update ->
+                        text = "Logout exitoso!"
+                )
+                bot.sendMessage(
+                        chatId = chatId,
+                        text = startText
+                )
+            } else {
+                bot.sendMessage(
+                        chatId = chatId,
+                        text = "Error al procesar la solicitud"
+                )
+            }
+        },
+
+        createCallbackQueryHandler("Inicio") { bot, update ->
+            update.callbackQuery?.let {
+                val chatId = it.message!!.chat.id
+                bot.sendMessage(chatId = chatId,
+                                text = startMessageCallBackQuery(update),
+                                replyMarkup = startButtons())
+            }
+        },
+        createCallbackQueryHandler("Logout") { bot, update ->
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
