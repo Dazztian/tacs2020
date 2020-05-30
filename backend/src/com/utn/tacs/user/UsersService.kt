@@ -32,6 +32,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     }
 
     fun getUserLists(userId: String): List<UserCountriesListResponse> {
+        usersRepository.getUserById(userId) ?: throw NotFoundException()
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
         userListsRepository.getUserLists(userId).forEach { it -> userLists.add(
             UserCountriesListResponse(it._id.toString(), it.name, it.countries)
