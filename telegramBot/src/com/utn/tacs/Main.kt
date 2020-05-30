@@ -1,21 +1,34 @@
 package com.utn.tacs
 
 import com.github.kotlintelegrambot.bot
+import com.github.kotlintelegrambot.dispatch
+import com.github.kotlintelegrambot.dispatcher.command
+import com.github.kotlintelegrambot.entities.ParseMode
+import com.utn.tacs.handlers.addCountryListCommands
 import com.utn.tacs.handlers.addStartCommands
+import javax.swing.text.html.HTML
 
 fun main(args: Array<String>) {
     val bot = bot {
         token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
 
         addStartCommands(updater)
-        /*dispatch {
-            command("a") { bot, update->
-                val a = update.message!!.from!!.id.toString()
+        addCountryListCommands(updater)
 
-                /*bot.sendMessage(
-                    chatId = update.message!!.chat.id,
-                    text = "End\n$responseJson"
-                )*/
+
+        dispatch {
+            command("a") { bot, update->
+                val a = "<pre>\n" +
+                        "|           Nombre           | Paises |  Creacion  |\n"+
+                        "</pre>"
+
+
+                bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = "125".padEnd(5, '-').padStart(5, '.'),
+                        parseMode = ParseMode.HTML
+                )
+
             }
 
             // DATABASE
@@ -124,7 +137,7 @@ fun main(args: Array<String>) {
                 bot.sendMessage(chatId = update.message!!.chat.id, text = "sent")
             }
              */
-        }*/
+        }
     }
     bot.startPolling()
 }

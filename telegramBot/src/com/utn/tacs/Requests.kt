@@ -60,7 +60,8 @@ fun logout(telegramUserId :String) :Boolean{
     }
 }
 
-fun countryLists(telegramUserId :String) :Array<CountriesList>?{
+//Returns the coutry lists from the logged in user
+fun countryLists(telegramUserId :String) :List<CountriesList>?{
     return try {
         val (_, response, result) = Fuel.get("http://localhost:8080/api/telegram/countries?id=$telegramUserId")
             .responseString()
@@ -69,7 +70,24 @@ fun countryLists(telegramUserId :String) :Array<CountriesList>?{
         val responseJson = payload.toString()
 
         when (response.statusCode) {
-            200 -> Gson().fromJson(responseJson, Array<CountriesList>::class.java)
+            200 -> Gson().fromJson(responseJson, Array<CountriesList>::class.java).asList()
+            else -> emptyList()
+        }
+    } catch (exc :Exception) {
+        null
+    }
+}
+
+//Returns all countries
+fun allCountries() :Array<Country>?{
+    return try {
+        val (_, response, result) = Fuel.get("http://localhost:8080/api/countries/").responseString()
+
+        val (payload, _) = result // payload is a String
+        val responseJson = payload.toString()
+
+        when (response.statusCode) {
+            200 -> Gson().fromJson(responseJson, Array<Country>::class.java)
             else -> arrayOf()
         }
     } catch (exc :Exception) {
