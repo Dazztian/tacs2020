@@ -32,6 +32,10 @@ import io.ktor.util.pipeline.PipelineInterceptor
 import io.ktor.util.pipeline.PipelinePhase
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
+val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
+val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase())
+val usersService = UsersService(usersRepository, userListsRepository)
+val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -72,11 +76,6 @@ fun Application.contentNegotiator() {
 }
 
 fun Application.routes() {
-    val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
-    val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()))
-    val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase())
-    val usersService = UsersService(usersRepository, userListsRepository)
-
     healthCheckRoutes()
     countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
     userCountriesListRoutes(usersService)

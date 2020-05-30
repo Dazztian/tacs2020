@@ -5,6 +5,7 @@ import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.getLogger
 import com.utn.tacs.exception.UnAuthorizedException
+import com.utn.tacs.exception.UserAlreadyExistsException
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.features.NotFoundException
@@ -33,7 +34,7 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                 } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
             post {
@@ -44,6 +45,8 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                     call.respond(usersService.createUserList(ObjectId(userId).toId(), request.name!!, request.countries!!) ?: HttpStatusCode.BadRequest)
                 } catch (e: UnAuthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: UserAlreadyExistsException) {
+                    call.respond(HttpStatusCode.BadRequest)
                 } catch (e: Exception) {
                     logger.error("Request could not be parsed...", e)
                     call.respond(HttpStatusCode.BadRequest, "Please check that body complies to { name: \"name\", countries: [\"countries\"]}")

@@ -89,7 +89,7 @@ data class SignUpRequest(
         val email: String,
         val password: String,
         val country: String,
-        val isAdmin: Boolean? = false
+        var isAdmin: Boolean? = false
 )
 
 data class LoginResponse(

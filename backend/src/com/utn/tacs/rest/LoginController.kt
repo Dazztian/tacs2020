@@ -7,9 +7,12 @@ import com.utn.tacs.User
 import com.utn.tacs.LoginRequest
 import com.utn.tacs.SignUpRequest
 import com.utn.tacs.account.AccountService
+import com.utn.tacs.exception.UnAuthorizedException
+import com.utn.tacs.exception.UserAlreadyExistsException
 import com.utn.tacs.user.UsersRepository
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
 import io.ktor.request.receive
@@ -27,20 +30,32 @@ fun Application.login(accountService: AccountService) {
     routing {
         route("/api/login") {
             post {
-                val loginData = call.receive<LoginRequest>()
-                call.respond(accountService.logIn(loginData) ?: HttpStatusCode.Unauthorized)
+                try {
+                    val loginData = call.receive<LoginRequest>()
+                    call.respond(accountService.logIn(loginData))
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
         route("/api/signup") {
             post {
-                val signUpData = call.receive<SignUpRequest>()
-                call.respond(accountService.signUp(SignUpRequest(
-                    signUpData.name.trim().toLowerCase(),
-                    signUpData.email.trim().toLowerCase(),
-                    signUpData.password.trim(),
-                    signUpData.country.trim().toUpperCase(),
-                    false
-                )) ?: HttpStatusCode.BadRequest)
+                try {
+                    val signUpData = call.receive<SignUpRequest>()
+                    call.respond(accountService.signUp(SignUpRequest(
+                        signUpData.name.trim().toLowerCase(),
+                        signUpData.email.trim().toLowerCase(),
+                        signUpData.password.trim(),
+                        signUpData.country.trim().toUpperCase(),
+                        false
+                    )))
+                } catch (e: UserAlreadyExistsException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
         route("/auth/google") {
@@ -50,10 +65,15 @@ fun Application.login(accountService: AccountService) {
         }
         route("api/logout") {
             post {
-                val authorizationHeader: String = call.request.header("Authorization") ?: ""
                 try {
-                    accountService.logOut(LogOutRequest(authorizationHeader.split(" ").get(1)))
+                    val authHeader = call.request.header("Authorization") ?: ""
+                    val user = authorizeUser(authHeader, userId)
+                    accountService.logOut(LogOutRequest(getToken(authHeader)))
                     call.respond(HttpStatusCode.OK)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.Unauthorized)
                 }

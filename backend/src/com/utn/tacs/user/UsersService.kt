@@ -5,30 +5,36 @@ import com.utn.tacs.lists.*
 import io.ktor.features.NotFoundException
 import org.litote.kmongo.Id
 import java.lang.Exception
+import com.utn.tacs.exception.UnAuthorizedException
+import com.utn.tacs.exception.UserAlreadyExistsException
 
 class UsersService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
 
-    fun getUser(id: String): UserResponse? {
-        val user = usersRepository.getUserById(id) ?: return null
-        return UserResponse(
-            user._id.toString(),
-            user.name,
-            user.email,
-            user.creationDate ?: "",
-            user.country!!,
-            user.isAdmin,
-            getUserLists(id)
-        )
+    fun getUser(id: String): UserResponse {
+        try {
+            val user = usersRepository.getUserById(id) ?: throw NotFoundException()
+            return UserResponse(
+                user._id.toString(),
+                user.name,
+                user.email,
+                user.creationDate ?: "",
+                user.country!!,
+                user.isAdmin,
+                getUserLists(id)
+            )
+        } catch (e: IllegalArgumentException) {
+            throw NotFoundException()
+        }
     }
 
-    fun createUser(signUpRequest: SignUpRequest): User? {
+    fun createUser(signUpRequest: SignUpRequest): User {
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
-            return null
+            throw UserAlreadyExistsException()
         }
 
         return usersRepository.createUser(
             User(signUpRequest.name, signUpRequest.email, signUpRequest.password, signUpRequest.country, signUpRequest.isAdmin ?: false)
-        )
+        ) ?: throw Exception()
     }
 
     fun getUserLists(userId: String): List<UserCountriesListResponse> {

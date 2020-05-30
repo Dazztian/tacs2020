@@ -7,11 +7,10 @@ import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.utils.MongoClientGenerator
 import com.utn.tacs.exception.UnAuthorizedException
 import io.ktor.features.NotFoundException
-
-val accountService = AccountService(UsersRepository(MongoClientGenerator.getDataBase()), AccountRepository(MongoClientGenerator.getDataBase()))
+import com.utn.tacs.accountService
 
 fun authorizeUser(authenticationHeader: String, userId: String): User {
-    val user = accountService.getUserByToken(getTokenIfValid(authenticationHeader)) ?: throw NotFoundException()
+    val user = accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
     if (!userId.equals(user._id.toString()) && !user.isAdmin) {
         throw UnAuthorizedException()
     }
@@ -19,14 +18,14 @@ fun authorizeUser(authenticationHeader: String, userId: String): User {
 }
 
 fun authorizeUserAdmin(authenticationHeader: String): User {
-    val user = accountService.getUserByToken(getTokenIfValid(authenticationHeader)) ?: throw NotFoundException()
+    val user = accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
     if (!user.isAdmin) {
         throw UnAuthorizedException()
     }
     return user
 }
 
-private fun getTokenIfValid(authenticationHeader: String): String {
+fun getToken(authenticationHeader: String): String {
     try {
         if(authenticationHeader.split(" ").size != 2) {
             throw UnAuthorizedException()
