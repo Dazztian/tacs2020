@@ -38,7 +38,8 @@ fun Application.login(accountService: AccountService) {
                     signUpData.name.trim().toLowerCase(),
                     signUpData.email.trim().toLowerCase(),
                     signUpData.password.trim(),
-                    signUpData.country.trim().toLowerCase()
+                    signUpData.country.trim().toUpperCase(),
+                    false
                 )) ?: HttpStatusCode.BadRequest)
             }
         }

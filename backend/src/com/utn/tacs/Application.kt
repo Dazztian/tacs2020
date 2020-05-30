@@ -74,12 +74,14 @@ fun Application.contentNegotiator() {
 fun Application.routes() {
     val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
     val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()))
+    val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase())
+    val usersService = UsersService(usersRepository, userListsRepository)
 
     healthCheckRoutes()
     countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
-    userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
-    users(UsersService(usersRepository))
+    userCountriesListRoutes(usersService)
+    users(usersService)
     login(accountService)
     adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), UserListsRepository(MongoClientGenerator.getDataBase())))
-    telegram(usersRepository, UserListsRepository(MongoClientGenerator.getDataBase()), TelegramRepository(MongoClientGenerator.getDataBase()))
+    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()))
 }

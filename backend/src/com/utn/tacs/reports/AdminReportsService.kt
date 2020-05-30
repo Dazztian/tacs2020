@@ -15,7 +15,7 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
     fun getUserData(userId: Id<User>): UserData? {
         val user = usersRepository.getUserById(userId)
         return if (user != null) {
-            val lists = userListsRepository.getUserLists(user._id)
+            val lists = userListsRepository.getUserLists(user._id.toString())
             UserData(user, lists.size, lists.sumBy { l -> l.countries.size })
         } else {
             null
@@ -37,8 +37,8 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
 
     fun getListComparison(userListId1: Id<UserCountriesList>, userListId2: Id<UserCountriesList>): UserListComparision? {
 
-        val userList1 = userListsRepository.getUserList(userListId1)
-        val userList2 = userListsRepository.getUserList(userListId2)
+        val userList1 = userListsRepository.getUserList(userListId1.toString())
+        val userList2 = userListsRepository.getUserList(userListId2.toString())
 
         return if (userList1 != null && userList2 != null) {
             UserListComparision(userList1, userList2, userList1.countries.intersect(userList2.countries))

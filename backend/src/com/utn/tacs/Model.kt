@@ -14,11 +14,12 @@ data class User(
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
-        val creationDate: Instant? = null,
-        val country: String?
+        val creationDate: String? = null,
+        val country: String?,
+        val isAdmin: Boolean = false
 ) {
         constructor(name: String) : this(name, "", "", newId(), null, null)
-        constructor(name: String, email: String, password: String, country: String) : this(name, email, password, newId(), null, country)
+        constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
         constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
         constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)
         constructor(_id: Id<User>, name: String, email:String, password:String) : this(name, email, password, _id, null, null)
@@ -74,8 +75,8 @@ data class UserCountriesList(
 }
 
 data class UserCountriesListModificationRequest(
-        val name: String?,
-        val countries: MutableSet<String>?
+        val name: String,
+        val countries: MutableSet<String>
 )
 
 data class LoginRequest(
@@ -87,7 +88,8 @@ data class SignUpRequest(
         val name: String,
         val email: String,
         val password: String,
-        val country: String
+        val country: String,
+        val isAdmin: Boolean? = false
 )
 
 data class LoginResponse(
@@ -136,3 +138,19 @@ data class TelegramSession(
 ){
     constructor(userId: Id<User>, telegramId: String): this(newId(), userId, telegramId)
 }
+
+data class UserResponse(
+        val id: String,
+        val name: String,
+        val email: String,
+        val creationDate: String,
+        val country: String,
+        val isAdmin: Boolean,
+        val lists: List<UserCountriesListResponse>
+)
+
+data class UserCountriesListResponse (
+        val id: String,
+        val name: String,
+        val countries: MutableSet<String>
+)

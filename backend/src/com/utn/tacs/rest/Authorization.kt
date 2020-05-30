@@ -8,8 +8,18 @@ import com.utn.tacs.utils.MongoClientGenerator
 
 val accountService = AccountService(UsersRepository(MongoClientGenerator.getDataBase()), AccountRepository(MongoClientGenerator.getDataBase()))
 
-fun getUserByAuthenticationHeader(authenticationHeader: String): User? {
-    val token = authenticationHeader.split(" ").get(1)
-    return accountService.getUserByToken(token)
+fun authorizeUser(authenticationHeader: String, userId: String): User {
+    val user = accountService.getUserByToken(authenticationHeader.split(" ").get(1)) ?: throw Exception()
+    if (!userId.equals(user._id.toString()) && !user.isAdmin) {
+        throw Exception()
+    }
+    return user
 }
 
+fun authorizeUserAdmin(authenticationHeader: String): User {
+    val user = accountService.getUserByToken(authenticationHeader.split(" ").get(1)) ?: throw Exception()
+    if (!user.isAdmin) {
+        throw Exception()
+    }
+    return user
+}

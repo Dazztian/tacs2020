@@ -41,7 +41,7 @@ class AccountService(private val usersRepository: UsersRepository, private val a
         }
 
         val user = usersRepository.createUser(
-            User(signUpRequest.name.trim().toLowerCase(), signUpRequest.email.trim().toLowerCase(), signUpRequest.password, signUpRequest.country.trim().toLowerCase())
+            User(signUpRequest.name, signUpRequest.email, signUpRequest.password, signUpRequest.country, false)
         ) ?: throw Exception("user not created")
 
         return LoginResponse(user, accountRepository.createUserAccount(UserAccount(user._id, generateToken(user)))!!.token)

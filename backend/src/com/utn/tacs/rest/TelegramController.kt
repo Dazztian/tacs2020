@@ -56,7 +56,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
             get("/countries") {
                 when(val session = telegramRepository.getUserId(call.parameters["id"]!!)){
                     null -> call.respond(HttpStatusCode(400, "Id not found"))
-                    else -> call.respond(userListsRepository.getUserLists(session.userId))
+                    else -> call.respond(userListsRepository.getUserLists(session.userId.toString()))
                 }
             }
         }
