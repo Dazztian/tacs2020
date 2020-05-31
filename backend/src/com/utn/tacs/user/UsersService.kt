@@ -10,6 +10,14 @@ import com.utn.tacs.exception.UserAlreadyExistsException
 
 class UsersService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
 
+    /**
+     * Get user by Id
+     *
+     * @param id String
+     * @return UserResponse
+     *
+     * @throws NotFoundException
+     */
     fun getUser(id: String): UserResponse {
         try {
             val user = usersRepository.getUserById(id) ?: throw NotFoundException()
@@ -27,6 +35,15 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         }
     }
 
+    /**
+     * Create user only if its doesn't exists
+     *
+     * @param signUpRequest SignUpRequest
+     * @return User
+     *
+     * @throws UserAlreadyExistsException
+     * @throws Exception
+     */
     fun createUser(signUpRequest: SignUpRequest): User {
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
             throw UserAlreadyExistsException()
@@ -37,6 +54,12 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         ) ?: throw Exception()
     }
 
+    /**
+     * Get all user's countries lists or empty List if the user does not have any
+     *
+     * @param userId String
+     * @return List<UserCountriesListResponse>
+     */
     fun getUserLists(userId: String): List<UserCountriesListResponse> {
         usersRepository.getUserById(userId) ?: throw NotFoundException()
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
@@ -46,8 +69,20 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return userLists
     }
 
+    /**
+     * Get one user's countries list by list id. Only if the list owns to that user
+     *
+     * @param userId String
+     * @param listId String
+     * @return UserCountriesListResponse
+     *
+     * @throws NotFoundException
+     */
     fun getUserList(userId: String, listId: String): UserCountriesListResponse {
         val userList = userListsRepository.getUserList(listId) ?: throw NotFoundException()
+        if(!userList.userId.toString().equals(userId)) {
+            throw NotFoundException()
+        }
         return UserCountriesListResponse(
             userList._id.toString(),
             userList.name,
@@ -55,6 +90,16 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         )
     }
 
+    /**
+     * Create a user list of countries
+     *
+     * @param userId Id<User>
+     * @param listName String
+     * @param countries MutableSet<String>
+     * @return UserCountriesListResponse
+     *
+     * @throws NotFoundException
+     */
     fun createUserList(userId: Id<User>, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
         val id = userListsRepository.createUserList(UserCountriesList(userId, listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
@@ -64,15 +109,35 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         )
     }
 
+    /**
+     * Deletes a user list of countries
+     *
+     * @param userId String
+     * @param listId String
+     *
+     * @throws Exception
+     * @throws NotFoundException
+     */
     fun deleteUserList(userId: String, listId: String) {
-        getUserList(userId, listId) ?: throw NotFoundException()
+        getUserList(userId, listId)
         if (! userListsRepository.delete(listId)) {
             throw Exception()
         }
     }
 
+    /**
+     * Update a user list of countries
+     *
+     * @param userId String
+     * @param listId String
+     * @param request UserCountriesListModificationRequest
+     * @return UserCountriesListResponse
+     *
+     * @throws Exception
+     * @throws NotFoundException
+     */
     fun updateUserList(userId: String, listId: String, request: UserCountriesListModificationRequest): UserCountriesListResponse {
-        getUserList(userId, listId) ?: throw NotFoundException()
+        getUserList(userId, listId)
         val newListId = userListsRepository.doUpdate(listId, request.name, request.countries) ?: throw Exception()
         return UserCountriesListResponse(
             newListId,

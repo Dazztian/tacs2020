@@ -18,6 +18,11 @@ class CountriesRepository(private val database: MongoDatabase) {
     private val cacheExpirationTime: Long = ConfigFactory.load().getLong("cache.countries")
     private val collection: MongoCollection<Country> = database.getCollection<Country>(DB_MONGO_COUNTRIES_COLLECTION)
 
+    /**
+     * Get all countries covid data from cache, or if cache is expired or empty get countries from external api
+     *
+     * @return List<Country>
+     */
     public suspend fun getCountries(): List<Country> {
         val countries = collection.find()
         if (countries.none() || cacheTimeExpired()) {
@@ -26,10 +31,21 @@ class CountriesRepository(private val database: MongoDatabase) {
         return collection.find().toList()
     }
 
+    /**
+     * Get country from cache if its present, or from external client if that country is not in cache
+     *
+     * @param iso2 String
+     * @return Country
+     */
     public suspend fun getCountry(iso2: String): Country {
         return collection.findOne(Country::countrycode / CountryCode::iso2 eq iso2) ?: getCountryLatestByIsoCodeFromApi(iso2)
     }
 
+    /**
+     * Checks if countries covid data cache should be refreshed
+     *
+     * @return Boolean
+     */
     private fun cacheTimeExpired(): Boolean {
         val timestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
         if (timestamp > (cacheLastLoad + cacheExpirationTime)) {

@@ -2,9 +2,11 @@ package com.utn.tacs.rest
 
 import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
+import com.utn.tacs.exception.UnAuthorizedException
 import com.utn.tacs.reports.AdminReportsService
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.get
@@ -21,10 +23,14 @@ fun Application.adminReports(adminReportsService: AdminReportsService) {
             get {
                 try {
                     authorizeUserAdmin(call.request.header("Authorization") ?: "")
-                    val userId: Id<User> = call.parameters["userId"]!!.toId()
-                    call.respond(adminReportsService.getUserData(userId) ?: HttpStatusCode.NotFound)
-                } catch (e: Exception) {
+                    val userId = call.parameters["userId"]!!.toString()
+                    call.respond(adminReportsService.getUserData(userId))
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: UnAuthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
         }
@@ -32,33 +38,42 @@ fun Application.adminReports(adminReportsService: AdminReportsService) {
             get {
                 try {
                     authorizeUserAdmin(call.request.header("Authorization") ?: "")
-                    val userCountriesListId1: Id<UserCountriesList> = call.request.queryParameters["list1"]!!.toId()
-                    val userCountriesListId2: Id<UserCountriesList> = call.request.queryParameters["list2"]!!.toId()
-                    val response = adminReportsService.getListComparison(userCountriesListId1, userCountriesListId2)
-                    if (response != null) {
-                        call.respond(response)
-                    } else {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
-                } catch (e: Exception) {
+                    val userCountriesListId1 = call.request.queryParameters["list1"]!!.toString()
+                    val userCountriesListId2 = call.request.queryParameters["list2"]!!.toString()
+                    call.respond(adminReportsService.getListComparison(userCountriesListId1, userCountriesListId2))
+                } catch (e: NotFoundException) {
                     logger.error("Parameters where not correct...", e)
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
         }
         route("/api/admin/report/{country}/list") {
             get {
-                authorizeUserAdmin(call.request.header("Authorization") ?: "")
-                val country: String = call.parameters["country"]!!.toString()
-                val response = adminReportsService.getUsersByCountry(country)
-                call.respond(response)
+                try {
+                    authorizeUserAdmin(call.request.header("Authorization") ?: "")
+                    val country: String = call.parameters["country"]!!.toString()
+                    call.respond(adminReportsService.getUsersByCountry(country))
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
         route("/api/admin/report/lists/total") {
             get {
-                authorizeUserAdmin(call.request.header("Authorization") ?: "")
-                val response = adminReportsService.getListsQuantity()
-                call.respond(response)
+                try {
+                    authorizeUserAdmin(call.request.header("Authorization") ?: "")
+                    call.respond(adminReportsService.getListsQuantity())
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
         route("/api/admin/report/lists") {
@@ -67,12 +82,12 @@ fun Application.adminReports(adminReportsService: AdminReportsService) {
                     authorizeUserAdmin(call.request.header("Authorization") ?: "")
                     val startDate: String = call.request.queryParameters["startDate"]!!.toString()
                     val endDate: String = call.request.queryParameters["endDate"]!!.toString()
-
-                    val response = adminReportsService.getRegisteredUserListsBetween(LocalDate.parse(startDate), LocalDate.parse(endDate))
-                    call.respond(response)
+                    call.respond(adminReportsService.getRegisteredUserListsBetween(LocalDate.parse(startDate), LocalDate.parse(endDate)))
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: Exception) {
                     logger.error("Parameters where not correct...", e)
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
         }

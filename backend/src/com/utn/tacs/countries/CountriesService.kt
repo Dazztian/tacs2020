@@ -7,15 +7,34 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
 
     private val maxDistance = 2000.0
 
+    /**
+     * Returns all countries covid data from cache repository or external api
+     *
+     * @return List<Country>
+     */
     suspend fun getAllCountries(): List<Country> {
         return countriesRepository.getCountries()
     }
 
-    //We will consider that nearest countries are the one that are 3000km from latitude and long
+    /**
+     * Returns all countries in the area of {{maxDistance}} area around
+     *
+     * @param lat Double
+     * @param lon Double
+     * @return List<Country>
+     */
     suspend fun getNearestCountries(lat: Double, lon: Double): List<Country> {
         return countriesRepository.getCountries().filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }
     }
 
+    /**
+     * Get one country covid data by iso2 code name
+     * @sample AR
+     * @sample EU
+     *
+     * @param iso2 String
+     * @return Country
+     */
     suspend fun getCountryLatestByIsoCode(iso2: String): Country {
         try {
             return countriesRepository.getCountry(iso2)
@@ -24,6 +43,12 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
         }
     }
 
+    /**
+     * Get one country covid timeseries by iso2 code name separated by dates
+     *
+     * @param iso2 String
+     * @return Country
+     */
     suspend fun getCountryTimesSeries(iso2: String): Country {
         val country = getCountryLatestByIsoCode(iso2)
         country.timeseries = getCountryTimeSeriesFromApi("iso2=$iso2")

@@ -17,6 +17,10 @@ fun authorizeUser(authenticationHeader: String, userId: String): User {
     return user
 }
 
+fun authorizeUser(authenticationHeader: String): User {
+    return accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
+}
+
 fun authorizeUserAdmin(authenticationHeader: String): User {
     val user = accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
     if (!user.isAdmin) {

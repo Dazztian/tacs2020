@@ -54,7 +54,7 @@ fun Application.login(accountService: AccountService) {
                         false
                     )))
                 } catch (e: UserAlreadyExistsException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
                 }
             }
         }
@@ -67,7 +67,7 @@ fun Application.login(accountService: AccountService) {
             post {
                 try {
                     val authHeader = call.request.header("Authorization") ?: ""
-                    val user = authorizeUser(authHeader, userId)
+                    val user = authorizeUser(authHeader)
                     accountService.logOut(LogOutRequest(getToken(authHeader)))
                     call.respond(HttpStatusCode.OK)
                 } catch (e: UnAuthorizedException) {

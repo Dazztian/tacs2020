@@ -11,10 +11,21 @@ import java.util.ArrayList
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
 const val onlyCountries = "onlyCountries=true"
 
+/**
+ * Get all countries covid data from external api
+ *
+ * @return List<Country>
+ */
 suspend fun getCountriesLatestFromApi(): List<Country> {
     return getCountriesLatestFromApi("")
 }
 
+/**
+ * Get countries covid data from external api accepting query params
+ *
+ * @param queryParams String
+ * @return List<Country>
+ */
 suspend fun getCountriesLatestFromApi(queryParams: String): List<Country> {
     return HttpClient().use { client ->
         val jsonData: String = client.get(apiEntryPoint + "latest?" + onlyCountries + "&" +  queryParams)
@@ -22,6 +33,12 @@ suspend fun getCountriesLatestFromApi(queryParams: String): List<Country> {
     }
 }
 
+/**
+ * Get countries covid data timeseries from external api
+ *
+ * @param queryParams String
+ * @return List<TimeSerie>
+ */
 suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSerie> {
     return HttpClient().use { client ->
         val result = ArrayList<TimeSerie>()
@@ -43,6 +60,12 @@ suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSerie> {
     }
 }
 
+/**
+ * Get countries covid data from external api accepting filtering of a countries names list
+ *
+ * @param isoCodes2 List<String>
+ * @return List<Country>
+ */
 suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<Country> {
     val result = ArrayList<Country>()
     for (countryData in getCountriesLatestFromApi()) {
@@ -56,6 +79,14 @@ suspend fun getCountriesLatestFromApi(isoCodes2: List<String>): List<Country> {
     return result
 }
 
+/**
+ * Get a country covid data from external api by Iso code2 name
+ *
+ * @param iso2 String
+ * @return Country
+ *
+ * @throws IllegalArgumentException
+ */
 suspend fun getCountryLatestByIsoCodeFromApi(iso2: String): Country {
     try {
         return getCountriesLatestFromApi("iso2=$iso2")[0]
