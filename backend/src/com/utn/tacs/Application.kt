@@ -33,7 +33,7 @@ import io.ktor.util.pipeline.PipelinePhase
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
 val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
-val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase())
+val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
 val usersService = UsersService(usersRepository, userListsRepository)
 val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
 
@@ -81,6 +81,6 @@ fun Application.routes() {
     userCountriesListRoutes(usersService)
     users(usersService)
     login(accountService)
-    adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), UserListsRepository(MongoClientGenerator.getDataBase())))
+    adminReports(AdminReportsService(UsersRepository(MongoClientGenerator.getDataBase()), userListsRepository))
     telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()))
 }

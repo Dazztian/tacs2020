@@ -42,7 +42,7 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                 try {
                     authorizeUser(call.request.header("Authorization") ?: "", userId)
                     val request = call.receive<UserCountriesListModificationRequest>()
-                    call.respond(usersService.createUserList(ObjectId(userId).toId(), request.name!!, request.countries!!) ?: HttpStatusCode.BadRequest)
+                    call.respond(usersService.createUserList(userId, request.name!!, request.countries!!) ?: HttpStatusCode.BadRequest)
                 } catch (e: UnAuthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: UserAlreadyExistsException) {

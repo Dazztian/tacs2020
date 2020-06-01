@@ -66,11 +66,11 @@ data class UserCountriesList(
         val name: String,
         val countries: MutableSet<String>,
         @ContextualSerialization
-        val creationDate: String
+        val creationDate: LocalDate
 ) {
-    constructor(userId: Id<User>, name: String, countries: MutableSet<String>, creationDate: LocalDate) : this(newId(), userId, name, countries, creationDate.toString())
-    constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries, LocalDate.now().toString())
-    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf(), LocalDate.now().toString())
+    constructor(userId: Id<User>, name: String, countries: MutableSet<String>, creationDate: LocalDate) : this(newId(), userId, name, countries, creationDate)
+    constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries, LocalDate.now())
+    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf(), LocalDate.now())
 
 }
 

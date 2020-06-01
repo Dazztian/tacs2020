@@ -29,14 +29,14 @@ class AdminReportsServiceTest {
     fun testGetUserData() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
-        val result: UserData? = service.getUserData(userId1)
+        val result: UserData? = service.getUserData(userId1.toString())
 
         Assert.assertNotNull(result)
         Assert.assertEquals(user1, result?.user)
         Assert.assertEquals(2, result?.listsQuantity)
         Assert.assertEquals(6, result?.countriesTotal)
 
-        Assert.assertNull(service.getUserData("NON_EXISTENT_ID".toId()))
+        Assert.assertNull(service.getUserData("NON_EXISTENT_ID"))
     }
 
     @Test
@@ -73,12 +73,12 @@ class AdminReportsServiceTest {
 
         val result = service.getUsersByCountry("Country3")
         Assert.assertEquals(2, result.size)
-        Assert.assertTrue(result.contains(user1._id))
-        Assert.assertTrue(result.contains(user2._id))
+        Assert.assertTrue(result.contains(user1._id.toString()))
+        Assert.assertTrue(result.contains(user2._id.toString()))
 
         val result2 = service.getUsersByCountry("Country6")
         Assert.assertEquals(1, result2.size)
-        Assert.assertTrue(result2.contains(user1._id))
+        Assert.assertTrue(result2.contains(user1._id.toString()))
 
         val result3 = service.getUsersByCountry("NON_EXISTENT")
         Assert.assertEquals(0, result3.size)
@@ -88,22 +88,22 @@ class AdminReportsServiceTest {
     fun testGetListComparison(){
         val service = AdminReportsService(usersRepository, userListRepository)
 
-        val result = service.getListComparison(userCountryList1._id, userCountryList4._id)
+        val result = service.getListComparison(userCountryList1._id.toString(), userCountryList4._id.toString())
         Assert.assertNotNull(result)
         Assert.assertEquals(userCountryList1, result?.userCountryList1)
         Assert.assertEquals(userCountryList4, result?.userCountryList2)
         Assert.assertEquals(setOf("Country1", "Country2", "Country3"), result?.sharedCountries)
 
-        val result2 = service.getListComparison(userCountryList1._id, userCountryList2._id)
+        val result2 = service.getListComparison(userCountryList1._id.toString(), userCountryList2._id.toString())
         Assert.assertNotNull(result2)
         Assert.assertEquals(userCountryList1, result2?.userCountryList1)
         Assert.assertEquals(userCountryList2, result2?.userCountryList2)
         Assert.assertTrue(result2!!.sharedCountries.isEmpty())
 
-        val result3 = service.getListComparison(userCountryList1._id, "NON_EXISTENT".toId())
+        val result3 = service.getListComparison(userCountryList1._id.toString(), "NON_EXISTENT")
         Assert.assertNull(result3)
 
-        val result4 = service.getListComparison("NON_EXISTENT_1".toId(), "NON_EXISTENT_2".toId())
+        val result4 = service.getListComparison("NON_EXISTENT_1", "NON_EXISTENT_2")
         Assert.assertNull(result4)
     }
 
@@ -158,7 +158,7 @@ class AdminReportsServiceTest {
             mongoDatabase.getCollection<User>(USERS_COLLECTION_NAME).insertMany(mutableListOf(user1, user2))
             mongoDatabase.getCollection<UserCountriesList>().insertMany(mutableListOf(userCountryList1, userCountryList2, userCountryList3, userCountryList4))
 
-            userListRepository = UserListsRepository(mongoDatabase)
+            userListRepository = UserListsRepository(mongoDatabase, UsersRepository(mongoDatabase))
             usersRepository = UsersRepository(mongoDatabase)
         }
 

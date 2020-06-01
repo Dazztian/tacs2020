@@ -7,6 +7,8 @@ import org.litote.kmongo.Id
 import java.lang.Exception
 import com.utn.tacs.exception.UnAuthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
+import org.bson.types.ObjectId
+import org.litote.kmongo.id.toId
 
 class UsersService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
 
@@ -93,15 +95,15 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     /**
      * Create a user list of countries
      *
-     * @param userId Id<User>
+     * @param userId String
      * @param listName String
      * @param countries MutableSet<String>
      * @return UserCountriesListResponse
      *
      * @throws NotFoundException
      */
-    fun createUserList(userId: Id<User>, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(userId, listName.trim(), countries)) ?: throw NotFoundException()
+    fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
             id.toString(),
             listName,

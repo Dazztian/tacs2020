@@ -55,7 +55,7 @@ class AdminReportsControllerKtTest {
     @Test
     fun testGetUserInfo() = testApp {
         every { usersRepository.getUserById(user1._id) } returns user1
-        every { userListRepository.getUserLists(user1._id) } returns listOf(ucl1, ucl2, ucl3)
+        every { userListRepository.getUserLists(user1._id.toString()) } returns listOf(ucl1, ucl2, ucl3)
 
         with(handleRequest(HttpMethod.Get, "/api/admin/report/info/userId1")) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -74,7 +74,7 @@ class AdminReportsControllerKtTest {
         }
 
         every { usersRepository.getUserById(user2._id) } returns user2
-        every { userListRepository.getUserLists(user2._id) } returns listOf()
+        every { userListRepository.getUserLists(user2._id.toString()) } returns listOf()
 
         with(handleRequest(HttpMethod.Get, "/api/admin/report/info/userId2")) {
             assertEquals(HttpStatusCode.OK, response.status())

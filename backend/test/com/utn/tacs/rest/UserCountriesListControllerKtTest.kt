@@ -3,6 +3,7 @@ package com.utn.tacs.rest
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.contentNegotiator
 import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.user.UsersService
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -26,12 +27,12 @@ class UserCountriesListControllerKtTest {
     private lateinit var ucl4: UserCountriesList
     private lateinit var ucl5: UserCountriesList
 
-    private val userListRepository = mockk<UserListsRepository>()
+    private val usersService = mockk<UsersService>()
 
     private fun testApp(callback: TestApplicationEngine.() -> Unit) {
         withTestApplication({
             contentNegotiator()
-            userCountriesListRoutes(userListRepository)
+            userCountriesListRoutes(usersService)
         }, callback)
     }
 
@@ -46,7 +47,7 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testGetLists() = testApp {
-        every { userListRepository.getUserLists("userId1") } returns listOf(ucl1)
+        every { usersService.getUserLists("userId1") } returns listOf(ucl1)
 
         with(handleRequest(HttpMethod.Get, "/api/user/userId1/countries/")) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -59,14 +60,14 @@ class UserCountriesListControllerKtTest {
                     "} ]", response.content)
         }
 
-        every { userListRepository.getUserLists("nonExistentId") } returns listOf()
+        every { usersService.getUserLists("nonExistentId") } returns listOf()
 
         with(handleRequest(HttpMethod.Get, "/api/user/nonExistentId/countries/")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("[ ]", response.content)
         }
 
-        every { userListRepository.getUserLists("userId3") } returns listOf(ucl3, ucl4, ucl5)
+        every { usersService.getUserLists("userId3") } returns listOf(ucl3, ucl4, ucl5)
 
         with(handleRequest(HttpMethod.Get, "/api/user/userId3/countries/")) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -96,7 +97,7 @@ class UserCountriesListControllerKtTest {
     @Test
     fun testPostLists() = testApp {
 
-        every { userListRepository.createUserList(ucl2.userId, ucl2.name, ucl2.countries) } returns ucl2._id
+        every { usersService.createUserList(ucl2.userId, ucl2.name, ucl2.countries) } returns ucl2._id
 
         with(handleRequest(HttpMethod.Post, "/api/user/userId2/countries") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
@@ -106,7 +107,7 @@ class UserCountriesListControllerKtTest {
             assertEquals(ucl2._id.toString(), response.content)
         }
 
-        every { userListRepository.createUserList(ucl2.userId, ucl2.name, ucl2.countries) } returns null
+        every { usersService.createUserList(ucl2.userId, ucl2.name, ucl2.countries) } returns null
 
         with(handleRequest(HttpMethod.Post, "/api/user/userId2/countries") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
@@ -126,7 +127,7 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testGetListWithNameAndUserId() = testApp {
-        every { userListRepository.getUserList(ucl3.userId.toString(), ucl3.name) } returns ucl3
+        every { usersService.getUserList(ucl3.userId.toString(), ucl3.name) } returns ucl3
 
         with(handleRequest(HttpMethod.Get, "/api/user/userId3/countries/list/TEST_3")) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -138,7 +139,7 @@ class UserCountriesListControllerKtTest {
                     "  \"creationDate\" : \"${ucl3.creationDate}\"\n" +
                     "}", response.content)
         }
-        every { userListRepository.getUserList(ucl3.userId.toString(), "TEST_NO_EXISTS") } returns null
+        every { usersService.getUserList(ucl3.userId.toString(), "TEST_NO_EXISTS") } returns null
 
         with(handleRequest(HttpMethod.Get, "/api/user/userId3/countries/list/TEST_NO_EXISTS")) {
             assertEquals(HttpStatusCode.NoContent, response.status())
@@ -147,17 +148,17 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testDeleteLists() = testApp {
-        every { userListRepository.delete(ucl3.userId, ucl3.name) } returns true
+        every { usersService.delete(ucl3.userId, ucl3.name) } returns true
 
         with(handleRequest(HttpMethod.Delete, "/api/user/userId3/countries/list/TEST_3")) {
             assertEquals(HttpStatusCode.Accepted, response.status())
         }
-        every { userListRepository.delete(ucl3.userId, ucl3.name) } returns false
+        every { usersService.delete(ucl3.userId, ucl3.name) } returns false
 
         with(handleRequest(HttpMethod.Delete, "/api/user/userId3/countries/list/TEST_3")) {
             assertEquals(HttpStatusCode.NotModified, response.status())
         }
-        every { userListRepository.delete(ucl3.userId, ucl3.name) } returns null
+        every { usersService.delete(ucl3.userId, ucl3.name) } returns null
 
         with(handleRequest(HttpMethod.Delete, "/api/user/userId3/countries/list/TEST_3")) {
             assertEquals(HttpStatusCode.NotFound, response.status())
@@ -166,7 +167,7 @@ class UserCountriesListControllerKtTest {
 
     @Test
     fun testPatchLists() = testApp {
-        every { userListRepository.update(ucl4.userId, ucl4.name, "new_name", mutableSetOf("new_country")) } returns ucl4._id
+        every { usersService.update(ucl4.userId, ucl4.name, "new_name", mutableSetOf("new_country")) } returns ucl4._id
 
         with(handleRequest(HttpMethod.Patch, "/api/user/userId3/countries/list/TEST_4") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
@@ -176,7 +177,7 @@ class UserCountriesListControllerKtTest {
             assertEquals(ucl4._id.toString(), response.content)
         }
 
-        every { userListRepository.update(ucl4.userId, ucl4.name, "new_name", mutableSetOf("new_country")) } returns null
+        every { usersService.update(ucl4.userId, ucl4.name, "new_name", mutableSetOf("new_country")) } returns null
 
         with(handleRequest(HttpMethod.Patch, "/api/user/userId3/countries/list/TEST_4") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
@@ -196,7 +197,7 @@ class UserCountriesListControllerKtTest {
     }
 
     @Test
-    fun testApiCountriesIdListTable() = withTestApplication({ userCountriesListRoutes(userListRepository) }) {
+    fun testApiCountriesIdListTable() = withTestApplication({ userCountriesListRoutes(usersService) }) {
         with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Envia los datos e/m/r para una lista de paises", response.content)

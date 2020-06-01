@@ -4,14 +4,16 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoDatabase
 import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
+import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.utils.getLogger
+import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
 import java.time.LocalDate
 
 
-class UserListsRepository(private val database: MongoDatabase) {
+class UserListsRepository(private val database: MongoDatabase, private val usersRepository: UsersRepository) {
 
     private val logger = getLogger()
 
@@ -44,7 +46,7 @@ class UserListsRepository(private val database: MongoDatabase) {
      * @return List<UserCountriesList>
      */
     fun getUserListsByCreationDate(startDate: LocalDate, endDate: LocalDate): List<UserCountriesList> {
-        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::creationDate gte startDate.toString(), UserCountriesList::creationDate lte endDate.toString()).toList()
+        return database.getCollection<UserCountriesList>("userCountriesList").find(UserCountriesList::creationDate gte startDate, UserCountriesList::creationDate lte endDate).toList()
     }
 
     /**
@@ -72,9 +74,12 @@ class UserListsRepository(private val database: MongoDatabase) {
      *
      * @param userList UserCountriesList
      * @return String?
+     *
+     * @throws NotFoundException
      */
     fun createUserList(userList: UserCountriesList): String? {
         return try {
+            usersRepository.getUserById(userList._id.toString()) ?: throw NotFoundException("User does not exists")
             database.getCollection<UserCountriesList>().insertOne(userList)
             logger.info("User country list ${userList.name} creation completed.")
             return userList._id.toString()
@@ -92,8 +97,10 @@ class UserListsRepository(private val database: MongoDatabase) {
      *          True when delete is correct
      *          False when delete is not correct
      *          null when object was not found
+     * @throws NotFoundException
      */
     fun delete(listId: String): Boolean {
+        getUserList(listId) ?: throw NotFoundException("User list does not exists")
         return getUserList(listId)?.let {
             logger.info("User found, trying to delete...")
             val deleted = database.getCollection<UserCountriesList>().deleteOneById(it._id)
