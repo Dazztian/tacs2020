@@ -9,6 +9,16 @@ import com.utn.tacs.exception.UnAuthorizedException
 import io.ktor.features.NotFoundException
 import com.utn.tacs.accountService
 
+/**
+ * Verifies if access token and user is valid and return the User
+ *
+ * @param authenticationHeader String
+ * @param userId String
+ * @return User
+ *
+ * @throws NotFoundException
+ * @throws UnAuthorizedException
+ */
 fun authorizeUser(authenticationHeader: String, userId: String): User {
     val user = accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
     if (!userId.equals(user._id.toString()) && !user.isAdmin) {
@@ -17,10 +27,27 @@ fun authorizeUser(authenticationHeader: String, userId: String): User {
     return user
 }
 
+/**
+ * Verifies if access token is valid and return the User
+ *
+ * @param authenticationHeader String
+ * @return User
+ *
+ * @throws NotFoundException
+ */
 fun authorizeUser(authenticationHeader: String): User {
     return accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
 }
 
+/**
+ * Validates the access token for an Admin user
+ *
+ * @param authenticationHeader String
+ * @return User
+ *
+ * @throws NotFoundException
+ * @throws UnAuthorizedException
+ */
 fun authorizeUserAdmin(authenticationHeader: String): User {
     val user = accountService.getUserByToken(getToken(authenticationHeader)) ?: throw NotFoundException()
     if (!user.isAdmin) {
@@ -29,6 +56,14 @@ fun authorizeUserAdmin(authenticationHeader: String): User {
     return user
 }
 
+/**
+ * Get Token from Authorization header
+ *
+ * @param authenticationHeader String
+ * @return String
+ *
+ * @throws UnAuthorizedException
+ */
 fun getToken(authenticationHeader: String): String {
     try {
         if(authenticationHeader.split(" ").size != 2) {
