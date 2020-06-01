@@ -90,15 +90,15 @@ class AdminReportsServiceTest {
 
         val result = service.getListComparison(userCountryList1._id.toString(), userCountryList4._id.toString())
         Assert.assertNotNull(result)
-        Assert.assertEquals(userCountryList1, result?.userCountryList1)
-        Assert.assertEquals(userCountryList4, result?.userCountryList2)
-        Assert.assertEquals(setOf("Country1", "Country2", "Country3"), result?.sharedCountries)
+        Assert.assertEquals(userCountryList1, result.userCountryList1)
+        Assert.assertEquals(userCountryList4, result.userCountryList2)
+        Assert.assertEquals(setOf("Country1", "Country2", "Country3"), result.sharedCountries)
 
         val result2 = service.getListComparison(userCountryList1._id.toString(), userCountryList2._id.toString())
         Assert.assertNotNull(result2)
-        Assert.assertEquals(userCountryList1, result2?.userCountryList1)
-        Assert.assertEquals(userCountryList2, result2?.userCountryList2)
-        Assert.assertTrue(result2!!.sharedCountries.isEmpty())
+        Assert.assertEquals(userCountryList1, result2.userCountryList1)
+        Assert.assertEquals(userCountryList2, result2.userCountryList2)
+        Assert.assertTrue(result2.sharedCountries.isEmpty())
 
         val result3 = service.getListComparison(userCountryList1._id.toString(), "NON_EXISTENT")
         Assert.assertNull(result3)
