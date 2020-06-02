@@ -18,7 +18,6 @@ data class User(
         val country: String?,
         val isAdmin: Boolean = false
 ) {
-        constructor(name: String) : this(name, "", "", newId(), null, null)
         constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
         constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
         constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)

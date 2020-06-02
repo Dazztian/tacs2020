@@ -6,18 +6,16 @@ import com.utn.tacs.User
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
+import com.typesafe.config.ConfigFactory
 
 const val USERS_COLLECTION_NAME = "users"
 class UsersRepository(private val database: MongoDatabase) {
-
-    /**
-     * Get User by name
-     *
-     * @param name String
-     * @return User?
-     */
-    fun getUserByName(name: String): User? {
-        return database.getCollection<User>(USERS_COLLECTION_NAME).findOne(User::name eq name)
+    private val adminUserName = ConfigFactory.load().getString("adminUser.name")
+    private val adminUserEmail = ConfigFactory.load().getString("adminUser.email")
+    private val adminUserPass = ConfigFactory.load().getString("adminUser.pass")
+    init {
+        getUserByEmailAndPass(adminUserEmail, adminUserPass) ?:
+            createUser( User( adminUserName, adminUserEmail, adminUserPass, "Argentina",true))
     }
 
     /**
