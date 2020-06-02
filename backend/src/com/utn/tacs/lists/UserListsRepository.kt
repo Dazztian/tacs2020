@@ -79,7 +79,7 @@ class UserListsRepository(private val database: MongoDatabase, private val users
      */
     fun createUserList(userList: UserCountriesList): String? {
         return try {
-            usersRepository.getUserById(userList._id.toString()) ?: throw NotFoundException("User does not exists")
+            usersRepository.getUserById(userList.userId) ?: throw NotFoundException("User does not exists")
             database.getCollection<UserCountriesList>().insertOne(userList)
             logger.info("User country list ${userList.name} creation completed.")
             return userList._id.toString()
