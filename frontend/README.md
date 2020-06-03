@@ -1,3 +1,5 @@
+#Esta branch esta destinada a tener la ultima version de la webapp, que será mergeada con master para finalizar el proyecto.
+
 # Probar el front
 1. yarn install
 2. npm start
