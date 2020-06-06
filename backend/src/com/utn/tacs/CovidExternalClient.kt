@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.client.request.post
-import java.util.*
 import org.json.JSONObject
 import java.util.ArrayList
 
@@ -40,16 +38,16 @@ suspend fun getCountriesLatestFromApi(queryParams: String): List<Country> {
  * @param queryParams String
  * @return List<TimeSerie>
  */
-suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSerie> {
+suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
     return HttpClient().use { client ->
-        val result = ArrayList<TimeSerie>()
+        val result = ArrayList<TimeSeries>()
         val jsonData: String = client.get(apiEntryPoint + "timeseries?" + onlyCountries + "&" + queryParams)
         val timeSeries = JSONObject(jsonData.substring(1, jsonData.length - 1)).get("timeseries") as JSONObject
         val iterator = timeSeries.keys()
         while (iterator.hasNext()) {
             val date = iterator.next() as String
             val timeserie =  timeSeries.get(date) as JSONObject
-            result.add(TimeSerie(
+            result.add(TimeSeries(
                 result.size,
                 timeserie.get("confirmed") as Int,
                 timeserie.get("deaths") as Int,

@@ -1,8 +1,6 @@
 package com.utn.tacs.rest
 
 import com.utn.tacs.countries.CountriesService
-import com.utn.tacs.*
-import com.utn.tacs.countries.*
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -11,7 +9,6 @@ import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import io.ktor.util.pipeline.intercept
 
 
 fun Application.countriesRoutes(countriesService: CountriesService) {
@@ -20,25 +17,25 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
     routing {
         route("/api/countries") {
             get {
-                try{
+                try {
                     val name = call.request.queryParameters["name"]
                     val lat = call.request.queryParameters["lat"]?.toDouble()
                     val lon = call.request.queryParameters["lon"]?.toDouble()
-                    when{
+                    when {
                         lat != null && lon != null -> call.respond(countriesService.getNearestCountries(lat, lon))
                         name != null -> call.respond(countriesService.getCountryLatestByName(name))
                         else -> call.respond(countriesService.getAllCountries())
                     }
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     logger.error("Parameters where not correct...", e)
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
             get("/names") {
-                try{
+                try {
                     val a = countriesService.getAllCountries().map { x -> x.countryregion }.sorted()
                     call.respond(a)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }

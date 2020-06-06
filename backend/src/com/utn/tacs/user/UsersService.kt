@@ -3,9 +3,7 @@ package com.utn.tacs.user
 import com.utn.tacs.*
 import com.utn.tacs.lists.*
 import io.ktor.features.NotFoundException
-import org.litote.kmongo.Id
 import java.lang.Exception
-import com.utn.tacs.exception.UnAuthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
@@ -105,7 +103,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
         val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
-            id.toString(),
+            id,
             listName,
             countries
         )
@@ -122,7 +120,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUserList(userId: String, listId: String) {
         getUserList(userId, listId)
-        if (! userListsRepository.delete(listId)) {
+        if (!userListsRepository.delete(listId)) {
             throw Exception()
         }
     }

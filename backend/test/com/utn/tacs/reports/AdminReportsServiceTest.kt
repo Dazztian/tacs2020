@@ -8,18 +8,22 @@ import com.utn.tacs.UserData
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.USERS_COLLECTION_NAME
 import com.utn.tacs.user.UsersRepository
+import io.ktor.features.NotFoundException
 import org.bson.Document
+import org.bson.types.ObjectId
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
-import org.litote.kmongo.*
+import org.junit.jupiter.api.assertThrows
+import org.litote.kmongo.Id
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.newId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
-import java.time.ZoneOffset
-import kotlin.test.*
 
 @Testcontainers
 class AdminReportsServiceTest {
@@ -36,7 +40,7 @@ class AdminReportsServiceTest {
         Assert.assertEquals(2, result?.listsQuantity)
         Assert.assertEquals(6, result?.countriesTotal)
 
-        Assert.assertNull(service.getUserData("NON_EXISTENT_ID"))
+        assertThrows<NotFoundException> { service.getUserData(ObjectId().toString()) }
     }
 
     @Test
@@ -62,13 +66,13 @@ class AdminReportsServiceTest {
     }
 
     @Test
-    fun testGetListQuantity(){
+    fun testGetListQuantity() {
         val service = AdminReportsService(usersRepository, userListRepository)
         Assert.assertEquals(4, service.getListsQuantity())
     }
 
     @Test
-    fun testGetUsersByCountry(){
+    fun testGetUsersByCountry() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
         val result = service.getUsersByCountry("Country3")
@@ -85,7 +89,7 @@ class AdminReportsServiceTest {
     }
 
     @Test
-    fun testGetListComparison(){
+    fun testGetListComparison() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
         val result = service.getListComparison(userCountryList1._id.toString(), userCountryList4._id.toString())
@@ -100,11 +104,9 @@ class AdminReportsServiceTest {
         Assert.assertEquals(userCountryList2, result2.userCountryList2)
         Assert.assertTrue(result2.sharedCountries.isEmpty())
 
-        val result3 = service.getListComparison(userCountryList1._id.toString(), "NON_EXISTENT")
-        Assert.assertNull(result3)
+        assertThrows<NotFoundException> { service.getListComparison(userCountryList1._id.toString(), ObjectId().toString()) }
 
-        val result4 = service.getListComparison("NON_EXISTENT_1", "NON_EXISTENT_2")
-        Assert.assertNull(result4)
+        assertThrows<NotFoundException> { service.getListComparison(ObjectId().toString(), ObjectId().toString()) }
     }
 
     companion object {

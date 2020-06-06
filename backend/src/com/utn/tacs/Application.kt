@@ -3,10 +3,10 @@ package com.utn.tacs
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.utn.tacs.account.AccountRepository
-import com.utn.tacs.account.AccountService
+import com.utn.tacs.account.AuthorizationService
+import com.utn.tacs.auth.JwtConfig
 import com.utn.tacs.countries.CountriesRepository
 import com.utn.tacs.countries.CountriesService
-
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
@@ -18,30 +18,27 @@ import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.CORS
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
+import io.ktor.auth.Authentication
+import io.ktor.auth.authentication
+import io.ktor.auth.jwt.jwt
+import io.ktor.features.*
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.util.pipeline.PipelineInterceptor
-import io.ktor.util.pipeline.PipelinePhase
+import io.ktor.routing.Routing
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
 val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
 val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
 val usersService = UsersService(usersRepository, userListsRepository)
-val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
+val accountService = AuthorizationService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
 val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase()))
 
-//Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application. module() {
+fun Application.module() {
 
     install(DefaultHeaders)
     install(CORS) {
@@ -52,7 +49,8 @@ fun Application. module() {
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
-
+    install(CallLogging)
+    authentication(usersRepository)
     contentNegotiator()
 
     install(StatusPages) {
@@ -63,6 +61,26 @@ fun Application. module() {
     }
 
     routes()
+}
+
+/**
+ * This is separated in a different method to be able to call it when testing controllers.
+ * */
+fun Application.authentication(usersRepository: UsersRepository) {
+    install(Authentication) {
+        /**
+         * Setup the JWT authentication to be used in [Routing].
+         * If the token is valid, the corresponding [User] is fetched from the database.
+         * The [User] can then be accessed in each [ApplicationCall].
+         */
+        jwt {
+            verifier(JwtConfig.verifier)
+            realm = "tacs"
+            validate {
+                it.payload.getClaim("id").asString()?.let(usersRepository::getUserOrFail)
+            }
+        }
+    }
 }
 
 fun Application.contentNegotiator() {
@@ -84,3 +102,6 @@ fun Application.routes() {
     adminReports(AdminReportsService(usersRepository, userListsRepository))
     telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService, countriesService)
 }
+
+//Define a call for when using authorization
+val ApplicationCall.user get() = authentication.principal<User>()

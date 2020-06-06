@@ -66,8 +66,8 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
      * @throws NotFoundException
      */
     fun getListComparison(userListId1: String, userListId2: String): UserListComparision {
-        val userList1 = userListsRepository.getUserList(userListId1.toString()) ?: throw NotFoundException()
-        val userList2 = userListsRepository.getUserList(userListId2.toString()) ?: throw NotFoundException()
+        val userList1 = userListsRepository.getUserList(userListId1) ?: throw NotFoundException()
+        val userList2 = userListsRepository.getUserList(userListId2) ?: throw NotFoundException()
         return UserListComparision(userList1, userList2, userList1.countries.intersect(userList2.countries))
     }
 }
