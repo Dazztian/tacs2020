@@ -52,7 +52,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getCountryLatestByName(name: String): Country {
         try {
-            return countriesRepository.getCountryByName(name)
+            return countriesRepository.getCountryByName("^${name.toLowerCase().capitalize()}")
         } catch (e: IndexOutOfBoundsException) {
             throw kotlin.IllegalArgumentException("There was no country with name $name")
         }

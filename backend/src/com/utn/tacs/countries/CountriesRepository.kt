@@ -4,11 +4,8 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.utn.tacs.*
 import com.utn.tacs.utils.MongoClientGenerator
-import org.litote.kmongo.div
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.getCollection
 import com.typesafe.config.ConfigFactory
+import org.litote.kmongo.*
 import java.util.concurrent.TimeUnit
 
 const val DB_MONGO_COUNTRIES_COLLECTION = "countries"
@@ -48,7 +45,7 @@ class CountriesRepository(private val database: MongoDatabase) {
      * @return Country
      */
     public suspend fun getCountryByName(name: String): Country {
-        return collection.findOne(Country::countryregion eq name) ?: throw kotlin.IllegalArgumentException("There was no country with name $name")
+        return collection.findOne(Country::countryregion regex name) ?: throw kotlin.IllegalArgumentException("There was no country with name $name")
     }
 
     /**
