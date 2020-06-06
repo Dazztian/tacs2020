@@ -42,6 +42,16 @@ class CountriesRepository(private val database: MongoDatabase) {
     }
 
     /**
+     * Get country from cache if its present, or from external client if that country is not in cache
+     *
+     * @param iso2 String
+     * @return Country
+     */
+    public suspend fun getCountryByName(name: String): Country {
+        return collection.findOne(Country::countryregion eq name) ?: throw kotlin.IllegalArgumentException("There was no country with name $name")
+    }
+
+    /**
      * Checks if countries covid data cache should be refreshed
      *
      * @return Boolean

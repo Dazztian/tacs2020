@@ -44,6 +44,21 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     }
 
     /**
+     * Get one country covid data by iso2 code name
+     * @sample Argentina
+     *
+     * @param name String
+     * @return Country
+     */
+    suspend fun getCountryLatestByName(name: String): Country {
+        try {
+            return countriesRepository.getCountryByName(name)
+        } catch (e: IndexOutOfBoundsException) {
+            throw kotlin.IllegalArgumentException("There was no country with name $name")
+        }
+    }
+
+    /**
      * Get one country covid timeseries by iso2 code name separated by dates
      *
      * @param iso2 String

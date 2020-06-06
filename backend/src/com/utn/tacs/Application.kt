@@ -81,5 +81,5 @@ fun Application.routes() {
     users(usersService)
     login(accountService)
     adminReports(AdminReportsService(usersRepository, userListsRepository))
-    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()))
+    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService)
 }
