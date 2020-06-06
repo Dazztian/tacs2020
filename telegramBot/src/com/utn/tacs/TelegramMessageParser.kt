@@ -1,16 +1,58 @@
 package com.utn.tacs
 
-//Retorna una tabla con los elementos del array
-//Se divide en strings de 4084 caracteres (4096 - 12 caracteres a agregar) por el max de char por mensaje en telegram
+import kotlin.math.ceil
+import kotlin.math.min
+
+
+/**
+ * Arma la fila con un map de los campos y el espacio por linea de cada campo
+ * En el caso que un campo sea mas largo que el total de su espacio en la linea
+ * se crean mas lineas y se llena el resto del campo ahi
+ *
+ * @param nameXvalue Map<String, Int>
+ * @return String
+ */
+fun createTableRowString(nameXvalue:Map<String, Int>): String{
+    val nLines = nameXvalue.map { ceil(it.key.length.toDouble() / it.value) }.max()!!.toInt()
+    val lines = MutableList(nLines){ "" }
+
+    for(i in 0 until nLines){
+        for ((field, lengthFieldRow) in nameXvalue){
+            val currentIndex = i * lengthFieldRow
+            lines[i] += "| " +
+                    field.substring(
+                            min(field.length, currentIndex),
+                            min(field.length, currentIndex+lengthFieldRow))
+                            .padEnd(lengthFieldRow)
+        }
+    }
+
+    return lines.joinToString(separator = "|\n", postfix = "|\n")
+}
+
+/**
+ * Retorna una tabla con los elementos de la lista
+ * Se divide en strings de 4084 (4096 - 12) caracteres por el max de char por mensaje en telegram
+ *
+ * @param list List<RequestModel>
+ * @return List<String>
+ */
 fun buildTableArray(list :List<RequestModel>?) :List<String> {
     return if (list == null || list.isEmpty()){
         emptyList()
     }else{
         organizarEnCaracteres(listOf(list[0].tableHeader()) + list.map { p -> p.toTableRowString() }, 4084)
-                .map { row -> "<pre>\n$row</pre>" }
+            .map { row -> "<pre>\n$row</pre>" }
     }
 }
 
+/**
+ * Retorna una lista con los joineando los strings de la lissta pasada hasta alcanzar el maxCharPorString
+ *
+ * @param list List<RequestModel>
+ * @param maxCharPorString Int
+ * @return List<String>
+ */
 fun organizarEnCaracteres(list :List<String>, maxCharPorString :Int) :List<String>{
     val ret = mutableListOf<String>()
     var acc = ""
