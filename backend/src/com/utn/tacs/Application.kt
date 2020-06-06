@@ -36,6 +36,7 @@ val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
 val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
 val usersService = UsersService(usersRepository, userListsRepository)
 val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
+val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase()))
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -76,10 +77,10 @@ fun Application.contentNegotiator() {
 
 fun Application.routes() {
     healthCheckRoutes()
-    countriesRoutes(CountriesService(CountriesRepository(MongoClientGenerator.getDataBase())))
+    countriesRoutes(countriesService)
     userCountriesListRoutes(usersService)
     users(usersService)
     login(accountService)
     adminReports(AdminReportsService(usersRepository, userListsRepository))
-    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService)
+    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService, countriesService)
 }

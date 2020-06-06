@@ -1,5 +1,6 @@
 package com.utn.tacs.countries
 
+import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.utn.tacs.*
@@ -41,11 +42,21 @@ class CountriesRepository(private val database: MongoDatabase) {
     /**
      * Get country from cache if its present, or from external client if that country is not in cache
      *
-     * @param iso2 String
+     * @param name String
      * @return Country
      */
     public suspend fun getCountryByName(name: String): Country {
         return collection.findOne(Country::countryregion regex name) ?: throw kotlin.IllegalArgumentException("There was no country with name $name")
+    }
+
+    /**
+     * Get country from cache if its present, or from external client if that country is not in cache
+     *
+     * @param names String
+     * @return Country
+     */
+    public suspend fun getCountriesByName(names: List<String>): FindIterable<Country> {
+        return collection.find(or(names.map { Country::countryregion eq it })) ?: throw kotlin.IllegalArgumentException("There are no countries in that list")
     }
 
     /**

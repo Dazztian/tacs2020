@@ -4,9 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.utn.tacs.telegram.TelegramRepository
 import com.utn.tacs.TelegramUser
-import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.UserCountriesListModificationRequest
+import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.user.UsersService
@@ -19,7 +19,9 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 import org.litote.kmongo.Id
 
-fun Application.telegram(usersRepository: UsersRepository, userListsRepository: UserListsRepository, telegramRepository: TelegramRepository, usersService: UsersService) {
+fun Application.telegram(usersRepository: UsersRepository, userListsRepository: UserListsRepository,
+                         telegramRepository: TelegramRepository, usersService: UsersService,
+                         countriesService: CountriesService) {
     routing {
         route("/api/telegram") {
             get {
@@ -64,15 +66,18 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
                         else -> {
                             val userCountryLists = userListsRepository.getUserLists(session.userId.toString())
-                            //TODO: ARREGLAR ESTO
-                            call.respond(userCountryLists.map { UserCountriesListMiniFix(it._id, it.name) })
+                            call.respond(userCountryLists.map { UserCountriesListWrapper(it._id, it.name) })
                         }
                     }
                 }
                 get("/{listId}") {
                     when(val countryList = userListsRepository.getUserList(call.parameters["listId"].toString())){
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
-                        else -> call.respond(UserCountriesListMiniFix(countryList))
+                        else -> {
+                            val a = countryList.countries.toList()
+                            println(a)
+                            call.respond(countriesService.getCountriesByName(a))
+                        }
                     }
                 }
                 post {
@@ -93,9 +98,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
     }
 }
 
-
-//TODO: ARREGLAR ESTO
-class UserCountriesListMiniFix(
+class UserCountriesListWrapper(
         val _id: Id<UserCountriesList>,
         val name: String,
         val countries: Set<String>){
