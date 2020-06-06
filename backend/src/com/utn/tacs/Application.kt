@@ -40,7 +40,7 @@ val accountService = AccountService(usersRepository, AccountRepository(MongoClie
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application.module() {
+fun Application. module() {
 
     install(DefaultHeaders)
     install(CORS) {
@@ -70,7 +70,6 @@ fun Application.contentNegotiator() {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             setDefaultPrettyPrinter(DefaultPrettyPrinter())
             registerModule(IdJacksonModule())
-
         }
     }
 }

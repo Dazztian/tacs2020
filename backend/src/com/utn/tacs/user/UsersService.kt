@@ -147,4 +147,14 @@ class UsersService(private val usersRepository: UsersRepository, private val use
             request.countries
         )
     }
+
+    /**
+     * Delete a user by id
+     * @param userId String
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    fun deleteUser(userId: String) {
+        usersRepository.delete(usersRepository.getUserById(userId) ?: throw NotFoundException())
+    }
 }
