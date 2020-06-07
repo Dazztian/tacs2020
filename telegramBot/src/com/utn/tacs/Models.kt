@@ -81,3 +81,9 @@ data class TimeSerie(
         val recovered: Int,
         val date: String
 )
+
+data class UserCountriesListResponse(
+        val id: String,
+        val name: String,
+        val countries: MutableSet<String>
+)

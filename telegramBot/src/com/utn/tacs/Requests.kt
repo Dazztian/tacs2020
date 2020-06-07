@@ -179,9 +179,9 @@ fun newCountriesList(telegramUserId: String, listName :String, countries :List<S
         return if(response.statusCode == 200){
             val (payload, _) = result
             val responseJson = payload.toString()
-            //Gson().fromJson(responseJson, UserCountriesListResponse::class.java)
-            //TODO : ARREGLAR ESTo
-            "OK "
+            val userCountriesList = Gson().fromJson(responseJson, UserCountriesListResponse::class.java)
+
+            "OK "+userCountriesList.id
         }else{
             String(response.data)
         }

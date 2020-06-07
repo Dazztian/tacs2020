@@ -118,10 +118,9 @@ fun countryListCommands(updater : Updater){
                         val listName = countriesList[0]
                         val response = newCountriesList(chatId.toString(), listName, countriesList.drop(1))
 
-                        if (response == "Saved"){
+                        if (response.startsWith("OK")){
                             lastImportantMessages.remove(userId)
-                            bot.sendMessage(update.message!!.chat.id, text = newListSavedText)
-                            myLists(bot, chatId)
+                            showList(bot, response.substringAfter(" "), chatId)
                         }else{
                             bot.sendMessage(update.message!!.chat.id, text = response)
                         }
