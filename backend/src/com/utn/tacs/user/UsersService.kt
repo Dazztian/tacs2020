@@ -103,7 +103,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
         val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
-            id.toString(),
+            id,
             listName,
             countries
         )
@@ -120,7 +120,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUserList(userId: String, listId: String) {
         getUserList(userId, listId)
-        if (! userListsRepository.delete(listId)) {
+        if (!userListsRepository.delete(listId)) {
             throw Exception()
         }
     }

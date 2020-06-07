@@ -1,39 +1,33 @@
 package com.utn.tacs.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.utn.tacs.LogOutRequest
-import com.utn.tacs.User
 import com.utn.tacs.LoginRequest
 import com.utn.tacs.SignUpRequest
-import com.utn.tacs.account.AccountService
-import com.utn.tacs.exception.UnAuthorizedException
+import com.utn.tacs.account.AuthorizationService
+import com.utn.tacs.auth.JwtConfig
+import com.utn.tacs.exception.UnauthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
-import com.utn.tacs.user.UsersRepository
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.auth.authenticate
 import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.header
 import io.ktor.request.receive
-import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.response.respondText
-import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
-fun Application.login(accountService: AccountService) {
+fun Application.login(authorizationService: AuthorizationService) {
     routing {
         route("/api/login") {
             post {
                 try {
                     val loginData = call.receive<LoginRequest>()
-                    call.respond(accountService.logIn(loginData))
-                } catch (e: UnAuthorizedException) {
+                    val user = authorizationService.auth(loginData.email, loginData.password)
+                    val token = JwtConfig.makeToken(user)
+                    call.respond(token)
+                } catch (e: UnauthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
@@ -46,13 +40,15 @@ fun Application.login(accountService: AccountService) {
             post {
                 try {
                     val signUpData = call.receive<SignUpRequest>()
-                    call.respond(accountService.signUp(SignUpRequest(
-                        signUpData.name.trim().toLowerCase(),
-                        signUpData.email.trim().toLowerCase(),
-                        signUpData.password.trim(),
-                        signUpData.country.trim().toUpperCase(),
-                        false
-                    )))
+
+                    val user = authorizationService.signUp(SignUpRequest(
+                            signUpData.name.trim().toLowerCase(),
+                            signUpData.email.trim().toLowerCase(),
+                            signUpData.password.trim(),
+                            signUpData.country.trim().toUpperCase(),
+                            false
+                    ))
+                    call.respond(JwtConfig.makeToken(user))
                 } catch (e: UserAlreadyExistsException) {
                     call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
                 } catch (e: Exception) {
@@ -63,22 +59,6 @@ fun Application.login(accountService: AccountService) {
         route("/auth/google") {
             post {
                 call.respondText("Oauth")
-            }
-        }
-        route("api/logout") {
-            post {
-                try {
-                    val authHeader = call.request.header("Authorization") ?: ""
-                    val user = authorizeUser(authHeader)
-                    accountService.logOut(LogOutRequest(getToken(authHeader)))
-                    call.respond(HttpStatusCode.OK)
-                } catch (e: UnAuthorizedException) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                }
             }
         }
     }

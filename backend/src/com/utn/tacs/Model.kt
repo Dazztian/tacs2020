@@ -1,10 +1,10 @@
 package com.utn.tacs
 
+import io.ktor.auth.Principal
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 import java.time.LocalDate
 
 data class User(
@@ -17,11 +17,13 @@ data class User(
         val creationDate: String? = null,
         val country: String?,
         val isAdmin: Boolean = false
-) {
-        constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
-        constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
-        constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)
-        constructor(_id: Id<User>, name: String, email:String, password:String) : this(name, email, password, _id, null, null)
+) : Principal {
+    constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
+    constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
+    constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)
+    constructor(_id: Id<User>, name: String, email: String, password: String) : this(name, email, password, _id, null, null)
+    constructor(_id: Id<User>, name: String, email: String, password: String, isAdmin:Boolean) : this(name, email, password, _id, null, null, isAdmin)
+
 }
 
 @Serializable
@@ -46,10 +48,10 @@ data class Country(
         val confirmed: Int,
         val deaths: Int,
         val recovered: Int,
-        var timeseries: List<TimeSerie>? = listOf()
+        var timeseries: List<TimeSeries>? = listOf()
 )
 
-data class TimeSerie(
+data class TimeSeries(
         val number: Int,
         val confirmed: Int,
         val deaths: Int,
@@ -104,9 +106,6 @@ data class LoginResponse(
         val token: String
 )
 
-data class LogOutRequest(
-    val token: String
-)
 
 data class UserAccount(
         @ContextualSerialization
@@ -115,7 +114,7 @@ data class UserAccount(
         val userId: Id<User>,
         val token: String
 ) {
-        constructor(userId: Id<User>, token: String): this(newId(), userId, token)
+    constructor(userId: Id<User>, token: String) : this(newId(), userId, token)
 }
 
 data class UserData(
@@ -142,8 +141,8 @@ data class TelegramSession(
         @ContextualSerialization
         val userId: Id<User>,
         val telegramId: String
-){
-    constructor(userId: Id<User>, telegramId: String): this(newId(), userId, telegramId)
+) {
+    constructor(userId: Id<User>, telegramId: String) : this(newId(), userId, telegramId)
 }
 
 data class UserResponse(
@@ -156,7 +155,7 @@ data class UserResponse(
         val lists: List<UserCountriesListResponse>
 )
 
-data class UserCountriesListResponse (
+data class UserCountriesListResponse(
         val id: String,
         val name: String,
         val countries: MutableSet<String>

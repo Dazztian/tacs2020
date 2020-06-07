@@ -7,6 +7,7 @@ import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
 import com.typesafe.config.ConfigFactory
+import io.ktor.features.NotFoundException
 
 const val USERS_COLLECTION_NAME = "users"
 class UsersRepository(private val database: MongoDatabase) {
@@ -36,6 +37,16 @@ class UsersRepository(private val database: MongoDatabase) {
      */
     fun getUserById(id: String): User? {
         return getUserById(ObjectId(id).toId())
+    }
+
+    /**
+     * Get user by id
+     *
+     * @param id String
+     * @return User
+     */
+    fun getUserOrFail(id: String): User {
+        return getUserById(id) ?: throw NotFoundException("User was not found")
     }
 
     /**
