@@ -17,11 +17,11 @@ fun startButtons() = InlineKeyboardMarkup(
                                 InlineKeyboardButton(text = "Logout", callbackData = "Logout")
                             )))
 fun returnButtonNoMarkup() = listOf(
-                                        listOf(
-                                            InlineKeyboardButton(
-                                                text = "Return",
-                                                callbackData = "Start")
-                                        ))
+                                    listOf(
+                                        InlineKeyboardButton(
+                                            text = "Return",
+                                            callbackData = "Start")
+                                    ))
 fun returnButton() = InlineKeyboardMarkup(returnButtonNoMarkup())
 
 fun startMessageCallBackQuery(update :Update) = startMessageBuilder(update.callbackQuery!!.from.firstName)
@@ -40,7 +40,9 @@ const val helpText =    "- This bot maintains a registry of the coronavirus adva
                         "Tip: you don't need to capitalize the country or write the whole name\n" +
                         "Example: /check arg brings Argentina info!"
 const val startText =   "Welcome to the Group 4 Telegram Bot!  \uD83D\uDCBB\n\n" +
-                        "- To begin write /login followed by your username and password\n" +
+                        "- To see the last values of a country use /check {country}\n" +
+                        "- To see al countries use /countries\n\n"+
+                        "- To manage your lists write /login followed by your username and password\n" +
                         "(Example: /login user pass)\n\n" +
                         "- To create an account go to $urlBase"
 
@@ -48,7 +50,7 @@ const val textoLoginIncorrecto = "Username or password incorrect   \uD83D\uDE15"
 const val textoLoginHelp =  "To begin write /login followed by your username and password\n" +
                             "(Example: /login user pass)"
 
-fun addStartCommands(updater :Updater){
+fun startCommands(updater :Updater){
     listOf(
         CommandHandler("start") { bot, update->
             if(healthCheck() && isLoggedIn(update.message!!.from!!.id.toString()))
@@ -93,7 +95,7 @@ fun addStartCommands(updater :Updater){
         }),
         createCommandHandler("logout") { bot, update->
             val chatId = update.message!!.chat.id
-            if(logout(update.message!!.from!!.id.toString())) {
+            if(logout(chatId.toString())) {
                 bot.sendMessage(
                         chatId = chatId,
                         text = "Logout exitoso!"
@@ -112,17 +114,15 @@ fun addStartCommands(updater :Updater){
 
         createCallbackQueryHandler("Help") { bot, update ->
                 update.callbackQuery?.let {
-                    val chatId = it.message!!.chat.id
                     bot.sendMessage(
-                            chatId = chatId,
+                            chatId = it.message!!.chat.id,
                             text = helpText
                     )
                 }
             },
         createCallbackQueryHandler("Start") { bot, update ->
             update.callbackQuery?.let {
-                val chatId = it.message!!.chat.id
-                bot.sendMessage(chatId = chatId,
+                bot.sendMessage(chatId = it.message!!.chat.id,
                                 text = startMessageCallBackQuery(update),
                                 replyMarkup = startButtons())
             }
@@ -131,7 +131,9 @@ fun addStartCommands(updater :Updater){
                 update.callbackQuery?.let {
                     val chatId = it.message!!.chat.id
 
-                    if(logout(update.callbackQuery?.message!!.chat.id.toString())) {
+                    if(logout(chatId.toString())) {
+                        lastImportantMessages.remove(chatId)
+
                         bot.sendMessage(
                             chatId = chatId,
                             text = "Logout exitoso!"

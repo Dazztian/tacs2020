@@ -9,12 +9,12 @@ import java.time.format.DateTimeFormatter
 
 interface MessageType{
     object ADD_COUNTRY : MessageType
-    object REMOVE_COUNTRY : MessageType
+    object NEW_LIST : MessageType
     object LAST_X_DAYS : MessageType
 }
 class MessageWrapper(
         val messageType: MessageType,
-        val countryListId: String?)
+        val countryListId: String)
 
 interface RequestModelInterface{
     //Retorna el model a una fila de tabla para mensaje telegram
@@ -62,15 +62,15 @@ data class Country(
 ) :RequestModel() {
     override fun toTableRowString(): String {
         return createTableRowString(
-                mapOf(  (countryregion ?: "") to 15,
+                mapOf(  (countryregion ?: "") to 13,
                         (confirmed?.toString() ?: "0") to 10,
                         (deaths?.toString() ?: "0") to 9,
                         (recovered?.toString() ?: "0") to 10))
     }
 
     override fun tableHeader(): String {
-        return  "|      Name      | Confirmed |  Deaths  | Recovered |\n" +
-                "|:--------------:|:---------:|:--------:|:---------:|\n"
+        return  "|     Name     | Confirmed |  Deaths  | Recovered |\n" +
+                "|:------------:|:---------:|:--------:|:---------:|\n"
     }
 }
 

@@ -2,14 +2,8 @@ package com.utn.tacs
 
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
-import com.github.kotlintelegrambot.dispatcher.callbackQuery
-import com.github.kotlintelegrambot.dispatcher.command
-import com.github.kotlintelegrambot.dispatcher.message
-import com.github.kotlintelegrambot.entities.*
-import com.utn.tacs.handlers.addCountryListCommands
-import com.utn.tacs.handlers.addStartCommands
-import javax.swing.text.html.HTML
-import com.github.kotlintelegrambot.extensions.filters.Filter
+import com.utn.tacs.handlers.countryListCommands
+import com.utn.tacs.handlers.startCommands
 
 
 //Map of last important messages separatad by each telegram user Id
@@ -17,10 +11,10 @@ val lastImportantMessages = mutableMapOf<Long, MessageWrapper>()
 
 fun main(args: Array<String>) {
     val bot = bot {
-        token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
+        token = "1250247908:AAFafjMtBEQGMpH1cl4_xk2u5PA--ckVF6A"
 
-        addStartCommands(updater)
-        addCountryListCommands(updater)
+        startCommands(updater)
+        countryListCommands(updater)
 
         dispatch {
             /*command("a") { bot, update->
@@ -31,8 +25,7 @@ fun main(args: Array<String>) {
                                             ))
                 bot.sendMessage(
                         chatId = update.message!!.chat.id,
-                        text = "HOLA",
-                        parseMode = ParseMode.MARKDOWN,
+                        text = update.message!!.chat.id.toString()+" "+update.message!!.from!!.id.toString(),
                         replyMarkup = keyboardMarkup
                 )
             }
@@ -42,20 +35,14 @@ fun main(args: Array<String>) {
 
                     bot.sendMessage(
                             chatId = chatId,
-                            text = "EL texto era: " + it.message?.text
+                            text = it.message!!.from!!.id.toString() + " " + it.message!!.chat.id
                     )
                 }
             }
             message(Filter.Text){ bot, update ->
-                lastImportantMessages[update.message!!.from!!.id] = MessageWrapper(MessageType.ADD_COUNTRY, null)
-                bot.sendMessage(update.message!!.chat.id, text = "Saved")
-            }
-            command("last") { bot, update->
-                bot.sendMessage(
-                        chatId = update.message!!.chat.id,
-                        text = "Last message: "+ (lastImportantMessages[update.message!!.from!!.id]?.messageType ?: "null")
-                )
-
+                lastImportantMessages[update.message!!.from!!.id] = MessageWrapper(MessageType.ADD_COUNTRY, "")
+                bot.sendMessage(update.message!!.chat.id,
+                        text = update.message!!.from!!.id.toString() +" "+ update.message!!.chat.id)
             }*/
 
             // DATABASE

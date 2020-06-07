@@ -2,16 +2,15 @@ package com.utn.tacs.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.utn.tacs.*
 import com.utn.tacs.telegram.TelegramRepository
-import com.utn.tacs.TelegramUser
-import com.utn.tacs.UserCountriesList
-import com.utn.tacs.UserCountriesListModificationRequest
 import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.user.UsersService
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.request.receiveText
@@ -25,7 +24,8 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
     routing {
         route("/api/telegram") {
             get {
-                val telegramUser = TelegramUser(call.parameters["telegramId"]!!, null, null)
+                val userId = call.parameters["telegramId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+                val telegramUser = TelegramUser(userId, null, null)
 
                 call.respond(telegramRepository.getTelegramSession(telegramUser) ?: HttpStatusCode.NotFound)
             }
@@ -53,16 +53,9 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                 }
             }
 
-            get("/user") {
-                when(val session = telegramRepository.getUserId(call.parameters["id"]!!)){
-                    null -> call.respond(HttpStatusCode(400, "Id not found"))
-                    else -> call.respond(usersRepository.getUserById(session.userId) ?: HttpStatusCode.NotFound)
-                }
-            }
-
             route("/countryList"){
                 get {
-                    when(val session = telegramRepository.getUserId(call.parameters["telegramId"]!!)){
+                    when(val session = telegramRepository.getTelegramSession(call.parameters["telegramId"]  ?: return@get call.respond(HttpStatusCode.BadRequest))){
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
                         else -> {
                             val userCountryLists = userListsRepository.getUserLists(session.userId.toString())
@@ -70,25 +63,85 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                         }
                     }
                 }
-                get("/{listId}") {
-                    when(val countryList = userListsRepository.getUserList(call.parameters["listId"].toString())){
-                        null -> call.respond(HttpStatusCode(400, "Id not found"))
-                        else -> {
-                            val a = countryList.countries.toList()
-                            println(a)
+                route("/{listId}"){
+                    get {
+                        val telegramId = call.parameters["telegramId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+                        val listId = call.parameters["listId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+
+                        if (!telegramRepository.authenticated(telegramId, listId))
+                            call.respond(HttpStatusCode(400, "Id not found"))
+                        else {
+                            val countryList = userListsRepository.getUserList(listId)
+                            val a = countryList!!.countries.toList()
                             call.respond(countriesService.getCountriesByName(a))
                         }
                     }
+                    post("/add"){
+                        val telegramId = call.parameters["telegramId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                        val listId = call.parameters["listId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                        if(!telegramRepository.authenticated(telegramId, listId)){
+                            call.respond(HttpStatusCode(401, "Telegram id not logged in or not associated to that list"))
+                            return@post
+                        }
+
+                        when(val countryList = userListsRepository.getUserList(listId)) {
+                            null -> call.respond(HttpStatusCode(400, "List not found"))
+                            else -> {
+                                try {
+                                    val request = call.receive<UserCountriesListModificationRequest>()
+                                    val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
+                                    if(!countryNames.containsAll(request.countries)){
+                                        call.respond(HttpStatusCode(405, "invalid countries"),
+                                            request.countries.fold("Invalid countries:", { acc, country ->
+                                                                                            if (!countryNames.contains(country))
+                                                                                                "$acc\n$country"
+                                                                                            else
+                                                                                                acc
+                                                                                          }))
+                                        return@post
+                                    }
+
+                                    val newList = UserCountriesListModificationRequest(countryList.name, countryList.countries)
+                                    newList.countries.addAll(request.countries)
+                                    usersService.updateUserList(countryList.userId.toString(), countryList._id.toString(), newList)
+
+                                    call.respond(HttpStatusCode.OK, "Saved")
+                                } catch (e: NotFoundException) {
+                                    call.respond(HttpStatusCode.NotFound, e.toString())
+                                } catch (e: Exception) {
+                                    logger.error("Error parsing patch request", e)
+                                    call.respond(HttpStatusCode.BadRequest, e.toString())
+                                }
+                            }
+                        }
+                    }
                 }
+                //Creates a new userCountriesList
                 post {
-                    when(val sessionId = telegramRepository.getUserId(call.parameters["sessionId"]!!)){
+                    val telegramId = call.parameters["telegramId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    when(val session = telegramRepository.getTelegramSession(telegramId)){
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
                         else -> {
-                            val requestJson = call.receive<UserCountriesListModificationRequest>()
                             try{
-                                call.respond(usersService.createUserList(sessionId.userId.toString(), requestJson.name!!, requestJson.countries!!))
-                            }catch (exc :Exception){
-                                call.respond(HttpStatusCode(500, "Exception"), exc.message.toString())
+                                val request = call.receive<UserCountriesListModificationRequest>()
+                                val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
+                                if(!countryNames.containsAll(request.countries)){
+                                    call.respond(HttpStatusCode(405, "invalid countries"),
+                                        request.countries.fold("Invalid countries:", { acc, country ->
+                                                                                            if (!countryNames.contains(country))
+                                                                                                "$acc\n$country"
+                                                                                            else
+                                                                                                acc
+                                                                                        }))
+                                    return@post
+                                }
+
+                                call.respond(usersService.createUserList(session.userId.toString(), request.name, request.countries))
+                            }catch (e: NotFoundException) {
+                                call.respond(HttpStatusCode.NotFound, e.toString())
+                            } catch (e: Exception) {
+                                logger.error("Error parsing patch request", e)
+                                call.respond(HttpStatusCode.BadRequest, e.toString())
                             }
                         }
                     }
@@ -96,12 +149,4 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
             }
         }
     }
-}
-
-class UserCountriesListWrapper(
-        val _id: Id<UserCountriesList>,
-        val name: String,
-        val countries: Set<String>){
-    constructor(userCountriesList: UserCountriesList) : this(userCountriesList._id, userCountriesList.name, userCountriesList.countries.toSet())
-    constructor(id :Id<UserCountriesList>, name :String) : this(id, name, emptySet())
 }

@@ -80,24 +80,6 @@ fun getCountryLists(telegramUserId :String) :List<CountriesList>?{
 }
 
 //Returns the countryList with the id
-fun getCountryList(listId :String) :CountriesList?{
-    return try {
-        val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList/$listId")
-                .responseString()
-
-        val (payload, _) = result // payload is a String
-        val responseJson = payload.toString()
-
-        when (response.statusCode) {
-            200 -> Gson().fromJson(responseJson, CountriesList::class.java)
-            else -> null
-        }
-    } catch (exc :Exception) {
-        null
-    }
-}
-
-//Returns the countryList with the id
 fun getCountryByName(name :String) :Country?{
     return try {
         val (_, response, result) = Fuel.get(urlBase+"api/countries?name=$name")
@@ -151,9 +133,10 @@ fun allCountriesNames() :Array<String>?{
     }
 }
 
-fun getListCountries(listId :String) :List<Country>?{
+//Returns the last country values from a list
+fun getListCountries(listId :String, telegramId :String) :List<Country>?{
     return try {
-        val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList/$listId")
+        val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList/$listId?telegramId=$telegramId")
                 .responseString()
 
         val (payload, _) = result // payload is a String
@@ -165,5 +148,44 @@ fun getListCountries(listId :String) :List<Country>?{
         }
     } catch (exc :Exception) {
         null
+    }
+}
+
+fun addCountries(telegramUserId: String, listId :String, countries :Set<String>) :String{
+    return try {
+        val (x, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
+                .header("Content-Type", "application/json")
+                .body(Gson().toJson(UserCountriesListModificationRequest("list", countries.toMutableSet())).toString())
+                .responseString()
+
+        return if(response.statusCode == 200){
+            val (payload, _) = result
+            payload.toString()
+        }else{
+            String(response.data)
+        }
+    } catch (exc :Exception) {
+        "Error"
+    }
+}
+
+fun newCountriesList(telegramUserId: String, listName :String, countries :List<String>) :String{
+    return try {
+        val (_, response, result) = Fuel.post(urlBase+"api/telegram/countryList?telegramId=$telegramUserId")
+                .header("Content-Type", "application/json")
+                .body(Gson().toJson(UserCountriesListModificationRequest(listName, countries.toMutableSet())).toString())
+                .responseString()
+
+        return if(response.statusCode == 200){
+            val (payload, _) = result
+            val responseJson = payload.toString()
+            //Gson().fromJson(responseJson, UserCountriesListResponse::class.java)
+            //TODO : ARREGLAR ESTo
+            "OK "
+        }else{
+            String(response.data)
+        }
+    } catch (exc :Exception) {
+        "Error"
     }
 }

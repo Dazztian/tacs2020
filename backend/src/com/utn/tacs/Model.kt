@@ -73,6 +73,13 @@ data class UserCountriesList(
 
 }
 
+class UserCountriesListWrapper(
+        val _id: Id<UserCountriesList>,
+        val name: String,
+        val countries: Set<String>){
+    constructor(id :Id<UserCountriesList>, name :String) : this(id, name, emptySet())
+}
+
 data class UserCountriesListModificationRequest(
         val name: String,
         val countries: MutableSet<String>

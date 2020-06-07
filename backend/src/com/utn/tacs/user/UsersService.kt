@@ -3,9 +3,7 @@ package com.utn.tacs.user
 import com.utn.tacs.*
 import com.utn.tacs.lists.*
 import io.ktor.features.NotFoundException
-import org.litote.kmongo.Id
 import java.lang.Exception
-import com.utn.tacs.exception.UnAuthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
