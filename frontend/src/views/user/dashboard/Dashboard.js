@@ -56,7 +56,7 @@ export default function Dashboard(props) {
         localStorage.setItem('tracker_country', pais)
        }
       
-      //fetchValues(query)
+      //await fetchValues(query)
 
     } catch(error) {
       console.log(error)
@@ -77,7 +77,7 @@ export default function Dashboard(props) {
         direction="column"
         alignItems="center"
         justify="center"
-        style={{ minHeight: '100vh' }}
+        style={{ minHeight: '80vh' }}
       >
         <Grid item xs={3}>
           <CircularProgress size={100}/>
