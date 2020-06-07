@@ -5,7 +5,8 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  CircularProgress
+  CircularProgress,
+  Box
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import {
@@ -54,24 +55,38 @@ export default function Dashboard(props) {
         const pais = await getCountry()
         localStorage.setItem('tracker_country', pais)
        }
-       setIsLoading(false)
+      
+      //fetchValues(query)
+
     } catch(error) {
       console.log(error)
     }
+    setIsLoading(false)
   }
 
-  useEffect(() => {
+  useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
       fetchData()
   });
 
   return (
     <>
     {isLoading 
-    ? <CircularProgress />
+    ? <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{ minHeight: '100vh' }}
+      >
+        <Grid item xs={3}>
+          <CircularProgress size={100}/>
+        </Grid>   
+      </Grid> 
     : <div>
-      <PageTitle title= {localStorage.getItem('tracker_country') + " hoy"} />
+      <PageTitle title= {localStorage.getItem('tracker_country') + " today:"} />
       <Grid container spacing={4}>
-        <Grid item lg={3} md={4} sm={6} xs={12}>
+        <Grid item lg={4} md={4} sm={6} xs={12}>
           <Widget
             title="New cases"
             upperTitle

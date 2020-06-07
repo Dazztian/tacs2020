@@ -20,7 +20,7 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-//import { findUser } from '../../apis/Api'
+//import { findUser, createUser } from '../../apis/Api'
 import { useUserDispatch, /*loginUser, createNewUser*/ } from "../../context/UserContext";
 
 function Login(props) {
@@ -37,13 +37,12 @@ function Login(props) {
   var [nameValue, setNameValue] = useState("");
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
-  //var [isLoggin, setIsLoggin] = useState(false);
 
-  async function findUser(loginValue,passwordValue) {
+  async function findUser(loginValue,passwordValue) { //al api.js
     try{
       return new Promise(resolve => {
         setTimeout(() => {
-          resolve('token');
+          resolve({token : 'asdasdas', sessionId: 'asdasd', nameValue: 'Nacho Schocco'});
         }, 2000);
       })
     }catch(error){
@@ -57,18 +56,39 @@ function Login(props) {
       }*/
   }
 
-  const createNewUser = async () => {
+  async function createUser(nameValue,loginValue,passwordValue) { //esto va al api.js
+    try{
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({token : 'asdasdas', sessionId: 'asdasd'});
+        }, 2000);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*return await fetch(this.BASE_URL, {
+          method:'POST',
+          headers: this.createHeaders(),
+          body: JSON.stringify(item),
+        });
+      }*/
+  }
+
+  const handleLoginWithGoogle = async () => {
+    
+  }
+
+  const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,history,setIsLoading,setSignupError) => {
     setSignupError(false);
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
-      const user = await findUser(loginValue,passwordValue)
-      if(!!user){
-        setIsLoading(false)
-        localStorage.setItem('id_token', 1)
-        localStorage.setItem('id_session',1)
+      const {token, sessionId} = await createUser(nameValue,loginValue,passwordValue)
+      if(!!token){
+        localStorage.setItem('id_token', token)
+        localStorage.setItem('id_session',sessionId)
         localStorage.setItem('tracker_name', nameValue)
         userDispatch({ type: 'LOGIN_USER_SUCCESS' })
-        props.history.push('/user/home')
+        history.push('/user/home')
       } else {
         setSignupError(true);
         setIsLoading(false);
@@ -76,24 +96,24 @@ function Login(props) {
   }
 }
 
-  const loginUser = async () => {
+  const handleLoginUser = async (userDispatch,loginValue,passwordValue,history,setIsLoading,setLoginError) => {
     setLoginError(false);
     setIsLoading(true);
     if (!!loginValue && !!passwordValue) {
-      const user = await findUser(loginValue,passwordValue)
+      const {token, sessionId, nameValue} = await findUser(loginValue,passwordValue)
       if(loginValue === 'user'){
-        localStorage.setItem('id_token', 1)
-        localStorage.setItem('tracker_name', 'Nacho Scocco')
-        setIsLoading(false);
+        localStorage.setItem('id_session',sessionId)
+        localStorage.setItem('id_token', token)
+        localStorage.setItem('tracker_name', nameValue)
         userDispatch({ type: 'LOGIN_USER_SUCCESS' })
-        props.history.push('/user/home')
+        history.push('/user/home')
       } else if( loginValue === 'admin'){
         localStorage.setItem('role', 1)
         localStorage.setItem('id_token', 1)
         localStorage.setItem('tracker_name', 'Jose Perez')
-        setIsLoading(false);
+        //setIsLoading(false);
         userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
-        props.history.push('/admin/home')
+        history.push('/admin/home')
       } else {
         //userDispatch({ type: "LOGIN_FAILURE" });
         setLoginError(true);
@@ -130,7 +150,7 @@ function Login(props) {
               <Typography variant="h1" className={classes.greeting}>
                 Covid-19 Tracker
               </Typography>
-              <Button size="large" className={classes.googleButton}>
+              <Button size="large" className={classes.googleButton} onClick={() => handleLoginWithGoogle()}>
                 <img src={google} alt="google" className={classes.googleIcon} />
                 &nbsp;Sign in with Google
               </Button>
@@ -183,8 +203,14 @@ function Login(props) {
                       loginValue.length === 0 || passwordValue.length === 0
                     }
                     onClick={() => {
-                      loginUser()
-                      //setIsLoggin(!isLoggin)
+                      handleLoginUser(                        
+                        userDispatch,
+                        loginValue,
+                        passwordValue,
+                        props.history,
+                        setIsLoading,
+                        setLoginError
+                      )
                     }
                     }
                     variant="contained"
@@ -268,7 +294,14 @@ function Login(props) {
                 ) :
                   <Button
                     onClick={() =>{
-                      createNewUser()
+                      handleCreateNewUser(
+                        userDispatch,
+                        nameValue,
+                        loginValue,
+                        passwordValue,
+                        props.history,
+                        setIsLoading,
+                        setSignupError)
                       /*createNewUser(
                         userDispatch,
                         nameValue,
@@ -302,6 +335,7 @@ function Login(props) {
                 <div className={classes.formDivider} />
               </div>
               <Button
+                onClick={() => handleLoginWithGoogle()}
                 size="large"
                 className={classnames(
                   classes.googleButton,

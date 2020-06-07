@@ -19,6 +19,7 @@ async function getCountry(){
       const data = await response.json();
       console.log(data.country);
       return data.country;*/
+      
     } catch(error){
       console.log(error)
     }
