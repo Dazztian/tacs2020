@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getCountry } from "../../../apis/GeolocationApi"
 import {
   Grid,
   Select,
   OutlinedInput,
   MenuItem,
+  CircularProgress
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import {
@@ -43,10 +45,31 @@ export default function Dashboard(props) {
 
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
+  var [isLoading, setIsLoading] = useState(true);
+  var [country, setCountry] = useState()
+
+  async function fetchData() {
+    try {
+      if (!localStorage.getItem("tracker_country")){
+        const pais = await getCountry()
+        localStorage.setItem('tracker_country', pais)
+       }
+       setIsLoading(false)
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+      fetchData()
+  });
 
   return (
     <>
-      <PageTitle title="Near you"/>
+    {isLoading 
+    ? <CircularProgress />
+    : <div>
+      <PageTitle title= {localStorage.getItem('tracker_country') + " hoy"} />
       <Grid container spacing={4}>
         <Grid item lg={3} md={4} sm={6} xs={12}>
           <Widget
@@ -325,8 +348,9 @@ export default function Dashboard(props) {
             </ResponsiveContainer>
           </Widget>
         </Grid>
-
-      </Grid>
+        </Grid>
+      </div>
+      }
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   CircularProgress,
@@ -20,7 +20,8 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-import { useUserDispatch, loginUser, createNewUser } from "../../context/UserContext";
+//import { findUser } from '../../apis/Api'
+import { useUserDispatch, /*loginUser, createNewUser*/ } from "../../context/UserContext";
 
 function Login(props) {
   var classes = useStyles();
@@ -30,11 +31,76 @@ function Login(props) {
 
   // local
   var [isLoading, setIsLoading] = useState(false);
-  var [error, setError] = useState(null);
+  var [loginError, setLoginError] = useState(null);
+  var [signUpError, setSignupError] = useState(null);
   var [activeTabId, setActiveTabId] = useState(0);
   var [nameValue, setNameValue] = useState("");
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
+  //var [isLoggin, setIsLoggin] = useState(false);
+
+  async function findUser(loginValue,passwordValue) {
+    try{
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve('token');
+        }, 2000);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*return await fetch(this.BASE_URL, {
+          method:'POST',
+          headers: this.createHeaders(),
+          body: JSON.stringify(item),
+        });
+      }*/
+  }
+
+  const createNewUser = async () => {
+    setSignupError(false);
+    setIsLoading(true)
+    if (!!loginValue && !!passwordValue) {
+      const user = await findUser(loginValue,passwordValue)
+      if(!!user){
+        setIsLoading(false)
+        localStorage.setItem('id_token', 1)
+        localStorage.setItem('id_session',1)
+        localStorage.setItem('tracker_name', nameValue)
+        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+        props.history.push('/user/home')
+      } else {
+        setSignupError(true);
+        setIsLoading(false);
+      }
+  }
+}
+
+  const loginUser = async () => {
+    setLoginError(false);
+    setIsLoading(true);
+    if (!!loginValue && !!passwordValue) {
+      const user = await findUser(loginValue,passwordValue)
+      if(loginValue === 'user'){
+        localStorage.setItem('id_token', 1)
+        localStorage.setItem('tracker_name', 'Nacho Scocco')
+        setIsLoading(false);
+        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+        props.history.push('/user/home')
+      } else if( loginValue === 'admin'){
+        localStorage.setItem('role', 1)
+        localStorage.setItem('id_token', 1)
+        localStorage.setItem('tracker_name', 'Jose Perez')
+        setIsLoading(false);
+        userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
+        props.history.push('/admin/home')
+      } else {
+        //userDispatch({ type: "LOGIN_FAILURE" });
+        setLoginError(true);
+        setIsLoading(false);
+    }
+  } 
+}
 
   return (
     <Grid container className={classes.container}>
@@ -51,7 +117,7 @@ function Login(props) {
         <div className={classes.form}>
           <Tabs
             value={activeTabId}
-            onChange={(e, id) => setActiveTabId(id)}
+            onChange={(e, id) => {setActiveTabId(id); setLoginError(false); setSignupError(false)}} 
             indicatorColor="primary"
             textColor="primary"
             centered
@@ -73,9 +139,9 @@ function Login(props) {
                 <Typography className={classes.formDividerWord}>or</Typography>
                 <div className={classes.formDivider} />
               </div>
-              <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password
+              <Fade in={loginError} timeout={500}>
+                <Typography color='error' className={classes.errorMessage}>
+                    User or password incorrect.
                 </Typography>
               </Fade>
               <TextField
@@ -116,15 +182,10 @@ function Login(props) {
                     disabled={
                       loginValue.length === 0 || passwordValue.length === 0
                     }
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
+                    onClick={() => {
+                      loginUser()
+                      //setIsLoggin(!isLoggin)
+                    }
                     }
                     variant="contained"
                     color="primary"
@@ -151,9 +212,9 @@ function Login(props) {
               <Typography variant="h2" className={classes.subGreeting}>
                 Create your account
               </Typography>
-              <Fade in={error}>
-                <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password
+              <Fade in={signUpError} timeout={500}>
+                <Typography color='error' className={classes.errorMessage}>
+                    Email already used.
                 </Typography>
               </Fade>
               <TextField
@@ -204,18 +265,21 @@ function Login(props) {
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
-                ) : (
+                ) :
                   <Button
-                    onClick={() =>
-                      createNewUser(
+                    onClick={() =>{
+                      createNewUser()
+                      /*createNewUser(
                         userDispatch,
                         nameValue,
                         loginValue,
                         passwordValue,
                         props.history,
                         setIsLoading,
-                        setError,
-                      )
+                        setError
+                      )*/
+                    //setIsLoading(true)
+                    }
                     }
                     disabled={
                       loginValue.length === 0 ||
@@ -230,7 +294,7 @@ function Login(props) {
                   >
                     Create your account
                   </Button>
-                )}
+                }
               </div>
               <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
@@ -259,3 +323,4 @@ function Login(props) {
 }
 
 export default withRouter(Login);
+
