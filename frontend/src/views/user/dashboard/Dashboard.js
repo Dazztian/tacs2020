@@ -47,7 +47,6 @@ export default function Dashboard(props) {
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
   var [isLoading, setIsLoading] = useState(true);
-  var [country, setCountry] = useState()
 
   async function fetchData() {
     try {
