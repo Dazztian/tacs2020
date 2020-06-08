@@ -55,6 +55,8 @@ fun Application.login(accountService: AccountService) {
                     )))
                 } catch (e: UserAlreadyExistsException) {
                     call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
                 }
             }
         }

@@ -83,6 +83,7 @@ data class LoginRequest(
         val password: String
 )
 
+@Serializable
 data class SignUpRequest(
         val name: String,
         val email: String,

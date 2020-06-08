@@ -73,4 +73,16 @@ class UsersRepository(private val database: MongoDatabase) {
             throw e
         }
     }
+
+    /**
+     * Delete user by user object
+     * @param user User
+     * @throws Exception
+     */
+    fun delete(user: User) {
+        val deleted = database.getCollection<User>(USERS_COLLECTION_NAME).deleteOneById(user._id.toString())
+        if (! deleted.wasAcknowledged()) {
+            throw Exception("User not deleted")
+        }
+    }
 }

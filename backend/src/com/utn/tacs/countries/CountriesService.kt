@@ -44,6 +44,36 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     }
 
     /**
+     * Get one country covid data by iso2 code name
+     * @sample Argentina
+     *
+     * @param name String
+     * @return Country
+     */
+    suspend fun getCountryLatestByName(name: String): Country {
+        try {
+            return countriesRepository.getCountryByName("^${name.toLowerCase().capitalize()}")
+        } catch (e: IndexOutOfBoundsException) {
+            throw kotlin.IllegalArgumentException("There was no country with name $name")
+        }
+    }
+
+    /**
+     * Get one country covid data by iso2 code name
+     * @sample Argentina
+     *
+     * @param name String
+     * @return Country
+     */
+    suspend fun getCountriesByName(names: List<String>): List<Country> {
+        try {
+            return countriesRepository.getCountriesByName(names).toList()
+        } catch (e: IndexOutOfBoundsException) {
+            throw kotlin.IllegalArgumentException("There are no countries in that list")
+        }
+    }
+
+    /**
      * Get one country covid timeseries by iso2 code name separated by dates
      *
      * @param iso2 String

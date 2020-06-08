@@ -52,6 +52,20 @@ fun Application.users(usersService: UsersService) {
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
+            delete("/{id}") {
+                val userId: String = call.parameters["id"].toString()
+                try {
+                    authorizeUser(call.request.header("Authorization") ?: "")
+                    usersService.deleteUser(userId)
+                    call.respond(HttpStatusCode.Accepted)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+            }
         }
     }
 }

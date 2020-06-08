@@ -21,15 +21,24 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
         route("/api/countries") {
             get {
                 try{
+                    val name = call.request.queryParameters["name"]
                     val lat = call.request.queryParameters["lat"]?.toDouble()
                     val lon = call.request.queryParameters["lon"]?.toDouble()
-                    if (lat != null && lon != null) {
-                        call.respond(countriesService.getNearestCountries(lat, lon))
-                    } else {
-                        call.respond(countriesService.getAllCountries())
+                    when{
+                        lat != null && lon != null -> call.respond(countriesService.getNearestCountries(lat, lon))
+                        name != null -> call.respond(countriesService.getCountryLatestByName(name))
+                        else -> call.respond(countriesService.getAllCountries())
                     }
                 } catch (e: Exception){
                     logger.error("Parameters where not correct...", e)
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+            get("/names") {
+                try{
+                    val a = countriesService.getAllCountries().map { x -> x.countryregion }.sorted()
+                    call.respond(a)
+                } catch (e: Exception){
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }

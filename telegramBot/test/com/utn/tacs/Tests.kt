@@ -1,6 +1,8 @@
 package com.utn.tacs
 
 import org.junit.Test
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class Tests {
@@ -27,5 +29,16 @@ class Tests {
         assertEquals(result2,   "|Nombr|Creacion C|\n" +
                                 "|e Nom|reacion   |\n" +
                                 "|bre  |          |\n")
+    }
+
+    @Test
+    fun buildTableArrayTest(){
+        val countriesList = CountriesList("id", "userId", "name", setOf(), LocalDate.now())
+
+        assertEquals(
+            buildTableArray(listOf(countriesList))[0],
+            "<pre>\n${countriesList.tableHeader()}" +
+            "|name                |0       |"+
+                    "${countriesList.creationDate?.format(DateTimeFormatter.ISO_LOCAL_DATE)}  |\n</pre>")
     }
 }
