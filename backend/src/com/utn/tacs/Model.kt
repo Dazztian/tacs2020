@@ -52,7 +52,7 @@ data class Country(
 )
 
 data class TimeSeries(
-        val number: Int,
+        var number: Int,
         val confirmed: Int,
         val deaths: Int,
         val recovered: Int,

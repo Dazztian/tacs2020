@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 
 const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/"
@@ -48,14 +50,20 @@ suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
             val date = iterator.next() as String
             val timeserie =  timeSeries.get(date) as JSONObject
             result.add(TimeSeries(
-                result.size,
+                0,
                 timeserie.get("confirmed") as Int,
                 timeserie.get("deaths") as Int,
                 timeserie.get("recovered") as Int,
                 date
             ))
         }
-        result
+        result.sortBy {  LocalDate.of(
+            it.date.split("/").get(2).toInt(),
+            it.date.split("/").get(0).toInt(),
+            it.date.split("/").get(1).toInt()
+        ) }
+        var count = 1
+        result.forEach{it -> it.number = count++}
     }
 }
 

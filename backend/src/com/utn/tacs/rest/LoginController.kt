@@ -1,6 +1,7 @@
 package com.utn.tacs.rest
 
 import com.utn.tacs.LoginRequest
+import com.utn.tacs.LoginResponse
 import com.utn.tacs.SignUpRequest
 import com.utn.tacs.account.AuthorizationService
 import com.utn.tacs.auth.JwtConfig
@@ -25,8 +26,7 @@ fun Application.login(authorizationService: AuthorizationService) {
                 try {
                     val loginData = call.receive<LoginRequest>()
                     val user = authorizationService.auth(loginData.email, loginData.password)
-                    val token = JwtConfig.makeToken(user)
-                    call.respond(token)
+                    call.respond(call.respond(LoginResponse(user, JwtConfig.makeToken(user))))
                 } catch (e: UnauthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: NotFoundException) {
@@ -40,7 +40,6 @@ fun Application.login(authorizationService: AuthorizationService) {
             post {
                 try {
                     val signUpData = call.receive<SignUpRequest>()
-
                     val user = authorizationService.signUp(SignUpRequest(
                             signUpData.name.trim().toLowerCase(),
                             signUpData.email.trim().toLowerCase(),
@@ -48,7 +47,7 @@ fun Application.login(authorizationService: AuthorizationService) {
                             signUpData.country.trim().toUpperCase(),
                             false
                     ))
-                    call.respond(JwtConfig.makeToken(user))
+                    call.respond(LoginResponse(user, JwtConfig.makeToken(user)))
                 } catch (e: UserAlreadyExistsException) {
                     call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
                 } catch (e: Exception) {
