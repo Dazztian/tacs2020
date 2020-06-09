@@ -1,8 +1,6 @@
 package com.utn.tacs.handlers
 
-import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
-import com.github.kotlintelegrambot.dispatcher.handlers.MessageHandler
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.ParseMode
@@ -38,16 +36,6 @@ fun newListButtonNoMarkup() = listOf(
                                         )
                                     )
 
-const val textNoLists = "This user has no lists"
-const val newListSavedText = "New list saved successfully!"
-const val createListText =  "To create a new list just send me the name of the list\n" +
-                            "Optionally you can also write the names of the countries in the list by writing them in a new line each\n\n" +
-                            "For example:\n\n" +
-                            "My new list!\nArgentina\nChile\nBrazil"
-const val addCountryText =  "Send me a list of the countries you want to add to this list\n" +
-                            "Each country must be written on a new line and have the exact name from /countries\n\n" +
-                            "Example:\nArgentina\nBrazil\nChile"
-
 fun countryListCommands(updater : Updater){
     listOf(
         CommandHandler("countries") { bot, update->
@@ -58,59 +46,56 @@ fun countryListCommands(updater : Updater){
             )
         },
 
-        createCallbackQueryHandler("My_Lists") { bot, update ->
-            update.callbackQuery?.let {
-                myLists(bot, it.message!!.chat.id)
+        createCallbackQueryHandler("My_Lists") { _, update ->
+            val chatId = update.callbackQuery!!.message!!.chat.id
+
+            when(val listas = getCountryLists(chatId.toString())){
+                null, emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
+                else -> listOf(TelegramMessageWrapper(
+                                        chatId, myListsText,
+                                        replyMarkup = InlineKeyboardMarkup(listas.map { countriesList -> listOf(countriesList.toButton()) } +
+                                                            newListButtonNoMarkup())))
             }
         },
-        createCallbackQueryHandler("Check_list") { bot, update, args ->
-            update.callbackQuery?.let {
-                val chatId = it.message!!.chat.id
-                val listId = args[0]
+        createCallbackQueryHandler("Check_list") { _, update, args ->
+            val chatId = update.callbackQuery!!.message!!.chat.id
+            val listId = args[0]
 
-                showList(bot, listId, chatId)
-            }
+            showList(listId, chatId)
         },
 
-        createCallbackQueryHandler("Add_country") { bot, update, args ->
-            update.callbackQuery?.let {
-                val chatId = it.message!!.chat.id
-                val listId = args[0]
+        createCallbackQueryHandler("Add_country") { _, update, args ->
+            val chatId = update.callbackQuery!!.message!!.chat.id
+            val listId = args[0]
 
-                lastImportantMessages[chatId] = MessageWrapper(MessageType.ADD_COUNTRY, listId)
+            lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.ADD_COUNTRY, listId)
 
-                bot.sendMessage(
-                    chatId = chatId,
-                    text = addCountryText)
-            }
+            listOf(TelegramMessageWrapper(chatId, addCountryText))
         },
-        createCallbackQueryHandler("Add_list") { bot, update ->
-            update.callbackQuery?.let {
-                val chatId = it.message!!.chat.id
+        createCallbackQueryHandler("Add_list") { _, update ->
+            val chatId = update.callbackQuery!!.message!!.chat.id
 
-                lastImportantMessages[chatId] = MessageWrapper(MessageType.NEW_LIST, "")
+            lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
 
-                bot.sendMessage(
-                    chatId = chatId,
-                    text = createListText)
-            }
+            listOf(TelegramMessageWrapper(chatId, createListText))
         },
-
-        MessageHandler({ bot, update ->
+        createMessageHandler(Filter.Text) { _, update ->
             val userId = update.message!!.from!!.id
             val chatId = update.message!!.chat.id
+
             if(healthCheck() && isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
                 val lastMessage = lastImportantMessages[userId]
-                when(lastMessage!!.messageType){
+
+                return@createMessageHandler when(lastMessage!!.messageType){
                     MessageType.ADD_COUNTRY  -> {
                         val countriesList = update.message!!.text!!.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toSet()
                         val response = addCountries(chatId.toString(), lastMessage.countryListId, countriesList)
 
                         if (response == "Saved"){
                             lastImportantMessages.remove(userId)
-                            showList(bot, lastMessage.countryListId, chatId)
+                            showList(lastMessage.countryListId, chatId)
                         }else{
-                            bot.sendMessage(update.message!!.chat.id, text = response)
+                            listOf(TelegramMessageWrapper(chatId, response))
                         }
                     }
                     MessageType.NEW_LIST -> {
@@ -120,27 +105,27 @@ fun countryListCommands(updater : Updater){
 
                         if (response.startsWith("OK")){
                             lastImportantMessages.remove(userId)
-                            showList(bot, response.substringAfter(" "), chatId)
+                            showList(response.substringAfter(" "), chatId)
                         }else{
-                            bot.sendMessage(update.message!!.chat.id, text = response)
+                            listOf(TelegramMessageWrapper(chatId, response))
                         }
                     }
                     MessageType.LAST_X_DAYS -> {
-
+                        emptyList()
                     }
+                    else -> emptyList()
                 }
             }
-        }, Filter.Text),
 
-        CommandHandler("check", commandHandlerNoLoginRequired { bot, update, args ->
-            bot.sendMessage(
-                chatId = update.message!!.chat.id,
-                parseMode = ParseMode.HTML,
-                text = getCountryByName(args[0])?.toTable()?.get(0) ?: "Error: Country not found\n" +
-                                                                    "User /paises to check the name of the " +
-                                                                    "country you are trying to look"
-            )
-        })
+            emptyList()
+        },
+
+        createCommandHandlerNoLoginRequired("check") { _, update, args ->
+            listOf(TelegramMessageWrapper(
+                    chatId = update.message!!.chat.id,
+                    parseMode = ParseMode.HTML,
+                    text = getCountryByName(args[0])?.toTable()?.get(0) ?: countryNotFoundText ))
+        }
         /*createCallbackQueryHandler("Countries") { bot, update ->
             update.callbackQuery?.let {
                 val paises = allCountries()
@@ -158,58 +143,15 @@ fun countryListCommands(updater : Updater){
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
-fun showList(bot: Bot, listId: String, chatId :Long){
-    try {
-        when(val countriesList = buildTableArray(getListCountries(listId, chatId.toString()))){
-            emptyList<String>() -> {
-                bot.sendMessage(
-                        chatId = chatId,
-                        text = textNoLists,
-                        replyMarkup = returnButton())
-            }
-            else -> {
-                countriesList.forEach { row ->
-                    bot.sendMessage(
-                            chatId = chatId,
-                            text = row,
-                            parseMode = ParseMode.HTML)
-                }
-
-                bot.sendMessage(
-                        chatId = chatId,
-                        text = "Commands:",
-                        replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId)))
-            }
+fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
+    return when(val countriesList = buildTableArray(getListCountries(listId, chatId.toString()))){
+        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))))
+        else -> {
+            val telegramMessageWrappers = mutableListOf<TelegramMessageWrapper>()
+            countriesList.forEach { row -> telegramMessageWrappers.add(TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML)) }
+            telegramMessageWrappers[telegramMessageWrappers.lastIndex] =
+                    telegramMessageWrappers[telegramMessageWrappers.lastIndex].copy(replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId)))
+            telegramMessageWrappers
         }
-
-    } catch (e :Exception){
-        bot.sendMessage(
-                chatId = chatId,
-                text = e.toString())
-    }
-}
-
-fun myLists(bot: Bot, chatId: Long){
-    try {
-        when(val listas = getCountryLists(chatId.toString())){
-            null, emptyList<String>() -> {
-                bot.sendMessage(
-                    chatId = chatId,
-                    text = textNoLists,
-                    replyMarkup = returnButton())
-            }
-            else -> {
-                bot.sendMessage(
-                    chatId = chatId,
-                    text = "Select one of the lists:",
-                    replyMarkup = InlineKeyboardMarkup(listas.map { countriesList -> listOf(countriesList.toButton()) } +
-                            newListButtonNoMarkup()))
-            }
-        }
-
-    }catch (e :Exception){
-        bot.sendMessage(
-            chatId = chatId,
-            text = e.toString())
     }
 }

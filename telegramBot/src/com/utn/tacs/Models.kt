@@ -1,18 +1,19 @@
 package com.utn.tacs
 
-import com.github.kotlintelegrambot.entities.InlineKeyboardButton
-import com.github.kotlintelegrambot.entities.Message
-import kotlinx.serialization.ContextualSerialization
-import org.litote.kmongo.Id
+import com.github.kotlintelegrambot.Bot
+import com.github.kotlintelegrambot.entities.*
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+
+
+typealias updateHandler = (Bot, Update) -> List<TelegramMessageWrapper>
+typealias updateHandlerArgs = (Bot, Update, List<String>) -> List<TelegramMessageWrapper>
 
 interface MessageType{
     object ADD_COUNTRY : MessageType
     object NEW_LIST : MessageType
     object LAST_X_DAYS : MessageType
 }
-class MessageWrapper(
+class PreviousMessageWrapper(
         val messageType: MessageType,
         val countryListId: String)
 
@@ -87,3 +88,12 @@ data class UserCountriesListResponse(
         val name: String,
         val countries: MutableSet<String>
 )
+
+data class TelegramMessageWrapper(
+        val chatId: Long,
+        val text: String,
+        val parseMode: ParseMode? = null,
+        val disableWebPagePreview: Boolean? = null,
+        val disableNotification: Boolean? = null,
+        val replyToMessageId: Long? = null,
+        val replyMarkup: ReplyMarkup? = null)
