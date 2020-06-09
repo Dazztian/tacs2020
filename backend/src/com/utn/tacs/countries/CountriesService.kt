@@ -67,7 +67,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getCountriesByName(names: List<String>): List<Country> {
         try {
-            return countriesRepository.getCountriesByName(names).toList()
+            return if (names.isEmpty()) emptyList() else countriesRepository.getCountriesByName(names).toList()
         } catch (e: IndexOutOfBoundsException) {
             throw kotlin.IllegalArgumentException("There are no countries in that list")
         }

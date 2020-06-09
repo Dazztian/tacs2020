@@ -20,15 +20,15 @@ class Tests {
                                                 "Paises" to 7,
                                                 "Creacion" to 10))
 
-        assertEquals("|Nombre |Paises |Creacion  |\n", result)
+        assertEquals("| Nombre | Paises | Creacion  |\n", result)
 
         val result2 = createTableRowString(mapOf("Nombre Nombre" to 5,
                                                  "Creacion Creacion" to 10))
 
 
-        assertEquals(result2,   "|Nombr|Creacion C|\n" +
-                                "|e Nom|reacion   |\n" +
-                                "|bre  |          |\n")
+        assertEquals(result2,   "| Nombr| Creacion C|\n" +
+                                "| e Nom| reacion   |\n" +
+                                "| bre  |           |\n")
     }
 
     @Test
@@ -38,7 +38,6 @@ class Tests {
         assertEquals(
             buildTableArray(listOf(countriesList))[0],
             "<pre>\n${countriesList.tableHeader()}" +
-            "|name                |0       |"+
-                    "${countriesList.creationDate?.format(DateTimeFormatter.ISO_LOCAL_DATE)}  |\n</pre>")
+            "| name               | 0         |\n</pre>")
     }
 }

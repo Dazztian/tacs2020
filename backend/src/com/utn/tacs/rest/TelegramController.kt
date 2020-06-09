@@ -54,6 +54,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
             }
 
             route("/countryList"){
+                //Gets all country lists from associated to the telegramId
                 get {
                     when(val session = telegramRepository.getTelegramSession(call.parameters["telegramId"]  ?: return@get call.respond(HttpStatusCode.BadRequest))){
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
@@ -72,10 +73,10 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                             call.respond(HttpStatusCode(400, "Id not found"))
                         else {
                             val countryList = userListsRepository.getUserList(listId)
-                            val a = countryList!!.countries.toList()
-                            call.respond(countriesService.getCountriesByName(a))
+                            call.respond(countriesService.getCountriesByName(countryList!!.countries.toList()))
                         }
                     }
+                    //Adds countries to a countriesList
                     post("/add"){
                         val telegramId = call.parameters["telegramId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                         val listId = call.parameters["listId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
@@ -124,16 +125,19 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                         else -> {
                             try{
                                 val request = call.receive<UserCountriesListModificationRequest>()
-                                val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
-                                if(!countryNames.containsAll(request.countries)){
-                                    call.respond(HttpStatusCode(405, "invalid countries"),
-                                        request.countries.fold("Invalid countries:", { acc, country ->
-                                                                                            if (!countryNames.contains(country))
-                                                                                                "$acc\n$country"
-                                                                                            else
-                                                                                                acc
-                                                                                        }))
-                                    return@post
+
+                                if(request.countries.isNotEmpty()){
+                                    val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
+                                    if(!countryNames.containsAll(request.countries)){
+                                        call.respond(HttpStatusCode(405, "invalid countries"),
+                                                request.countries.fold("Invalid countries:", { acc, country ->
+                                                    if (!countryNames.contains(country))
+                                                        "$acc\n$country"
+                                                    else
+                                                        acc
+                                                }))
+                                        return@post
+                                    }
                                 }
 
                                 call.respond(usersService.createUserList(session.userId.toString(), request.name, request.countries))
