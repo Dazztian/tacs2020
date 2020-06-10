@@ -2,7 +2,9 @@ package com.utn.tacs.countries
 
 import com.utn.tacs.utils.isDistanceLowerThan
 import com.utn.tacs.*
+import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
+import java.time.LocalDate
 
 class CountriesService(private val countriesRepository: CountriesRepository) {
 
@@ -88,13 +90,53 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * Get one country covid timeseries by iso2 code name separated by dates
      *
      * @param iso2 String
+     * @param fromDay Int?
+     * @param toDay Int?
+     * @param fromDate String?
+     * @param toDate String?
      * @return CountryResponse
      *
      * @throws NotFoundException
+     * @throws BadRequestException
      */
-    suspend fun getCountryTimesSeries(iso2: String): CountryResponse {
+    suspend fun getCountryTimesSeries(
+        iso2: String,
+        fromDay: Int?,
+        toDay: Int?,
+        fromDate: String?,
+        toDate: String?
+    ): CountryResponse {
         val country = getCountryLatestByIsoCode(iso2)
-        country.timeseries = getCountryTimeSeriesFromApi("iso2=$iso2")
+        var timeseries = getCountryTimeSeriesFromApi("iso2=$iso2")
+        if (null != fromDay) {
+            timeseries = timeseries.dropWhile { it.number < fromDay }
+        }
+        if (null != toDay) {
+            timeseries = timeseries.dropLastWhile { it.number > toDay }
+        }
+        if (null != fromDate && fromDate.isNotEmpty()) {
+            timeseries = timeseries.dropWhile { LocalDate.of(
+                it.date.split("/").get(2).toInt(),
+                it.date.split("/").get(0).toInt(),
+                it.date.split("/").get(1).toInt()
+            ) < LocalDate.of(
+                fromDate.split("/").get(2).toInt(),
+                fromDate.split("/").get(0).toInt(),
+                fromDate.split("/").get(1).toInt()
+            ) }
+        }
+        if (null != toDate && toDate.isNotEmpty()) {
+            timeseries = timeseries.dropLastWhile { LocalDate.of(
+                it.date.split("/").get(2).toInt(),
+                it.date.split("/").get(0).toInt(),
+                it.date.split("/").get(1).toInt()
+            ) > LocalDate.of(
+                toDate.split("/").get(2).toInt(),
+                toDate.split("/").get(0).toInt(),
+                toDate.split("/").get(1).toInt()
+            ) }
+        }
+        country.timeseries = timeseries
         return country
     }
 

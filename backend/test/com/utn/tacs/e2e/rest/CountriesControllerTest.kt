@@ -156,6 +156,39 @@ class CountriesControllerTest {
             assertEquals(status, HttpStatusCode.NotFound)
         }
     }
+
+    @Test
+    fun testGetCountryTimeseries_Between2Days_ok() = withTestApplication(Application::module) {
+        val fromDay = 8
+        val toDay = 10
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries")) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(status, HttpStatusCode.OK)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertEquals(3, country.timeseries!!.size)
+
+            var previousTimeSerie = country.timeseries!!.get(0)
+            country.timeseries!!.forEach { it ->
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (it.number != 1) {
+                    assertTrue(it.number > previousTimeSerie.number)
+                } else {
+                    assertEquals(1, it.number)
+                }
+                previousTimeSerie = it
+            }
+
+            assertEquals(8,country.timeseries!!.get(0).number)
+            assertEquals(9,country.timeseries!!.get(1).number)
+            assertEquals(10,country.timeseries!!.get(2).number)
+        }
+    }
 }
 
 

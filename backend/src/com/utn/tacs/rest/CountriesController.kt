@@ -4,6 +4,7 @@ import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
@@ -52,11 +53,19 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                 }
             }
             get("/{iso2}/timeseries") {
-                val iso2: String = call.parameters["iso2"].toString()
                 try {
-                    call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase()))
+                    val iso2: String = call.parameters["iso2"].toString()
+                    val fromDay: Int? = call.request.queryParameters["fromDay"]?.toInt()
+                    val toDay: Int? = call.request.queryParameters["toDay"]?.toInt()
+                    val fromDate: String? = call.request.queryParameters["fromDate"]
+                    val toDate: String? = call.request.queryParameters["toDate"]
+                    call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase(), fromDay, toDay, fromDate, toDate))
                 } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
+                } catch (e: NumberFormatException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } catch (e: BadRequestException) {
+                    call.respond(HttpStatusCode.BadRequest.description("malformed timeseries days or dates ranges"))
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)
                 }
