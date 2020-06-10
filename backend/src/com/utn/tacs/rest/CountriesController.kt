@@ -4,11 +4,13 @@ import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import java.lang.NumberFormatException
 
 
 fun Application.countriesRoutes(countriesService: CountriesService) {
@@ -26,26 +28,38 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                         name != null -> call.respond(countriesService.getCountryLatestByName(name))
                         else -> call.respond(countriesService.getAllCountries())
                     }
+                } catch (e: NumberFormatException) {
+                    call.respond(HttpStatusCode.BadRequest)
                 } catch (e: Exception) {
                     logger.error("Parameters where not correct...", e)
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.NotFound)
                 }
             }
             get("/names") {
                 try {
-                    val a = countriesService.getAllCountries().map { x -> x.countryregion }.sorted()
-                    call.respond(a)
+                    call.respond(countriesService.getAllCountries().map { x -> x.countryregion }.sorted())
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
             get("/{iso2}") {
-                val iso2: String = call.parameters["iso2"].toString()
-                call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
+                try {
+                    val iso2: String = call.parameters["iso2"].toString()
+                    call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
+                } catch (e: Exception) {
+                    logger.error("iso2 code was not correct...", e)
+                    call.respond(HttpStatusCode.NotFound)
+                }
             }
             get("/{iso2}/timeseries") {
                 val iso2: String = call.parameters["iso2"].toString()
-                call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase()))
+                try {
+                    call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase()))
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
         }
     }

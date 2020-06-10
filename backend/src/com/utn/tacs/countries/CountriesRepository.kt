@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase
 import com.utn.tacs.*
 import com.utn.tacs.utils.MongoClientGenerator
 import com.typesafe.config.ConfigFactory
+import io.ktor.features.NotFoundException
 import org.litote.kmongo.*
 import java.util.concurrent.TimeUnit
 
@@ -34,6 +35,8 @@ class CountriesRepository(private val database: MongoDatabase) {
      *
      * @param iso2 String
      * @return Country
+     *
+     * @throws IllegalArgumentException
      */
     public suspend fun getCountry(iso2: String): Country {
         return collection.findOne(Country::countrycode / CountryCode::iso2 eq iso2) ?: getCountryLatestByIsoCodeFromApi(iso2)
@@ -44,6 +47,8 @@ class CountriesRepository(private val database: MongoDatabase) {
      *
      * @param name String
      * @return Country
+     *
+     * @throws IllegalArgumentException
      */
     public suspend fun getCountryByName(name: String): Country {
         return collection.findOne(Country::countryregion regex name) ?: throw kotlin.IllegalArgumentException("There was no country with name $name")

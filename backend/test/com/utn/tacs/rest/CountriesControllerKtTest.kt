@@ -84,7 +84,7 @@ class CountriesControllerKtTest {
     @Test
     fun testApiCountriesRequests() = testApp {
 
-        coEvery { countriesService.getCountryLatestByIsoCode("US") } returns Country(null, "US",
+        coEvery { countriesService.getCountryLatestByIsoCode("US") } returns CountryResponse( "US",
                 "", Location(37.0902, -95.7129), CountryCode("US", "USA"), 0, 0, 0, listOf())
 
         with(handleRequest(HttpMethod.Get, "/api/countries/US") {

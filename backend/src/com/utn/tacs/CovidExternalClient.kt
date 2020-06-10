@@ -64,6 +64,7 @@ suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
         ) }
         var count = 1
         result.forEach{it -> it.number = count++}
+        result
     }
 }
 

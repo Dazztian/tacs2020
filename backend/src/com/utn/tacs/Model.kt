@@ -3,7 +3,9 @@ package com.utn.tacs
 import io.ktor.auth.Principal
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
+import org.bson.types.ObjectId
 import org.litote.kmongo.Id
+import org.litote.kmongo.id.toId
 import org.litote.kmongo.newId
 import java.time.LocalDate
 
@@ -51,6 +53,19 @@ data class Country(
         var timeseries: List<TimeSeries>? = listOf()
 )
 
+@Serializable
+data class CountryResponse (
+        val countryregion: String,
+        val lastupdate: String,
+        val location: Location,
+        val countrycode: CountryCode?,
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int,
+        var timeseries: List<TimeSeries>? = listOf()
+)
+
+@Serializable
 data class TimeSeries(
         var number: Int,
         val confirmed: Int,

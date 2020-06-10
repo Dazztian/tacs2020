@@ -19,9 +19,9 @@ class LoginControllerKtTest {
     private val userEmail = "testuser" + timestamp + "@gmail.com"
 
     @Test
-            /**
-             * Test login non existing user
-             */
+    /**
+     * Test login non existing user
+     */
     fun testLogin_nonExistingUser_notFoundException() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Post, "/api/login") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -33,13 +33,13 @@ class LoginControllerKtTest {
     }
 
     @Test
-            /**
-             * Test Steps:
-             *      create an user successfully - try send is admin true but the user should be created as no admin
-             *      Login that user
-             *      Get that user info
-             *      Delete that user
-             */
+    /**
+     * Test Steps:
+     *      create an user successfully - try send is admin true but the user should be created as no admin
+     *      Login that user
+     *      Get that user info
+     *      Delete that user
+     */
     fun testSignUp_nonExistingUserSendIsAdminTrue_ok() = withTestApplication(Application::module) {
         var userId = ""
         var token = ""
