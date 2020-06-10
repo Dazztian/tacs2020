@@ -1,56 +1,77 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Table,
   TableRow,
   TableHead,
   TableBody,
   TableCell,
+  TableContainer,
+  Paper,
+  TablePagination
 } from "@material-ui/core";
+import { withStyles } from '@material-ui/core/styles';
 
 // components
-import { Button } from "../Wrappers";
+import useStyles from "../../views/user/dashboard/styles";
 
-const states = {
-  sent: "success",
-  pending: "warning",
-  declined: "secondary",
-};
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor:theme.palette.primary.main,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
 
-export default function TableComponent({ data }) {
-  var keys = Object.keys(data[0]).map(i => i.toUpperCase());
-  keys.shift(); // delete "id" key
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+
+export default function TableComponent({data}) {
+  const classes = useStyles();
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   return (
-    <Table className="mb-0">
-      <TableHead>
-        <TableRow>
-          {keys.map(key => (
-            <TableCell key={key}>{key}</TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data.map(({ id, name, email, product, price, date, city, status }) => (
-          <TableRow key={id}>
-            <TableCell className="pl-3 fw-normal">{name}</TableCell>
-            <TableCell>{email}</TableCell>
-            <TableCell>{product}</TableCell>
-            <TableCell>{price}</TableCell>
-            <TableCell>{date}</TableCell>
-            <TableCell>{city}</TableCell>
-            <TableCell>
-              <Button
-                color={states[status.toLowerCase()]}
-                size="small"
-                className="px-2"
-                variant="contained"
-              >
-                {status}
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+      <TableContainer className={Paper}>
+      <Table className={classes.table} size="small" aria-label="a dense table">
+        <TableHead>
+            <TableRow>
+              <StyledTableCell align="right">Country</StyledTableCell>
+              <StyledTableCell align="right">Infected</StyledTableCell>
+              <StyledTableCell align="right">Recovered</StyledTableCell>
+              <StyledTableCell align="right">Deceased</StyledTableCell>
+            </TableRow>
+        </TableHead>
+        <TableBody>
+            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ _id, countryregion, confirmed, deaths, recovered}) => (
+                <StyledTableRow key={_id}>
+                  <StyledTableCell align="right">{countryregion}</StyledTableCell>
+                  <StyledTableCell align="right">{confirmed}</StyledTableCell>
+                  <StyledTableCell align="right">{recovered}</StyledTableCell>
+                  <StyledTableCell align="right">{deaths}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+          </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5]}
+        component="div"
+        count={data.length}
+        rowsPerPage={5}
+        page={page}
+        onChangePage={handleChangePage}
+      />
+      </TableContainer>
   );
 }

@@ -85,6 +85,18 @@ export default makeStyles(theme => ({
       flexWrap: "wrap",
     },
   },
+  table: {
+      minWidth: 400,
+  },
+  tableHead:{
+    head: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+  },
   mainChartHeaderLabels: {
     display: "flex",
     alignItems: "center",

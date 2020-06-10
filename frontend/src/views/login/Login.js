@@ -20,8 +20,8 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-//import { findUser, createUser } from '../../apis/Api'
-import { useUserDispatch, /*loginUser, createNewUser*/ } from "../../context/UserContext";
+import { useUserDispatch,  } from "../../context/UserContext";
+import { loginUser, createUser } from "../../apis/PublicApi"
 
 function Login(props) {
   var classes = useStyles();
@@ -38,42 +38,6 @@ function Login(props) {
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
 
-  async function findUser(loginValue,passwordValue) { //al api.js
-    try{
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({token : 'asdasdas', sessionId: 'asdasd', nameValue: 'Nacho Schocco'});
-        }, 2000);
-      })
-    }catch(error){
-      console.log(error)
-    }
-    /*return await fetch(this.BASE_URL, {
-          method:'POST',
-          headers: this.createHeaders(),
-          body: JSON.stringify(item),
-        });
-      }*/
-  }
-
-  async function createUser(nameValue,loginValue,passwordValue) { //esto va al api.js
-    try{
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({token : 'asdasdas', sessionId: 'asdasd'});
-        }, 2000);
-      })
-    }catch(error){
-      console.log(error)
-    }
-    /*return await fetch(this.BASE_URL, {
-          method:'POST',
-          headers: this.createHeaders(),
-          body: JSON.stringify(item),
-        });
-      }*/
-  }
-
   const handleLoginWithGoogle = async () => {
     
   }
@@ -82,45 +46,54 @@ function Login(props) {
     setSignupError(false);
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
-      const {token, sessionId} = await createUser(nameValue,loginValue,passwordValue)
-      if(!!token){
-        localStorage.setItem('id_token', token)
-        localStorage.setItem('id_session',sessionId)
-        localStorage.setItem('tracker_name', nameValue)
-        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
-        history.push('/user/home')
+      const res = await createUser(nameValue,loginValue,passwordValue)
+      if(true/*res.ok*/) {
+        //const {user, token} = await res.json()
+        const {user, token} = res;
+        if(!!token){
+          localStorage.setItem('id_token', token)
+          localStorage.setItem('id_session',user._id)
+          localStorage.setItem('tracker_name', user.name)
+          userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+          history.push('/user/home')
+        } 
       } else {
         setSignupError(true);
         setIsLoading(false);
       }
+    }
   }
-}
 
   const handleLoginUser = async (userDispatch,loginValue,passwordValue,history,setIsLoading,setLoginError) => {
     setLoginError(false);
     setIsLoading(true);
     if (!!loginValue && !!passwordValue) {
-      const {token, sessionId, nameValue} = await findUser(loginValue,passwordValue)
-      if(loginValue === 'user'){
-        localStorage.setItem('id_session',sessionId)
-        localStorage.setItem('id_token', token)
-        localStorage.setItem('tracker_name', nameValue)
-        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
-        history.push('/user/home')
-      } else if( loginValue === 'admin'){
-        localStorage.setItem('role', 1)
-        localStorage.setItem('id_token', 1)
-        localStorage.setItem('tracker_name', 'Jose Perez')
-        //setIsLoading(false);
-        userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
-        history.push('/admin/home')
-      } else {
+      //tener en cuenta q devuelve la res, esa hay q parsearla a json
+      const res = await loginUser(loginValue,passwordValue)
+      if(true/*res.ok*/) {
+        //const {user, token} = await res.json()
+        const {user,token} = res;
+        if(loginValue !== 'admin' /*!user.isAdmin*/){ 
+          localStorage.setItem('id_session',user._id)
+          localStorage.setItem('id_token', token)
+          localStorage.setItem('tracker_name', user.name)
+          userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+          history.push('/user/home')
+        } else {
+          localStorage.setItem('role', 1)
+          localStorage.setItem('id_token', 1)
+          localStorage.setItem('tracker_name', 'Jose Perez')
+          //setIsLoading(false);
+          userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
+          history.push('/admin/home')
+        }
+      } else { //este else va por el res.ok
         //userDispatch({ type: "LOGIN_FAILURE" });
         setLoginError(true);
         setIsLoading(false);
-    }
-  } 
-}
+      }
+    } 
+  }
 
   return (
     <Grid container className={classes.container}>
@@ -353,8 +326,9 @@ function Login(props) {
         </Typography>
       </div>
     </Grid>
-  );
-}
+    );
+  }
+
 
 export default withRouter(Login);
 

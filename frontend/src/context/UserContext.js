@@ -50,7 +50,7 @@ function useUserDispatch() {
   return context;
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, createNewUser, signOut };
+export { UserProvider, useUserState, useUserDispatch, signOut };
 
 // ###########################################################
 
@@ -107,6 +107,7 @@ function signOut(dispatch, history) {
   localStorage.removeItem('tracker_name');
   localStorage.removeItem('tracker_country');
   localStorage.removeItem("role");
+  localStorage.removeItem('tracker_country_Iso')
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }
