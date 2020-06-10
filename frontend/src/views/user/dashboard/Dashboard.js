@@ -74,15 +74,13 @@ export default function Dashboard(props) {
 
       const countryData = await api.getCountryDataByIsoDate(iso,Date.now(),Date.now())
 
-      const lastIndex = countryData.timeseries.length-1
-
       PieChartData[0].value = countryData.totals.recovered
       PieChartData[1].value = countryData.totals.confirmed
       PieChartData[2].value = countryData.totals.deaths
       
-      newCases = countryData.timeseries[lastIndex].confirmed
-      newRecovered = countryData.timeseries[lastIndex].recovered
-      newDeath = countryData.timeseries[lastIndex].deaths
+      newCases = countryData.confirmed
+      newRecovered = countryData.recovered
+      newDeath = countryData.deaths
 
       rateInfected = (newCases*100/countryData.totals.confirmed).toFixed(2)
       rateRecovered = (newRecovered*100/countryData.totals.recovered).toFixed(2)

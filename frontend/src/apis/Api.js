@@ -1,4 +1,4 @@
-import { getLocation } from "./GeolocationApi"
+import mock from "./mock"
 
 class Api {
 
@@ -11,10 +11,10 @@ class Api {
       'Content-Type': 'application/json'
     };
   
-    BASE_URL = '/api';
-  
+    BASE_URL = '{{localPath}}/api';
+
     createHeaders() {
-      return this.authToken ? {
+      return !!this.authToken ? {
         ...this.headers,
         'Authorization': 'Bearer ' + this.authToken
       } : this.headers;
@@ -57,45 +57,10 @@ class Api {
       });
     }
 
-    /*async findUser(loginValue,passwordValue) { //al api.js
-      try{
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve({token : 'asdasdas', sessionId: 'asdasd', nameValue: 'Nacho Schocco'});
-          }, 2000);
-        })
-      }catch(error){
-        console.log(error)
-      }
-      return await fetch(`${this.BASE_URL}, {
-            method:'POST',
-            headers: this.createHeaders(),
-            body: JSON.stringify(item),
-          });
-        
-    }}*/
-
-  async getCountryDataByIsoDate(loginValue,passwordValue) {
+  async getCountryDataByIsoDate(iso,dateinicial,datefinal) {
     try{
-      const data = { 
-        "timeseries":
-        [{
-        "number": 136,
-        "confirmed": 230,
-        "deaths": 20,
-        "recovered": 246414,
-        "date": "5/14/20"
-        },{
-        "number": 137,
-        "confirmed": 9707,
-        "deaths": 45,
-        "recovered": 250,
-        "date": "4/3/20"
-        }],
-        "totals": { "confirmed": 141777,
-                    "deaths": 8589,
-                    "recovered": 24641,} 
-        }
+      const data = mock.countryByIso 
+
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(data);
@@ -119,127 +84,7 @@ class Api {
   
   async getNearCountries() {
     try{
-      const data = [
-        {
-          "_id": "5ede4f65853cd27b821cecec",
-          "countryregion": "Argentina",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -38.4161,
-            "lng": -63.6167
-          },
-          "countrycode": {
-            "iso2": "AR",
-            "iso3": "ARG"
-          },
-          "confirmed": 22794,
-          "deaths": 664,
-          "recovered": 6909,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821cecf9",
-          "countryregion": "Bolivia",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -16.2902,
-            "lng": -63.5887
-          },
-          "countrycode": {
-            "iso2": "BO",
-            "iso3": "BOL"
-          },
-          "confirmed": 13643,
-          "deaths": 465,
-          "recovered": 2086,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821cecfb",
-          "countryregion": "Brazil",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -14.235,
-            "lng": -51.9253
-          },
-          "countrycode": {
-            "iso2": "BR",
-            "iso3": "BRA"
-          },
-          "confirmed": 691758,
-          "deaths": 36455,
-          "recovered": 283952,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821ced05",
-          "countryregion": "Chile",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -35.6751,
-            "lng": -71.543
-          },
-          "countrycode": {
-            "iso2": "CL",
-            "iso3": "CHL"
-          },
-          "confirmed": 134150,
-          "deaths": 1637,
-          "recovered": 108150,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821ced5a",
-          "countryregion": "Paraguay",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -23.4425,
-            "lng": -58.4438
-          },
-          "countrycode": {
-            "iso2": "PY",
-            "iso3": "PRY"
-          },
-          "confirmed": 1135,
-          "deaths": 11,
-          "recovered": 575,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821ced5b",
-          "countryregion": "Peru",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -9.19,
-            "lng": -75.0152
-          },
-          "countrycode": {
-            "iso2": "PE",
-            "iso3": "PER"
-          },
-          "confirmed": 196515,
-          "deaths": 5465,
-          "recovered": 86219,
-          "timeseries": []
-        },
-        {
-          "_id": "5ede4f65853cd27b821ced80",
-          "countryregion": "Uruguay",
-          "lastupdate": "2020-06-08T14:42:00.008Z",
-          "location": {
-            "lat": -32.5228,
-            "lng": -55.7658
-          },
-          "countrycode": {
-            "iso2": "UY",
-            "iso3": "URY"
-          },
-          "confirmed": 845,
-          "deaths": 23,
-          "recovered": 730,
-          "timeseries": []
-        }
-      ]
+      const data = mock.near
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -259,6 +104,46 @@ class Api {
     }catch(e){
       console.log(e)
     }
+  }
+
+  loginUser(loginValue,passwordValue) { //al api.js
+    const res = mock.loginUser
+    
+    try{
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(res);
+        }, 2000);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*return await fetch(`${BASE_URL}/`, {
+          method:'POST',
+          headers: headers,
+          body: JSON.stringify(item),
+        });
+      }*/
+  }
+
+  createUser(nameValue,loginValue,passwordValue) { //esto va al api.js
+    try{
+      const res = mock.signUp
+      
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(res);
+        }, 2000);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*return await fetch(`${BASE_URL}/`, {
+          method:'POST',
+          headers: headers,
+          body: JSON.stringify(item),
+        });
+      }*/
   }
 }
   export default Api;

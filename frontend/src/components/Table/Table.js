@@ -7,7 +7,10 @@ import {
   TableCell,
   TableContainer,
   Paper,
-  TablePagination
+  TablePagination,
+  Button,
+  TextField,
+  PropTypes 
 } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 
@@ -21,7 +24,8 @@ const StyledTableCell = withStyles((theme) => ({
   },
   body: {
     fontSize: 14,
-  },
+  }
+
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
@@ -32,6 +36,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
+const rowAlign = "center"
 
 export default function TableComponent({data}) {
   const classes = useStyles();
@@ -47,19 +52,54 @@ export default function TableComponent({data}) {
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
             <TableRow>
-              <StyledTableCell align="right">Country</StyledTableCell>
-              <StyledTableCell align="right">Infected</StyledTableCell>
-              <StyledTableCell align="right">Recovered</StyledTableCell>
-              <StyledTableCell align="right">Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Country</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Since</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Until</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Offset</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
             {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ _id, countryregion, confirmed, deaths, recovered}) => (
-                <StyledTableRow key={_id}>
-                  <StyledTableCell align="right">{countryregion}</StyledTableCell>
-                  <StyledTableCell align="right">{confirmed}</StyledTableCell>
-                  <StyledTableCell align="right">{recovered}</StyledTableCell>
-                  <StyledTableCell align="right">{deaths}</StyledTableCell>
+                <StyledTableRow align={rowAlign} key={_id}>
+                  <StyledTableCell align={rowAlign}>{countryregion}</StyledTableCell>
+                  <StyledTableCell align={rowAlign}>{confirmed}</StyledTableCell>
+                  <StyledTableCell align={rowAlign}>{recovered}</StyledTableCell>
+                  <StyledTableCell align={rowAlign}>{deaths}</StyledTableCell>
+                  <StyledTableCell align={rowAlign}>
+                    <form className={classes.container} noValidate>
+                      <TextField
+                        id="date1"
+                        type="date"
+                        defaultValue={Date.now()}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </form>
+                  </StyledTableCell>
+                  <StyledTableCell align={rowAlign}>
+                    <form className={classes.container} noValidate>
+                    <TextField
+                      id="date2"
+                      type="date"
+                      defaultValue={Date.now()}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    </form>
+                  </StyledTableCell>
+                  <StyledTableCell align={rowAlign}>
+                    <Button                 
+                      className="px-2"
+                      variant="contained" 
+                      color="primary"
+                    > Set
+                    </Button>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>

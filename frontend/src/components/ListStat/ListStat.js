@@ -101,7 +101,7 @@ const ListStat = ({ data })=>{
 return(
     <>
   <Grid container spacing={2}>
-  <Grid item lg={6} md={12} sm={12} xs={12}>
+  <Grid item lg={12} md={12} sm={12} xs={12}>
     <Widget 
       upperTitle
       noBodyPadding
@@ -113,7 +113,7 @@ return(
     </Widget>
   </Grid>
 
-  <Grid item lg={6} md={12} sm={12} xs={12}>
+  <Grid item lg={12} md={12} sm={12} xs={12}>
   <Widget 
       bodyClass={classes.mainChartBody}
       header={

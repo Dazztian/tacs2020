@@ -22,13 +22,14 @@ import google from "./images/google.svg";
 // context
 import { useUserDispatch,  } from "../../context/UserContext";
 import { loginUser, createUser } from "../../apis/PublicApi"
+import Api from "../../apis/Api"
+
+const api = new Api()
 
 function Login(props) {
   var classes = useStyles();
-
   // global
   var userDispatch = useUserDispatch();
-
   // local
   var [isLoading, setIsLoading] = useState(false);
   var [loginError, setLoginError] = useState(null);
@@ -46,7 +47,7 @@ function Login(props) {
     setSignupError(false);
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
-      const res = await createUser(nameValue,loginValue,passwordValue)
+      const res = await api.createUser(nameValue,loginValue,passwordValue)
       if(true/*res.ok*/) {
         //const {user, token} = await res.json()
         const {user, token} = res;
@@ -69,7 +70,7 @@ function Login(props) {
     setIsLoading(true);
     if (!!loginValue && !!passwordValue) {
       //tener en cuenta q devuelve la res, esa hay q parsearla a json
-      const res = await loginUser(loginValue,passwordValue)
+      const res = await api.loginUser(loginValue,passwordValue)
       if(true/*res.ok*/) {
         //const {user, token} = await res.json()
         const {user,token} = res;
