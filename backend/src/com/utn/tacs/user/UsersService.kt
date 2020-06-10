@@ -14,22 +14,13 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * Get user by Id
      *
      * @param id String
-     * @return UserResponse
+     * @return User
      *
      * @throws NotFoundException
      */
-    fun getUser(id: String): UserResponse {
+    fun getUser(id: String): User {
         try {
-            val user = usersRepository.getUserById(id) ?: throw NotFoundException()
-            return UserResponse(
-                user._id.toString(),
-                user.name,
-                user.email,
-                user.creationDate ?: "",
-                user.country!!,
-                user.isAdmin,
-                getUserLists(id)
-            )
+            return usersRepository.getUserById(id) ?: throw NotFoundException()
         } catch (e: IllegalArgumentException) {
             throw NotFoundException()
         }
@@ -154,5 +145,15 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUser(userId: String) {
         usersRepository.delete(usersRepository.getUserById(userId) ?: throw NotFoundException())
+    }
+
+    /**
+     * Delete a user by his email
+     * @param userEmail String
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    fun deleteUserByEmail(userEmail: String) {
+        usersRepository.delete(usersRepository.getUserByEmail(userEmail) ?: throw NotFoundException())
     }
 }

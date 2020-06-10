@@ -116,12 +116,6 @@ data class SignUpRequest(
         var isAdmin: Boolean? = false
 )
 
-data class LoginResponse(
-        val user: User,
-        val token: String
-)
-
-
 data class UserAccount(
         @ContextualSerialization
         val _id: Id<UserAccount> = newId(),
@@ -168,7 +162,18 @@ data class UserResponse(
         val country: String,
         val isAdmin: Boolean,
         val lists: List<UserCountriesListResponse>
-)
+) {
+        constructor(u: User, lists: List<UserCountriesListResponse>):
+                this(u._id.toString(), u.name, u.email, u.creationDate ?: "", u.country ?: "", u.isAdmin, lists)
+}
+
+data class LoginResponse(
+        val user: UserResponse,
+        val token: String
+) {
+        constructor(u: User, lists: List<UserCountriesListResponse>, token: String):
+                this(UserResponse(u._id.toString(), u.name, u.email, u.creationDate ?: "", u.country ?: "", u.isAdmin, lists), token)
+}
 
 data class UserCountriesListResponse(
         val id: String,

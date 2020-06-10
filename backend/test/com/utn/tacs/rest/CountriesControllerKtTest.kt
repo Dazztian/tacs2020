@@ -101,9 +101,4 @@ class CountriesControllerKtTest {
         }
 
     }
-
-    @Test
-    fun testApiCountriesTree() {
-        //TODO
-    }
 }

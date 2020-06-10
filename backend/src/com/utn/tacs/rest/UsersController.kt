@@ -1,6 +1,7 @@
 package com.utn.tacs.rest
 
 import com.utn.tacs.SignUpRequest
+import com.utn.tacs.UserResponse
 import com.utn.tacs.exception.UnauthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
 import com.utn.tacs.user.UsersService
@@ -21,7 +22,7 @@ fun Application.users(usersService: UsersService) {
                 get("/{id}") {
                     val userId: String = call.parameters["id"].toString()
                     try {
-                        call.respond(usersService.getUser(userId))
+                        call.respond(UserResponse(usersService.getUser(userId), usersService.getUserLists(userId)))
                     } catch (e: UnauthorizedException) {
                         call.respond(HttpStatusCode.Unauthorized)
                     } catch (e: NotFoundException) {
@@ -33,13 +34,14 @@ fun Application.users(usersService: UsersService) {
                 post {
                     try {
                         val signUpData = call.receive<SignUpRequest>()
-                        call.respond(usersService.createUser(SignUpRequest(
-                                signUpData.name.trim().toLowerCase(),
-                                signUpData.email.trim().toLowerCase(),
-                                signUpData.password.trim(),
-                                signUpData.country.trim().toUpperCase(),
-                                signUpData.isAdmin ?: false
-                        )))
+                        val user = usersService.createUser(SignUpRequest(
+                            signUpData.name.trim().toLowerCase(),
+                            signUpData.email.trim().toLowerCase(),
+                            signUpData.password.trim(),
+                            signUpData.country.trim().toUpperCase(),
+                            signUpData.isAdmin ?: false
+                        ))
+                        call.respond(UserResponse(user, usersService.getUserLists(user._id.toString())))
                     } catch (e: UnauthorizedException) {
                         call.respond(HttpStatusCode.Unauthorized)
                     } catch (e: UserAlreadyExistsException) {

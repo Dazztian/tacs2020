@@ -7,6 +7,7 @@ import com.utn.tacs.account.AuthorizationService
 import com.utn.tacs.auth.JwtConfig
 import com.utn.tacs.exception.UnauthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
+import com.utn.tacs.usersService
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.auth.authenticate
@@ -18,6 +19,7 @@ import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.server.engine.BaseApplicationResponse
 
 fun Application.login(authorizationService: AuthorizationService) {
     routing {
@@ -26,11 +28,11 @@ fun Application.login(authorizationService: AuthorizationService) {
                 try {
                     val loginData = call.receive<LoginRequest>()
                     val user = authorizationService.auth(loginData.email, loginData.password)
-                    call.respond(call.respond(LoginResponse(user, JwtConfig.makeToken(user))))
+                    call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
                 } catch (e: UnauthorizedException) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)
                 }
@@ -47,7 +49,7 @@ fun Application.login(authorizationService: AuthorizationService) {
                             signUpData.country.trim().toUpperCase(),
                             false
                     ))
-                    call.respond(LoginResponse(user, JwtConfig.makeToken(user)))
+                    call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
                 } catch (e: UserAlreadyExistsException) {
                     call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
                 } catch (e: Exception) {
