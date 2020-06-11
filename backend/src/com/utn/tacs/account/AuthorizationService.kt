@@ -22,8 +22,10 @@ class AuthorizationService(private val usersRepository: UsersRepository, private
      * @throws UnauthorizedException
      */
     fun auth(email: String, password: String): User {
-        return usersRepository.getUserByEmailAndPass(email, password)
+        val user = usersRepository.getUserByEmailAndPass(email, password)
                 ?: throw NotFoundException("User does not exists or password is invalid")
+        usersRepository.setUserLastLogin(user)
+        return user
     }
 
 

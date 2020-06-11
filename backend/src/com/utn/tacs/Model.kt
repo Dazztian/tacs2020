@@ -18,7 +18,8 @@ data class User(
         @ContextualSerialization
         val creationDate: String? = null,
         val country: String?,
-        val isAdmin: Boolean = false
+        val isAdmin: Boolean = false,
+        var lastConection: String? = null
 ) : Principal {
     constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
     constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)

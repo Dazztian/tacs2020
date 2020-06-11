@@ -8,6 +8,8 @@ import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
 import com.typesafe.config.ConfigFactory
 import io.ktor.features.NotFoundException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 const val USERS_COLLECTION_NAME = "users"
 class UsersRepository(private val database: MongoDatabase) {
@@ -95,5 +97,17 @@ class UsersRepository(private val database: MongoDatabase) {
         if (! deleted.wasAcknowledged()) {
             throw Exception("User not deleted")
         }
+    }
+
+    /**
+     * Updates user las access login date and time
+     *
+     * @param user User
+     * @return User
+     */
+    fun setUserLastLogin(user: User): User {
+        user.lastConection = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
+        database.getCollection<User>(USERS_COLLECTION_NAME).findOneAndUpdate(User::_id eq user._id, set(User::lastConection setTo user.lastConection))
+        return user
     }
 }
