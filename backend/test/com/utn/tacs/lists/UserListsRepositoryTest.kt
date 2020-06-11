@@ -154,7 +154,7 @@ class UserListsRepositoryTest {
                 ?: throw Exception("not exception expected")
         val sizeBeforeUpdate = repo.getUserLists(userId1.toString()).size
 
-        val response = repo.doUpdate(idCreated, "list_after_update", mutableSetOf("Country33"))
+        val response = repo.doUpdate(idCreated, "list_after_update", mutableSetOf("Country22", "Country23", "Country33"))
         assertEquals(idCreated, response)
         assertEquals(sizeBeforeUpdate, repo.getUserLists(userId1.toString()).size)
 
@@ -183,7 +183,7 @@ class UserListsRepositoryTest {
         val updated = repo.getUserList(idCreated)
 
         assertNotNull(updated)
-        assertEquals(mutableSetOf("Country33", "Country77", "Country22", "Country23"), updated.countries)
+        assertEquals(mutableSetOf("Country33", "Country77"), updated.countries)
         assertEquals(listName, updated.name)
         assertEquals(idCreated, updated._id.toString())
     }
