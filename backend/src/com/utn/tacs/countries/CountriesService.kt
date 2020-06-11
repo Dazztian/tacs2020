@@ -142,6 +142,11 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
                 throw BadRequestException("Wrong dates format")
             }
             country.timeseries = timeseries
+            country.timeSeriesTotal = TimeSeriesTotal(
+                timeseries.sumBy { it.confirmed },
+                timeseries.sumBy { it.deaths },
+                timeseries.sumBy { it.recovered }
+            )
         }
         return countries
     }

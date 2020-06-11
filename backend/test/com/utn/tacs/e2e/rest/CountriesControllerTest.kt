@@ -125,7 +125,7 @@ class CountriesControllerTest {
             assertTrue(country.timeseries!!.isNotEmpty())
 
             var previousTimeSerie = country.timeseries!!.get(0)
-            country.timeseries!!.forEach { it ->
+            country.timeseries!!.forEach {
                 assertNotNull(it.number)
                 assertNotNull(it.confirmed)
                 assertNotNull(it.deaths)

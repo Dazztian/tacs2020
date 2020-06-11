@@ -62,11 +62,21 @@ data class CountryResponse (
         val confirmed: Int,
         val deaths: Int,
         val recovered: Int,
-        var timeseries: List<TimeSeries>? = listOf()
+        var timeseries: List<TimeSeries>? = listOf(),
+        var timeSeriesTotal: TimeSeriesTotal? = null
 ){
         constructor(c: Country):
         this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf())
+        constructor(c: Country, timeSeriesTotal: TimeSeriesTotal):
+        this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf(), timeSeriesTotal)
 }
+
+@Serializable
+data class TimeSeriesTotal(
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int
+)
 
 @Serializable
 data class TimeSeries(
