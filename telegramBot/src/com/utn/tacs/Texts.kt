@@ -2,8 +2,7 @@ package com.utn.tacs
 
 import com.github.kotlintelegrambot.entities.Update
 
-fun startMessageCallBackQuery(update : Update) = startMessageBuilder(update.callbackQuery!!.from.firstName)
-fun loginText(update : Update) = startMessageBuilder(update.message!!.from?.firstName ?: "errorName")
+fun loginText(name: String?) = startMessageBuilder(name ?: "errorName")
 fun startMessageBuilder(firstName :String) =    "Welcome $firstName!  \uD83D\uDE04\n\n" +
         "To see your lists press \"My Lists\"\n" +
         "To see command info press \"Help\"\n" +

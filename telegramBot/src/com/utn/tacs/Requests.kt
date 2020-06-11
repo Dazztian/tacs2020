@@ -11,11 +11,13 @@ const val urlBase = "http://localhost:8080/"
 fun healthCheck() : Boolean{
     return try {
         HttpURLConnection.setFollowRedirects(false)
-        val con = URL(urlBase).openConnection()
+        val con = URL(urlBase+"configuration").openConnection()
         con.connectTimeout = 5000 //set timeout to 5 seconds
 
-        (con.inputStream.bufferedReader().readText() == "Application running")
+        val x = (con.inputStream.bufferedReader().readText() == "Application running")
+        x
     } catch (exc :Exception) {
+        val a = exc
         false
     }
 }
