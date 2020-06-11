@@ -3267,6 +3267,74 @@ Get NEAREST COUNTRIES
   }
 ]
 
+Asi esta ahora
+{{localPath}}/api/countries/{US}/timeseries
+Asi deberia quedar
+{{localPath}}/api/countries/timeseries?offset={5}&isoList=US,AR,CL
+>Deberia recibir como parametro el numero de dias desde el origen
+>A parte deberia dar el total de la suma de infectados muertos y recuperados en ese intervalo de dias
+>Ademas deberia devoler la lista ordenada por fecha
+Esto deberia responder
+res = {
+  "_id": "5ede4adc853cd27b821cecc6",
+  "countryregion": "US",
+  "countryname: "Estados unidos",
+  "lastupdate": "2020-06-08T13:42:00.008Z",
+  "timeseries": [ //tiene q ser una lista ordenada
+    {
+      "number": 0,
+      "confirmed": 1851520,
+      "deaths": 107175,
+      "recovered": 479258,
+      "date": "6/3/20"
+    },
+    {
+      "number": 1,
+      "confirmed": 1577147,
+      "deaths": 94702,
+      "recovered": 298418,
+      "date": "5/21/20"
+    },
+    {
+      "number": 2,
+      "confirmed": 219,
+      "deaths": 12,
+      "recovered": 7,
+      "date": "3/5/20"
+    },
+  ],
+  totalInTimeseries:  {
+    "confirmed": 1942363,
+    "deaths": 110514,
+    "recovered": 506367,
+    }
+}
+
+{{localPath}}/api/countries/{US}
+>debe responder los valores de la ultima medicion (del ultimo dia, que es lo que hace ahora)
+>ademas debe dar el valor total desde la primer medicion
+{
+  "_id": "5ede4f65853cd27b821ced81",
+  "countryregion": "US",
+  "countryname": "Estados unidos",
+  "lastupdate": "2020-06-08T14:42:00.008Z",
+  "confirmed": 1942363,
+  "deaths": 110514,
+  "recovered": 506367,
+  "timeseries": []
+  "overallTotals": {
+    "confirmed": 92342363,
+    "deaths": 1511234,
+    "recovered": 5236367,
+  }
+}
+
+
+
+
+
+
+
 Get country by iso2
 {{localPath}}/api/countries/{US}
 {
@@ -3286,6 +3354,7 @@ Get country by iso2
   "recovered": 506367,
   "timeseries": []
 }
+
 
 Get countries by iso2 - timeseries
 {{localPath}}/api/countries/{US}/timeseries

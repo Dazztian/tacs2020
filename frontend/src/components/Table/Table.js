@@ -48,7 +48,7 @@ export default function TableComponent({data}) {
   };
 
   return (
-      <TableContainer className={Paper}>
+      <TableContainer>
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
             <TableRow>
@@ -56,9 +56,6 @@ export default function TableComponent({data}) {
               <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
               <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
               <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
-              <StyledTableCell align={rowAlign}>Since</StyledTableCell>
-              <StyledTableCell align={rowAlign}>Until</StyledTableCell>
-              <StyledTableCell align={rowAlign}>Offset</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
@@ -68,47 +65,15 @@ export default function TableComponent({data}) {
                   <StyledTableCell align={rowAlign}>{confirmed}</StyledTableCell>
                   <StyledTableCell align={rowAlign}>{recovered}</StyledTableCell>
                   <StyledTableCell align={rowAlign}>{deaths}</StyledTableCell>
-                  <StyledTableCell align={rowAlign}>
-                    <form className={classes.container} noValidate>
-                      <TextField
-                        id="date1"
-                        type="date"
-                        defaultValue={Date.now()}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </form>
-                  </StyledTableCell>
-                  <StyledTableCell align={rowAlign}>
-                    <form className={classes.container} noValidate>
-                    <TextField
-                      id="date2"
-                      type="date"
-                      defaultValue={Date.now()}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                    </form>
-                  </StyledTableCell>
-                  <StyledTableCell align={rowAlign}>
-                    <Button                 
-                      className="px-2"
-                      variant="contained" 
-                      color="primary"
-                    > Set
-                    </Button>
-                  </StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[5]}
+        rowsPerPageOptions={[rowsPerPage]}
         component="div"
         count={data.length}
-        rowsPerPage={5}
+        rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
       />

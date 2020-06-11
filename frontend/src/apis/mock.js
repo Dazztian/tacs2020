@@ -3279,7 +3279,7 @@ countryByIso : {
   "deaths": 90,
   "recovered": 250,
   "timeseries": [],
-  "totals":{
+  "overallTotals":{
     "confirmed": 92034,
     "deaths": 2034,
     "recovered": 20712,

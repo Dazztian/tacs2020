@@ -2,9 +2,13 @@ import React, {useState, useEffect} from 'react'
 import {
   Grid,
   LinearProgress,
+  CircularProgress,
   Select,
   OutlinedInput,
   MenuItem,
+  TextField,
+  InputLabel,
+  Button
 } from "@material-ui/core";
 import ApexCharts from "react-apexcharts";
 import { useTheme } from "@material-ui/styles";
@@ -17,21 +21,15 @@ import TableComponent from "../Table/Table"
 // styles
 import useStyles from "../../views/user/dashboard/styles";
 
+import Api from "../../apis/Api"
+const api = new Api()
 
 const ListStat = ({ data })=>{
-  
-  async function fetchNearData() {
-    try {
-  
-    } catch(error) {
-      console.log(error)
-    }
-    setLoading(false)
-  }
+  let sec;
 
     const [unArray,setUnArray] = useState([{}])
     const [loading,setLoading] = useState(false)
-
+    const [isLoading, setIsLoading] = useState(false);
     
     //esta funcion podria ir definida en el archivo api.js
     const submitData = async (unPais)=>{
@@ -97,11 +95,22 @@ const ListStat = ({ data })=>{
       },
     ];
   
+  async function handleFetchOffset(){
+    setIsLoading(true);
+    const res = await api.loginUser()
+      if(true/*res.ok*/) {
+        
+      } else { //este else va por el res.ok
+        //userDispatch({ type: "LOGIN_FAILURE" });
+        
+      }
+      setIsLoading(false);
+    } 
 
 return(
     <>
   <Grid container spacing={2}>
-  <Grid item lg={12} md={12} sm={12} xs={12}>
+  <Grid item lg={5} md={6} sm={12} xs={12}>
     <Widget 
       upperTitle
       noBodyPadding
@@ -113,32 +122,106 @@ return(
     </Widget>
   </Grid>
 
-  <Grid item lg={12} md={12} sm={12} xs={12}>
+  <Grid item lg={7} md={6} sm={12} xs={12}>
   <Widget 
       bodyClass={classes.mainChartBody}
       header={
-        <div className={classes.mainChartHeader}>   
-          <Select
-            value={mainChartState}
-            onChange={e => setMainChartState(e.target.value)}
-            input={
-              <OutlinedInput
-                labelWidth={0}
-                classes={{
-                  notchedOutline: classes.mainChartSelectRoot,
-                  input: classes.mainChartSelect,
+        isLoading ? (
+          <Grid 
+            container
+            spacing={0}
+            alignItems="center"
+            justify="center">
+              <div className={classes.root}>
+                <LinearProgress />
+              </div>
+            </Grid>
+        ) : (
+          <div className={classes.mainChartHeader}>
+            <Grid   
+              item lg={8} md={9} sm={10} xs={9}        
+              container
+              spacing={1}
+              alignItems="center"
+              justify="left"
+            >
+            <Grid item xs={3} md={3} >
+              <TextField
+                id="filled-number"
+                label="Offset start"
+                type="number"
+                margin='dense'
+                size='small'
+                fullWidth={false}
+                inputProps={
+                  {step: 1,}
+                }
+                onChange={(event) => { 
+                  sec=event.target.value
+                } }
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
+            </Grid>
+            <Grid item xs={3} md={3} >
+              <TextField
+                id="filled-number"
+                label="Offset end"
+                type="number"
+                margin='dense'
+                size='small'
+                fullWidth={false}
+                inputProps={
+                  {step: 1,}
+                }
+                onChange={(event) => { 
+                  sec=event.target.value
+                } }
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+          <Grid item>
+            <Button xs={2} md={2} variant="outlined" color="primary" onClick={() =>{
+              handleFetchOffset()
             }
-            autoWidth
-          >
-            {/*Acá debería recibir la lista de países*/}
-            <MenuItem value="Infected">Infected</MenuItem>
-            <MenuItem value="Recovered">Recovered</MenuItem>
-            <MenuItem value="Death">Death</MenuItem>
-          </Select>         
-        </div>
-      }
+            }>
+              Submit
+            </Button>
+          </Grid> 
+        </Grid>
+        <Grid
+            item lg={2} md={3} sm={2} xs={3}
+            container
+            spacing={1}             
+            alignItems="center"
+            justify="right"> 
+          <Grid > 
+          <Select
+              value={mainChartState}
+              onChange={e => setMainChartState(e.target.value)}
+              input={
+                <OutlinedInput
+                  labelWidth={0}
+                  classes={{
+                    notchedOutline: classes.mainChartSelectRoot,
+                    input: classes.mainChartSelect,
+                  }}
+                />
+              }
+              autoWidth
+            >
+              <MenuItem value="Infected">Infected</MenuItem>
+              <MenuItem value="Recovered">Recovered</MenuItem>
+              <MenuItem value="Death">Death</MenuItem>
+            </Select>
+          </Grid>
+        </Grid>          
+      </div>
+        )        
+        }
   >
             <ApexCharts
             options={themeOptions(theme)}

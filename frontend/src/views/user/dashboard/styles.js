@@ -44,6 +44,17 @@ export default makeStyles(theme => ({
   tableWidget: {
     overflowX: "auto",
   },
+  selectField: {
+    width: "50%",
+    minWidth: 145,
+    paddingRight: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  offsetTxtField: {
+    width: "50%",
+    minWidth: 145,
+    paddingRight: theme.spacing(2),
+  },
   progressBar: {
     backgroundColor: theme.palette.warning.main,
   },
@@ -58,6 +69,7 @@ export default makeStyles(theme => ({
     alignItems: "center",
     marginRight: theme.spacing(2),
   },
+
   legendElementText: {
     marginLeft: theme.spacing(1),
   },
@@ -112,6 +124,13 @@ export default makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     marginLeft: theme.spacing(3),
+  },
+  root: {
+    width: '100%',
+    padding: '26px',
+    '& > * + *': {
+      marginTop: theme.spacing(4),
+    },
   },
   mainChartSelectRoot: {
     borderColor: theme.palette.text.hint + "80 !important",
