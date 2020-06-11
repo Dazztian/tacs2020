@@ -65,7 +65,7 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                         call.respond(HttpStatusCode.NotModified)
                     }
                 }
-                patch {
+                put {
                     val userId: String = call.parameters["userId"]!!.toString()
                     val listId: String = call.parameters["listId"]!!.toString()
                     try {

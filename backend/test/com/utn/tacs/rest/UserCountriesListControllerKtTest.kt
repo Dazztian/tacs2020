@@ -194,13 +194,13 @@ class UserCountriesListControllerKtTest {
     }
 
     @Test
-    fun testPatchLists() = testApp {
+    fun testPutLists() = testApp {
         val userId = "userId"
         val userListId = "userListId"
 
         every { usersService.updateUserList(userId, userListId, any()) } returns ucl4
 
-        with(handleRequest(HttpMethod.Patch, "/api/user/${userId}/lists/${userListId}") {
+        with(handleRequest(HttpMethod.Put, "/api/user/${userId}/lists/${userListId}") {
             addJwtHeader(authUser)
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
             setBody("{\"name\":\"new_name\",\"countries\":[ \"new_country\" ]}")
@@ -214,7 +214,7 @@ class UserCountriesListControllerKtTest {
         }
 
         every { usersService.updateUserList(userId, userListId, any()) } throws NotFoundException()
-        with(handleRequest(HttpMethod.Patch, "/api/user/${userId}/lists/${userListId}") {
+        with(handleRequest(HttpMethod.Put, "/api/user/${userId}/lists/${userListId}") {
             addJwtHeader(authUser)
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
             setBody("{\"name\":\"new_name\",\"countries\":[ \"new_country\" ]}")
@@ -222,7 +222,7 @@ class UserCountriesListControllerKtTest {
             assertEquals(HttpStatusCode.NotFound, response.status())
         }
 
-        with(handleRequest(HttpMethod.Patch, "/api/user/${userId}/lists/${userListId}") {
+        with(handleRequest(HttpMethod.Put, "/api/user/${userId}/lists/${userListId}") {
             addJwtHeader(authUser)
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
             setBody("{\"name\":\"new_name\", bad_json ]}")
