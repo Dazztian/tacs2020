@@ -8,6 +8,7 @@ import {
   Tab,
   TextField,
   Fade,
+  MenuItem 
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import classnames from "classnames";
@@ -23,6 +24,7 @@ import google from "./images/google.svg";
 import { useUserDispatch,  } from "../../context/UserContext";
 import { loginUser, createUser } from "../../apis/PublicApi"
 import Api from "../../apis/Api"
+import { getCountry } from "../../apis/GeolocationApi";
 
 const api = new Api()
 
@@ -38,6 +40,10 @@ function Login(props) {
   var [nameValue, setNameValue] = useState("");
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
+  var [countryValue, setCountryValue] = useState("");
+
+  let countryMap
+  let countryList = []
 
   const handleLoginWithGoogle = async () => {
     
@@ -55,6 +61,7 @@ function Login(props) {
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('tracker_name', user.name)
+          localStorage.setItem('countryIso', user.name)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } 
@@ -95,6 +102,18 @@ function Login(props) {
       }
     } 
   }
+
+  async function fetchCountries(){
+      const res = await api.getCountryList()
+      if(true/*res.ok*/){
+        const data = await res.json()
+        console.log(data)
+      }
+  }
+
+  useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
+    fetchCountries()
+  },[]);
 
   return (
     <Grid container className={classes.container}>
@@ -209,9 +228,6 @@ function Login(props) {
               <Typography variant="h1" className={classes.greeting}>
                 Welcome!
               </Typography>
-              <Typography variant="h2" className={classes.subGreeting}>
-                Create your account
-              </Typography>
               <Fade in={signUpError} timeout={500}>
                 <Typography color='error' className={classes.errorMessage}>
                     Email already used.
@@ -262,6 +278,30 @@ function Login(props) {
                 type="password"
                 fullWidth
               />
+              <TextField
+                id="country"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                select
+                value={countryValue}
+                onChange={e => setCountryValue(e.target.value)}
+                margin="normal"
+                placeholder="Country"
+                type="Country"
+                helperText="Select your country"
+                fullWidth
+              >
+                {
+                countryList.map((country) => (
+                  <MenuItem key={country} value={country}>
+                    {country}
+                  </MenuItem>
+                ))}
+              </TextField>
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />

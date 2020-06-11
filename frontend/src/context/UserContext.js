@@ -1,5 +1,4 @@
 import React from "react";
-import Api from "../apis/Api";
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
 
@@ -24,7 +23,6 @@ function UserProvider({ children }) {
   var [state, dispatch] = React.useReducer(userReducer, {
     isAuthenticated: !!localStorage.getItem("id_token"),
     isAdmin: !!localStorage.getItem("role"),
-    api : new Api()
   });
 
   return (

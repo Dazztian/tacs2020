@@ -11,7 +11,7 @@ class Api {
       'Content-Type': 'application/json'
     };
   
-    BASE_URL = '{{localPath}}/api';
+    BASE_URL = 'https://32ddbafd6091.ngrok.io/api';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -20,44 +20,40 @@ class Api {
       } : this.headers;
     }
 
-    async getAll() {
-      return await fetch(this.BASE_URL, {
-        method: 'GET',
-        headers: this.createHeaders()
-      });
-    }
   
-    async getById(id) {
-      return await fetch(`${this.BASE_URL}/${id}`, {
-        method: 'GET',
-        headers: this.createHeaders()
-      });
-    }
-  
-    async delete(id) {
-      return await fetch(`${this.BASE_URL}/${id}`, {
-        method: 'DELETE',
-        headers: this.createHeaders()
-      });
-    }
-  
-    async update(item) {
-      return await fetch(`${this.BASE_URL}/${item.id}`, {
-        method:'PUT',
+    async getCountryList(){
+      return await fetch(`${this.BASE_URL}/countries`, {
+        method:'GET',
         headers: this.createHeaders(),
-        body: JSON.stringify(item),
-      });
-    }
-  
-    async create(item) {
-      return await fetch(this.BASE_URL, {
-        method:'POST',
-        headers: this.createHeaders(),
-        body: JSON.stringify(item),
       });
     }
 
-  async getCountryDataByIsoDate(iso,dateinicial,datefinal) {
+  async getCountryDataByDate(iso,dateinicial,datefinal) {
+    try{
+      const data = mock.countryByIso 
+
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data);
+        }, 500);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*const res = await await fetch(this.BASE_URL, {
+          method:'POST',
+          headers: this.createHeaders(),
+          body: JSON.stringify(item),
+        });
+
+      if(res.ok)
+        const data = await res.json()
+      
+      return data.timeseries
+      }*/
+  }
+
+  async getCountryDataByDays(iso,dateinicial,datefinal) {
     try{
       const data = mock.countryByIso 
 
