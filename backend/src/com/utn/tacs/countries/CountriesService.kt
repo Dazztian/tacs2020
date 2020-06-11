@@ -114,27 +114,31 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
         if (null != toDay) {
             timeseries = timeseries.dropLastWhile { it.number > toDay }
         }
-        if (null != fromDate && fromDate.isNotEmpty()) {
-            timeseries = timeseries.dropWhile { LocalDate.of(
-                it.date.split("/").get(2).toInt(),
-                it.date.split("/").get(0).toInt(),
-                it.date.split("/").get(1).toInt()
-            ) < LocalDate.of(
-                fromDate.split("/").get(2).toInt(),
-                fromDate.split("/").get(0).toInt(),
-                fromDate.split("/").get(1).toInt()
-            ) }
-        }
-        if (null != toDate && toDate.isNotEmpty()) {
-            timeseries = timeseries.dropLastWhile { LocalDate.of(
-                it.date.split("/").get(2).toInt(),
-                it.date.split("/").get(0).toInt(),
-                it.date.split("/").get(1).toInt()
-            ) > LocalDate.of(
-                toDate.split("/").get(2).toInt(),
-                toDate.split("/").get(0).toInt(),
-                toDate.split("/").get(1).toInt()
-            ) }
+        try {
+            if (null != fromDate && fromDate.isNotEmpty()) {
+                timeseries = timeseries.dropWhile { LocalDate.of(
+                    it.date.split("/").get(2).toInt(),
+                    it.date.split("/").get(0).toInt(),
+                    it.date.split("/").get(1).toInt()
+                ) < LocalDate.of(
+                    fromDate.split("/").get(2).toInt(),
+                    fromDate.split("/").get(0).toInt(),
+                    fromDate.split("/").get(1).toInt()
+                ) }
+            }
+            if (null != toDate && toDate.isNotEmpty()) {
+                timeseries = timeseries.dropLastWhile { LocalDate.of(
+                    it.date.split("/").get(2).toInt(),
+                    it.date.split("/").get(0).toInt(),
+                    it.date.split("/").get(1).toInt()
+                ) > LocalDate.of(
+                    toDate.split("/").get(2).toInt(),
+                    toDate.split("/").get(0).toInt(),
+                    toDate.split("/").get(1).toInt()
+                ) }
+            }
+        } catch (e: IndexOutOfBoundsException) {
+            throw BadRequestException("Wrong dates format")
         }
         country.timeseries = timeseries
         return country

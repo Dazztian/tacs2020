@@ -59,13 +59,16 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     val toDay: Int? = call.request.queryParameters["toDay"]?.toInt()
                     val fromDate: String? = call.request.queryParameters["fromDate"]
                     val toDate: String? = call.request.queryParameters["toDate"]
+                    if (null != fromDay && null != toDay && fromDay > toDay) {
+                        throw BadRequestException("Invalid days ranges")
+                    }
                     call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase(), fromDay, toDay, fromDate, toDate))
                 } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
                 } catch (e: NumberFormatException) {
                     call.respond(HttpStatusCode.BadRequest)
                 } catch (e: BadRequestException) {
-                    call.respond(HttpStatusCode.BadRequest.description("malformed timeseries days or dates ranges"))
+                    call.respond(HttpStatusCode.BadRequest.description(e.message ?: "malformed request"))
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)
                 }
