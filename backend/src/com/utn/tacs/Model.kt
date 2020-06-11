@@ -63,7 +63,10 @@ data class CountryResponse (
         val deaths: Int,
         val recovered: Int,
         var timeseries: List<TimeSeries>? = listOf()
-)
+){
+        constructor(c: Country):
+        this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf())
+}
 
 @Serializable
 data class TimeSeries(

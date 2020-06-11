@@ -17,7 +17,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getAllCountries(): List<CountryResponse> {
         val countries = ArrayList<CountryResponse>()
-        countriesRepository.getCountries().forEach { countries.add(mapToResponse(it)) }
+        countriesRepository.getCountries().forEach { countries.add(CountryResponse(it)) }
         return countries
     }
 
@@ -44,7 +44,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getCountryLatestByIsoCode(iso2: String): CountryResponse {
         try {
-            return mapToResponse(countriesRepository.getCountry(iso2))
+            return CountryResponse(countriesRepository.getCountry(iso2))
         } catch (e: Exception) {
             throw NotFoundException("There was no country with iso2 code $iso2")
         }
@@ -61,7 +61,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getCountryLatestByName(name: String): CountryResponse {
         try {
-            return mapToResponse(countriesRepository.getCountryByName("^${name.toLowerCase().capitalize()}"))
+            return CountryResponse(countriesRepository.getCountryByName("^${name.toLowerCase().capitalize()}"))
         } catch (e: Exception) {
             throw NotFoundException("There was no country with name $name")
         }
@@ -78,7 +78,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
         try {
             val countries = ArrayList<CountryResponse>()
             (if (names.isEmpty()) emptyList() else countriesRepository.getCountriesByName(names).toList()).forEach {
-                it -> countries.add(mapToResponse(it))
+                countries.add(CountryResponse(it))
             }
             return countries
         } catch (e: IndexOutOfBoundsException) {
@@ -87,73 +87,62 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     }
 
     /**
-     * Get one country covid timeseries by iso2 code name separated by dates
+     * Get one country covid timeseries by iso2 codes for required countries
      *
-     * @param iso2 String
+     * @param countriesCodes List<String>
      * @param fromDay Int?
      * @param toDay Int?
      * @param fromDate String?
      * @param toDate String?
-     * @return CountryResponse
+     * @return List<CountryResponse>
      *
      * @throws NotFoundException
      * @throws BadRequestException
      */
     suspend fun getCountryTimesSeries(
-        iso2: String,
+        countriesCodes: List<String>,
         fromDay: Int?,
         toDay: Int?,
         fromDate: String?,
         toDate: String?
-    ): CountryResponse {
-        val country = getCountryLatestByIsoCode(iso2)
-        var timeseries = getCountryTimeSeriesFromApi("iso2=$iso2")
-        if (null != fromDay) {
-            timeseries = timeseries.dropWhile { it.number < fromDay }
-        }
-        if (null != toDay) {
-            timeseries = timeseries.dropLastWhile { it.number > toDay }
-        }
-        try {
-            if (null != fromDate && fromDate.isNotEmpty()) {
-                timeseries = timeseries.dropWhile { LocalDate.of(
-                    it.date.split("/").get(2).toInt(),
-                    it.date.split("/").get(0).toInt(),
-                    it.date.split("/").get(1).toInt()
-                ) < LocalDate.of(
-                    fromDate.split("/").get(2).toInt(),
-                    fromDate.split("/").get(0).toInt(),
-                    fromDate.split("/").get(1).toInt()
-                ) }
+    ): List<CountryResponse> {
+        val countries = countriesCodes.map{ getCountryLatestByIsoCode(it.toUpperCase()) }
+        for (country in countries) {
+            var timeseries = getCountryTimeSeriesFromApi("iso2=${country.countrycode!!.iso2}")
+            if (null != fromDay) {
+                timeseries = timeseries.dropWhile { it.number < fromDay }
             }
-            if (null != toDate && toDate.isNotEmpty()) {
-                timeseries = timeseries.dropLastWhile { LocalDate.of(
-                    it.date.split("/").get(2).toInt(),
-                    it.date.split("/").get(0).toInt(),
-                    it.date.split("/").get(1).toInt()
-                ) > LocalDate.of(
-                    toDate.split("/").get(2).toInt(),
-                    toDate.split("/").get(0).toInt(),
-                    toDate.split("/").get(1).toInt()
-                ) }
+            if (null != toDay) {
+                timeseries = timeseries.dropLastWhile { it.number > toDay }
             }
-        } catch (e: IndexOutOfBoundsException) {
-            throw BadRequestException("Wrong dates format")
+            try {
+                if (null != fromDate && fromDate.isNotEmpty()) {
+                    timeseries = timeseries.dropWhile { LocalDate.of(
+                        it.date.split("/").get(2).toInt(),
+                        it.date.split("/").get(0).toInt(),
+                        it.date.split("/").get(1).toInt()
+                    ) < LocalDate.of(
+                        fromDate.split("/").get(2).toInt(),
+                        fromDate.split("/").get(0).toInt(),
+                        fromDate.split("/").get(1).toInt()
+                    ) }
+                }
+                if (null != toDate && toDate.isNotEmpty()) {
+                    timeseries = timeseries.dropLastWhile { LocalDate.of(
+                        it.date.split("/").get(2).toInt(),
+                        it.date.split("/").get(0).toInt(),
+                        it.date.split("/").get(1).toInt()
+                    ) > LocalDate.of(
+                        toDate.split("/").get(2).toInt(),
+                        toDate.split("/").get(0).toInt(),
+                        toDate.split("/").get(1).toInt()
+                    ) }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                throw BadRequestException("Wrong dates format")
+            }
+            country.timeseries = timeseries
         }
-        country.timeseries = timeseries
-        return country
-    }
-
-    private fun mapToResponse(country: Country): CountryResponse {
-        return CountryResponse(
-            country.countryregion,
-            country.lastupdate,
-            country.location,
-            country.countrycode,
-            country.confirmed,
-            country.deaths,
-            country.recovered,
-            country.timeseries ?: listOf()
-        )
+        return countries
     }
 }

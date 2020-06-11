@@ -11,7 +11,6 @@ fun Application.healthCheckRoutes() {
     routing {
         route("/configuration") {
             get {
-                
                 call.respondText("Application running")
             }
         }

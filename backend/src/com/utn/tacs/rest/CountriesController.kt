@@ -36,13 +36,6 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }
-            get("/names") {
-                try {
-                    call.respond(countriesService.getAllCountries().map { x -> x.countryregion }.sorted())
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-            }
             get("/{iso2}") {
                 try {
                     val iso2: String = call.parameters["iso2"].toString()
@@ -52,9 +45,9 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }
-            get("/{iso2}/timeseries") {
+            get("/timeseries") {
                 try {
-                    val iso2: String = call.parameters["iso2"].toString()
+                    val iso2Countries = call.request.queryParameters["countries"]!!.split(",")
                     val fromDay: Int? = call.request.queryParameters["fromDay"]?.toInt()
                     val toDay: Int? = call.request.queryParameters["toDay"]?.toInt()
                     val fromDate: String? = call.request.queryParameters["fromDate"]
@@ -62,7 +55,7 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     if (null != fromDay && null != toDay && fromDay > toDay) {
                         throw BadRequestException("Invalid days ranges")
                     }
-                    call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase(), fromDay, toDay, fromDate, toDate))
+                    call.respond(countriesService.getCountryTimesSeries(iso2Countries, fromDay, toDay, fromDate, toDate))
                 } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
                 } catch (e: NumberFormatException) {
