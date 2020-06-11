@@ -42,7 +42,7 @@ suspend fun getCountriesLatestFromApi(queryParams: String): List<Country> {
  */
 suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
     return HttpClient().use { client ->
-        val result = ArrayList<TimeSeries>()
+        var result = ArrayList<TimeSeries>()
         val jsonData: String = client.get(apiEntryPoint + "timeseries?" + onlyCountries + "&" + queryParams)
         val timeSeries = JSONObject(jsonData.substring(1, jsonData.length - 1)).get("timeseries") as JSONObject
         val iterator = timeSeries.keys()
@@ -62,9 +62,10 @@ suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
             it.date.split("/").get(0).toInt(),
             it.date.split("/").get(1).toInt()
         ) }
+        val resultSplited = result.dropWhile { it.confirmed.equals(0) }
         var count = 1
-        result.forEach{it -> it.number = count++}
-        result
+        resultSplited.forEach{ it.number = count++}
+        resultSplited
     }
 }
 

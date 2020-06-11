@@ -29,7 +29,9 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @return List<CountryResponse>
      */
     suspend fun getNearestCountries(lat: Double, lon: Double): List<CountryResponse> {
-        return getAllCountries().filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }
+        val countries = getAllCountries().filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance)}
+        //countries.forEach { it.timeseries = getCountryTimeSeries(it.countrycode!!.iso2) }
+        return countries
     }
 
     /**
@@ -71,7 +73,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * Get one country covid data by iso2 code name
      * @sample Argentina
      *
-     * @param name String
+     * @param names List<String>
      * @return CountryResponse
      */
     suspend fun getCountriesByName(names: List<String>): List<CountryResponse> {
@@ -108,7 +110,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     ): List<CountryResponse> {
         val countries = countriesCodes.map{ getCountryLatestByIsoCode(it.toUpperCase()) }
         for (country in countries) {
-            var timeseries = getCountryTimeSeriesFromApi("iso2=${country.countrycode!!.iso2}")
+            var timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
             if (null != fromDay) {
                 timeseries = timeseries.dropWhile { it.number < fromDay }
             }
@@ -149,5 +151,15 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
             )
         }
         return countries
+    }
+
+    /**
+     * Get countries time series
+     *
+     * @param country Country
+     * @return List<TimeSeries>
+     */
+    suspend private fun getCountryTimeSeries(countryIso2Code: String): List<TimeSeries> {
+        return getCountryTimeSeriesFromApi("iso2=${countryIso2Code}")
     }
 }

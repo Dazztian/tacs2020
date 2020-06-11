@@ -193,3 +193,14 @@ data class UserCountriesListResponse(
         val name: String,
         val countries: MutableSet<String>
 )
+
+data class UserNamesResponse(
+        val name: String,
+        val iso2: String
+)
+
+@Serializable
+data class CountriesNamesResponse(
+        val name: String,
+        val iso2: String
+)
