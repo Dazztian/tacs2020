@@ -46,7 +46,7 @@ fun countryListCommands(updater : Updater){
             )
         },
 
-        createCallbackQueryHandler("My_Lists") { _, update ->
+        createCallbackQueryHandler("My_Lists", LoginType.LoggedIn) { _, update ->
             val chatId = update.callbackQuery!!.message!!.chat.id
 
             when(val listas = getCountryLists(chatId.toString())){
@@ -57,14 +57,14 @@ fun countryListCommands(updater : Updater){
                                                             newListButtonNoMarkup())))
             }
         },
-        createCallbackQueryHandler("Check_list") { _, update, args ->
+        createCallbackQueryHandler("Check_list", LoginType.LoggedIn) { _, update, args ->
             val chatId = update.callbackQuery!!.message!!.chat.id
             val listId = args[0]
 
             showList(listId, chatId)
         },
 
-        createCallbackQueryHandler("Add_country") { _, update, args ->
+        createCallbackQueryHandler("Add_country", LoginType.LoggedIn) { _, update, args ->
             val chatId = update.callbackQuery!!.message!!.chat.id
             val listId = args[0]
 
@@ -72,7 +72,7 @@ fun countryListCommands(updater : Updater){
 
             listOf(TelegramMessageWrapper(chatId, addCountryText))
         },
-        createCallbackQueryHandler("Add_list") { _, update ->
+        createCallbackQueryHandler("Add_list", LoginType.LoggedIn) { _, update ->
             val chatId = update.callbackQuery!!.message!!.chat.id
 
             lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
@@ -120,7 +120,7 @@ fun countryListCommands(updater : Updater){
             emptyList()
         },
 
-        createCommandHandlerNoLoginRequired("check") { _, update, args ->
+        createCommandHandler("check", LoginType.NotRequired) { _, update, args ->
             listOf(TelegramMessageWrapper(
                     chatId = update.message!!.chat.id,
                     parseMode = ParseMode.HTML,

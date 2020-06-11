@@ -153,7 +153,7 @@ fun getListCountries(listId :String, telegramId :String) :List<Country>?{
 
 fun addCountries(telegramUserId: String, listId :String, countries :Set<String>) :String{
     return try {
-        val (x, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
+        val (_, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
                 .header("Content-Type", "application/json")
                 .body(Gson().toJson(UserCountriesListModificationRequest("list", countries.toMutableSet())).toString())
                 .responseString()
