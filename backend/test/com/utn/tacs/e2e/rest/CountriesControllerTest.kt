@@ -158,10 +158,10 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_Between2Days_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_between2Days_ok() = withTestApplication(Application::module) {
         val fromDay = 8
         val toDay = 10
-        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries")) {
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDay=" + fromDay + "&toDay=" + toDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
             val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
             assertEquals(status, HttpStatusCode.OK)
@@ -169,17 +169,18 @@ class CountriesControllerTest {
             assertEquals("Argentina" , country.countryregion)
             assertEquals(3, country.timeseries!!.size)
 
+            var first = true
             var previousTimeSerie = country.timeseries!!.get(0)
-            country.timeseries!!.forEach { it ->
+            country.timeseries!!.forEach {
                 assertNotNull(it.number)
                 assertNotNull(it.confirmed)
                 assertNotNull(it.deaths)
                 assertNotNull(it.recovered)
                 assertNotNull(it.date)
-                if (it.number != 1) {
-                    assertTrue(it.number > previousTimeSerie.number)
+                if (first) {
+                    first = false
                 } else {
-                    assertEquals(1, it.number)
+                    assertTrue(previousTimeSerie.number < it.number)
                 }
                 previousTimeSerie = it
             }
@@ -187,6 +188,202 @@ class CountriesControllerTest {
             assertEquals(8,country.timeseries!!.get(0).number)
             assertEquals(9,country.timeseries!!.get(1).number)
             assertEquals(10,country.timeseries!!.get(2).number)
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_toDay_ok() = withTestApplication(Application::module) {
+        val toDay = 10
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?toDay=" + toDay)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(status, HttpStatusCode.OK)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertEquals(toDay, country.timeseries!!.size)
+
+            var first = true
+            var previousTimeSerie = country.timeseries!!.get(0)
+            assertEquals(1, previousTimeSerie.number)
+            assertEquals(toDay, country.timeseries!!.get(9).number)
+            country.timeseries!!.forEach {
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (first) {
+                    first = false
+                } else {
+                    assertTrue(previousTimeSerie.number < it.number)
+                }
+                previousTimeSerie = it
+            }
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDay_ok() = withTestApplication(Application::module) {
+        val fromDay = 10
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDay=" + fromDay)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(status, HttpStatusCode.OK)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertTrue(country.timeseries!!.isNotEmpty())
+
+            var first = true
+            var previousTimeSerie = country.timeseries!!.get(0)
+            assertEquals(fromDay, previousTimeSerie.number)
+            country.timeseries!!.forEach {
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (first) {
+                    first = false
+                } else {
+                    assertTrue(previousTimeSerie.number < it.number)
+                }
+                previousTimeSerie = it
+            }
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDayToDayWrongRanges_BadRequest() = withTestApplication(Application::module) {
+        val fromDay = 10
+        val toDay = 3
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDay=" + fromDay + "&toDay=" + toDay)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            assertEquals(status, HttpStatusCode.BadRequest)
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDayWrongTypeToDay_BadRequest() = withTestApplication(Application::module) {
+        val fromDay = "pepe"
+        val toDay = 3
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDay=" + fromDay + "&toDay=" + toDay)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            assertEquals(status, HttpStatusCode.BadRequest)
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDayToDayWrongType_BadRequest() = withTestApplication(Application::module) {
+        val fromDay = 3
+        val toDay = "pepe"
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDay=" + fromDay + "&toDay=" + toDay)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            assertEquals(status, HttpStatusCode.BadRequest)
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_betweenDates_ok() = withTestApplication(Application::module) {
+        val fromDate = "1/25/20"
+        val toDate = "1/28/20"
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDate=" + fromDate + "&toDate=" + toDate)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(status, HttpStatusCode.OK)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertEquals(4, country.timeseries!!.size)
+
+            var first = true
+            var previousTimeSerie = country.timeseries!!.get(0)
+            country.timeseries!!.forEach {
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (first) {
+                    first = false
+                } else {
+                    assertTrue(previousTimeSerie.number < it.number)
+                }
+                previousTimeSerie = it
+            }
+
+            assertEquals("1/25/20",country.timeseries!!.get(0).date)
+            assertEquals("1/26/20",country.timeseries!!.get(1).date)
+            assertEquals("1/27/20",country.timeseries!!.get(2).date)
+            assertEquals("1/28/20",country.timeseries!!.get(3).date)
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDate_ok() = withTestApplication(Application::module) {
+        val fromDate = "3/25/20"
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDate=" + fromDate)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(HttpStatusCode.OK, status)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertTrue(country.timeseries!!.isNotEmpty())
+
+            var first = true
+            var previousTimeSerie = country.timeseries!!.get(0)
+            assertEquals(fromDate, previousTimeSerie.date)
+            country.timeseries!!.forEach {
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (first) {
+                    first = false
+                } else {
+                    assertTrue(previousTimeSerie.number < it.number)
+                }
+                previousTimeSerie = it
+            }
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_toDate_ok() = withTestApplication(Application::module) {
+        val toDate = "1/25/20"
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?toDate=" + toDate)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
+            assertEquals(HttpStatusCode.OK, status)
+            assertEquals("AR" , country.countrycode?.iso2)
+            assertEquals("Argentina" , country.countryregion)
+            assertTrue(country.timeseries!!.isNotEmpty())
+
+            var first = true
+            var previousTimeSerie = country.timeseries!!.get(0)
+            assertEquals(toDate, country.timeseries!!.get(country.timeseries!!.size - 1).date)
+            country.timeseries!!.forEach {
+                assertNotNull(it.number)
+                assertNotNull(it.confirmed)
+                assertNotNull(it.deaths)
+                assertNotNull(it.recovered)
+                assertNotNull(it.date)
+                if (first) {
+                    first = false
+                } else {
+                    assertTrue(previousTimeSerie.number < it.number)
+                }
+                previousTimeSerie = it
+            }
+        }
+    }
+
+    @Test
+    fun testGetCountryTimeseries_fromDateToDateWrongType_BadRequest() = withTestApplication(Application::module) {
+        val fromDate = "1/25/20"
+        val toDate = "pepe"
+        with(handleRequest(HttpMethod.Get, "/api/countries/AR/timeseries?fromDate=" + fromDate + "&toDate=" + toDate)) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
     }
 }
