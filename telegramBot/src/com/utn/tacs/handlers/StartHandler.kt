@@ -25,65 +25,56 @@ fun returnButton() = InlineKeyboardMarkup(returnButtonNoMarkup())
 
 fun startCommands(updater :Updater){
     listOf(
-        CommandHandler("start") { bot, update->
-            if(healthCheck() && isLoggedIn(update.message!!.from!!.id.toString()))
-                bot.sendMessage(
-                    chatId = update.message!!.chat.id,
-                    text = loginText(update),
-                    replyMarkup = startButtons()
-                )
-            else
-                bot.sendMessage(
-                    chatId = update.message!!.chat.id,
-                    text = startText
-                )
+        createCommandHandler("start", LoginType.NotRequired) { _, update->
+            startCommand(update.message!!.from!!.id, update.message!!.from?.firstName)
         },
-        CommandHandler("help") { bot, update->
-            bot.sendMessage(
-                    chatId = update.message!!.chat.id,
-                    text = helpText
-            )
+        createCommandHandler("help", LoginType.NotRequired) { _, update->
+            helpCommand(update.message!!.chat.id)
         },
-        CommandHandler("login", commandHandlerNoLoginRequired { _, update, args->
-            val chatId = update.message!!.chat.id
-            if(args.size != 2){
-                return@commandHandlerNoLoginRequired listOf(TelegramMessageWrapper(chatId, textoLoginHelp))
-            }
-
-            if(login(args[0], args[1], update.message!!.from!!.id.toString()))
-                listOf(TelegramMessageWrapper(chatId, loginText(update), replyMarkup = startButtons()))
-            else
-                listOf(TelegramMessageWrapper(chatId, badLogoutText))
-
-        }),
-        createCommandHandler("logout") { _, update->
-            val chatId = update.message!!.chat.id
-
-            return@createCommandHandler if(logout(chatId.toString()))
-                listOf(TelegramMessageWrapper(chatId, startText))
-            else
-                listOf(TelegramMessageWrapper(chatId, errorText))
+        createCommandHandler("login", LoginType.NotLoggedIn) { _, update, args->
+            loginCommand(update.message!!.chat.id, update.message!!.from?.firstName, args)
+        },
+        createCommandHandler("logout", LoginType.LoggedIn) { _, update->
+            logoutCommand(update.message!!.chat.id)
         },
 
-        createCallbackQueryHandler("Help") { _, update ->
-            listOf(TelegramMessageWrapper(update.callbackQuery!!.message!!.chat.id, helpText))
+        createCallbackQueryHandler("Help", LoginType.NotRequired) { _, update ->
+            helpCommand(update.callbackQuery!!.message!!.chat.id)
         },
-        createCallbackQueryHandler("Start") { _, update ->
-                listOf(TelegramMessageWrapper(
-                        update.callbackQuery!!.message!!.chat.id,
-                        startMessageCallBackQuery(update),
-                        replyMarkup = startButtons()))
+        createCallbackQueryHandler("Start", LoginType.NotRequired) { _, update ->
+            startCommand(update.callbackQuery!!.message!!.chat.id, update.callbackQuery!!.from.firstName)
         },
-        createCallbackQueryHandler("Logout") { _, update ->
-            val chatId = update.callbackQuery!!.message!!.chat.id
-
-            if(logout(chatId.toString())) {
-                lastImportantMessages.remove(chatId)
-
-                listOf(TelegramMessageWrapper(chatId, startText))
-            } else {
-                listOf(TelegramMessageWrapper(chatId, errorText))
-            }
+        createCallbackQueryHandler("Logout", LoginType.LoggedIn) { _, update ->
+            logoutCommand(update.callbackQuery!!.message!!.chat.id)
         }
     ).forEach{updater.dispatcher.addHandler(it)}
+}
+
+fun startCommand(chatId :Long, firstName :String?) :List<TelegramMessageWrapper>{
+    return if(isLoggedIn(chatId.toString()))
+        listOf(TelegramMessageWrapper(
+                chatId = chatId,
+                text = loginText(firstName),
+                replyMarkup = startButtons()))
+    else
+        listOf(TelegramMessageWrapper(
+                chatId = chatId,
+                text = startText))
+}
+fun helpCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, helpText))
+fun loginCommand(chatId: Long, firstName :String?, args: List<String>) :List<TelegramMessageWrapper>{
+    if(args.size != 2){
+        return listOf(TelegramMessageWrapper(chatId, textoLoginHelp))
+    }
+
+    return if(login(args[0], args[1], chatId.toString()))
+        listOf(TelegramMessageWrapper(chatId, loginText(firstName), replyMarkup = startButtons()))
+    else
+        listOf(TelegramMessageWrapper(chatId, badLogoutText))
+}
+fun logoutCommand(chatId: Long) :List<TelegramMessageWrapper>{
+    return if(logout(chatId.toString()))
+        listOf(TelegramMessageWrapper(chatId, startText))
+    else
+        listOf(TelegramMessageWrapper(chatId, errorText))
 }

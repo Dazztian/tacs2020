@@ -38,93 +38,30 @@ fun newListButtonNoMarkup() = listOf(
 
 fun countryListCommands(updater : Updater){
     listOf(
-        CommandHandler("countries") { bot, update->
-            bot.sendMessage(
-                chatId = update.message!!.chat.id,
-                text = "Paises aceptados:\n" +
-                        allCountriesNames()?.joinToString(separator = "\n").toString()
-            )
+        createCallbackQueryHandler("countries", LoginType.NotRequired) { _, update->
+            countriesCommand(update.message!!.chat.id)
         },
 
-        createCallbackQueryHandler("My_Lists") { _, update ->
-            val chatId = update.callbackQuery!!.message!!.chat.id
-
-            when(val listas = getCountryLists(chatId.toString())){
-                null, emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
-                else -> listOf(TelegramMessageWrapper(
-                                        chatId, myListsText,
-                                        replyMarkup = InlineKeyboardMarkup(listas.map { countriesList -> listOf(countriesList.toButton()) } +
-                                                            newListButtonNoMarkup())))
-            }
+        createCallbackQueryHandler("My_Lists", LoginType.LoggedIn) { _, update ->
+            myListsCommand(update.callbackQuery!!.message!!.chat.id)
         },
-        createCallbackQueryHandler("Check_list") { _, update, args ->
-            val chatId = update.callbackQuery!!.message!!.chat.id
-            val listId = args[0]
-
-            showList(listId, chatId)
+        createCallbackQueryHandler("Check_list", LoginType.LoggedIn) { _, update, args ->
+            showList(args[0], update.callbackQuery!!.message!!.chat.id)
         },
 
-        createCallbackQueryHandler("Add_country") { _, update, args ->
-            val chatId = update.callbackQuery!!.message!!.chat.id
-            val listId = args[0]
-
-            lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.ADD_COUNTRY, listId)
-
-            listOf(TelegramMessageWrapper(chatId, addCountryText))
+        createCallbackQueryHandler("Add_country", LoginType.LoggedIn) { _, update, args ->
+            addCountryCommand(update.callbackQuery!!.message!!.chat.id, args[0])
         },
-        createCallbackQueryHandler("Add_list") { _, update ->
-            val chatId = update.callbackQuery!!.message!!.chat.id
-
-            lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
-
-            listOf(TelegramMessageWrapper(chatId, createListText))
+        createCallbackQueryHandler("Add_list", LoginType.LoggedIn) { _, update ->
+            addListCommand(update.callbackQuery!!.message!!.chat.id)
         },
+
         createMessageHandler(Filter.Text) { _, update ->
-            val userId = update.message!!.from!!.id
-            val chatId = update.message!!.chat.id
-
-            if(healthCheck() && isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
-                val lastMessage = lastImportantMessages[userId]
-
-                return@createMessageHandler when(lastMessage!!.messageType){
-                    MessageType.ADD_COUNTRY  -> {
-                        val countriesList = update.message!!.text!!.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toSet()
-                        val response = addCountries(chatId.toString(), lastMessage.countryListId, countriesList)
-
-                        if (response == "Saved"){
-                            lastImportantMessages.remove(userId)
-                            showList(lastMessage.countryListId, chatId)
-                        }else{
-                            listOf(TelegramMessageWrapper(chatId, response))
-                        }
-                    }
-                    MessageType.NEW_LIST -> {
-                        val countriesList = update.message!!.text!!.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toMutableList()
-                        val listName = countriesList[0]
-                        val response = newCountriesList(chatId.toString(), listName, countriesList.drop(1))
-
-                        if (response.startsWith("OK")){
-                            lastImportantMessages.remove(userId)
-                            showList(response.substringAfter(" "), chatId)
-                        }else{
-                            listOf(TelegramMessageWrapper(chatId, response))
-                        }
-                    }
-                    MessageType.LAST_X_DAYS -> {
-                        emptyList()
-                    }
-                    else -> emptyList()
-                }
-            }
-
-            emptyList()
+            messageCommand(update.message!!.from!!.id, update.message!!.chat.id, update.message!!.text!!)
         },
 
-        createCommandHandlerNoLoginRequired("check") { _, update, args ->
-            listOf(TelegramMessageWrapper(
-                    chatId = update.message!!.chat.id,
-                    parseMode = ParseMode.HTML,
-                    text = getCountryByName(args[0])?.toTable()?.get(0) ?: countryNotFoundText ))
+        createCommandHandler("check", LoginType.NotRequired) { _, update, args ->
+            checkCommand(update.message!!.chat.id, args)
         }
         /*createCallbackQueryHandler("Countries") { bot, update ->
             update.callbackQuery?.let {
@@ -143,6 +80,17 @@ fun countryListCommands(updater : Updater){
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
+fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, "Paises aceptados:\n" + allCountriesNames()?.joinToString(separator = "\n").toString()))
+
+fun myListsCommand(chatId: Long) :List<TelegramMessageWrapper>{
+    return when(val listas = getCountryLists(chatId.toString())){
+        null, emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
+        else -> listOf(TelegramMessageWrapper(
+                chatId, myListsText,
+                replyMarkup = InlineKeyboardMarkup(listas.map { countriesList -> listOf(countriesList.toButton()) } +
+                        newListButtonNoMarkup())))
+    }
+}
 fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
     return when(val countriesList = buildTableArray(getListCountries(listId, chatId.toString()))){
         emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))))
@@ -154,4 +102,60 @@ fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
             telegramMessageWrappers
         }
     }
+}
+
+fun addCountryCommand(chatId: Long, listId: String) :List<TelegramMessageWrapper>{
+    lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.ADD_COUNTRY, listId)
+
+    return listOf(TelegramMessageWrapper(chatId, addCountryText))
+}
+fun addListCommand(chatId: Long) :List<TelegramMessageWrapper>{
+    lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
+
+    return listOf(TelegramMessageWrapper(chatId, createListText))
+}
+
+fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessageWrapper>{
+    if(healthCheck() && isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
+        val lastMessage = lastImportantMessages[userId]
+
+        return when(lastMessage!!.messageType){
+            MessageType.ADD_COUNTRY  -> {
+                val countriesList = text.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toSet()
+                val response = addCountries(chatId.toString(), lastMessage.countryListId, countriesList)
+
+                if (response == "Saved"){
+                    lastImportantMessages.remove(userId)
+                    showList(lastMessage.countryListId, chatId)
+                }else{
+                    listOf(TelegramMessageWrapper(chatId, response))
+                }
+            }
+            MessageType.NEW_LIST -> {
+                val countriesList = text.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toMutableList()
+                val listName = countriesList[0]
+                val response = newCountriesList(chatId.toString(), listName, countriesList.drop(1))
+
+                if (response.startsWith("OK")){
+                    lastImportantMessages.remove(userId)
+                    showList(response.substringAfter(" "), chatId)
+                }else{
+                    listOf(TelegramMessageWrapper(chatId, response))
+                }
+            }
+            MessageType.LAST_X_DAYS -> {
+                emptyList()
+            }
+            else -> emptyList()
+        }
+    }
+
+    return emptyList()
+}
+
+fun checkCommand(chatId :Long, args :List<String>) :List<TelegramMessageWrapper> {
+    return listOf(TelegramMessageWrapper(
+            chatId = chatId,
+            parseMode = ParseMode.HTML,
+            text = getCountryByName(args[0])?.toTable()?.get(0) ?: countryNotFoundText))
 }

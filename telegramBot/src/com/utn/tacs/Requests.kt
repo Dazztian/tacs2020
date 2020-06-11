@@ -11,11 +11,13 @@ const val urlBase = "http://localhost:8080/"
 fun healthCheck() : Boolean{
     return try {
         HttpURLConnection.setFollowRedirects(false)
-        val con = URL(urlBase).openConnection()
+        val con = URL(urlBase+"configuration").openConnection()
         con.connectTimeout = 5000 //set timeout to 5 seconds
 
-        (con.inputStream.bufferedReader().readText() == "Application running")
+        val x = (con.inputStream.bufferedReader().readText() == "Application running")
+        x
     } catch (exc :Exception) {
+        val a = exc
         false
     }
 }
@@ -153,7 +155,7 @@ fun getListCountries(listId :String, telegramId :String) :List<Country>?{
 
 fun addCountries(telegramUserId: String, listId :String, countries :Set<String>) :String{
     return try {
-        val (x, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
+        val (_, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
                 .header("Content-Type", "application/json")
                 .body(Gson().toJson(UserCountriesListModificationRequest("list", countries.toMutableSet())).toString())
                 .responseString()

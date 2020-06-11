@@ -2,8 +2,7 @@ package com.utn.tacs
 
 import com.github.kotlintelegrambot.entities.Update
 
-fun startMessageCallBackQuery(update : Update) = startMessageBuilder(update.callbackQuery!!.from.firstName)
-fun loginText(update : Update) = startMessageBuilder(update.message!!.from?.firstName ?: "errorName")
+fun loginText(name: String?) = startMessageBuilder(name ?: "errorName")
 fun startMessageBuilder(firstName :String) =    "Welcome $firstName!  \uD83D\uDE04\n\n" +
         "To see your lists press \"My Lists\"\n" +
         "To see command info press \"Help\"\n" +
@@ -43,3 +42,14 @@ const val addCountryText =  "Send me a list of the countries you want to add to 
 const val countryNotFoundText = "Error: Country not found\n"+
                                 "User /paises to check the name of the " +
                                 "country you are trying to look"
+
+
+const val textoServerCaido = "An error occurred while connecting to the server \uD83D\uDE1F"
+const val textoUsuarioNoLogueado = "The current user is not logged in\n" +
+        "To login write: \n" +
+        "/login {usuario} {contraseña}"
+const val textoUsuarioYaLogueado = "The current user is already logged in. \n" +
+        "To change users write: \n" +
+        "/logout"
+const val textoArgumentsExpected =  "Error while trying to use a command without arguments\n" +
+        "For help use /help"
