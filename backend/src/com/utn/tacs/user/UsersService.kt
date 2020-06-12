@@ -1,10 +1,10 @@
 package com.utn.tacs.user
 
 import com.utn.tacs.*
-import com.utn.tacs.lists.*
-import io.ktor.features.NotFoundException
-import java.lang.Exception
 import com.utn.tacs.exception.UserAlreadyExistsException
+import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.utils.Encoder
+import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
 
@@ -39,10 +39,8 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
             throw UserAlreadyExistsException()
         }
-
-        return usersRepository.createUser(
-            User(signUpRequest.name, signUpRequest.email, signUpRequest.password, signUpRequest.country, signUpRequest.isAdmin ?: false)
-        ) ?: throw Exception()
+        return usersRepository.createUser(User(signUpRequest.name, signUpRequest.email, Encoder.encode(signUpRequest.password),
+                signUpRequest.country, signUpRequest.isAdmin ?: false)) ?: throw Exception()
     }
 
     /**
@@ -54,9 +52,11 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     fun getUserLists(userId: String): List<UserCountriesListResponse> {
         usersRepository.getUserById(userId) ?: throw NotFoundException()
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
-        userListsRepository.getUserLists(userId).forEach { it -> userLists.add(
-            UserCountriesListResponse(it._id.toString(), it.name, it.countries)
-        )}
+        userListsRepository.getUserLists(userId).forEach {
+            userLists.add(
+                    UserCountriesListResponse(it._id.toString(), it.name, it.countries)
+            )
+        }
         return userLists
     }
 
@@ -71,13 +71,13 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun getUserList(userId: String, listId: String): UserCountriesListResponse {
         val userList = userListsRepository.getUserList(listId) ?: throw NotFoundException()
-        if(!userList.userId.toString().equals(userId)) {
+        if (!userList.userId.toString().equals(userId)) {
             throw NotFoundException()
         }
         return UserCountriesListResponse(
-            userList._id.toString(),
-            userList.name,
-            userList.countries
+                userList._id.toString(),
+                userList.name,
+                userList.countries
         )
     }
 
@@ -92,11 +92,12 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * @throws NotFoundException
      */
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries))
+                ?: throw NotFoundException()
         return UserCountriesListResponse(
-            id,
-            listName,
-            countries
+                id,
+                listName,
+                countries
         )
     }
 
@@ -131,9 +132,9 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         getUserList(userId, listId)
         val newListId = userListsRepository.doUpdate(listId, request.name, request.countries) ?: throw Exception()
         return UserCountriesListResponse(
-            newListId,
-            request.name,
-            request.countries
+                newListId,
+                request.name,
+                request.countries
         )
     }
 

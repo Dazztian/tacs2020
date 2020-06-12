@@ -1,22 +1,17 @@
 package com.utn.tacs.e2e.rest
 
-import com.utn.tacs.module
-import io.ktor.application.Application
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withTestApplication
-import org.junit.Test
-import org.junit.jupiter.api.Assertions.assertEquals
-import java.util.concurrent.TimeUnit
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.utn.tacs.CountriesNamesResponse
-import com.utn.tacs.Country
 import com.utn.tacs.CountryResponse
+import com.utn.tacs.module
+import io.ktor.application.Application
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.withTestApplication
+import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -28,7 +23,7 @@ class CountriesControllerTest {
             val status = response.status() ?: throw Exception("not response status code found")
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
 
-            assertEquals(status, HttpStatusCode.OK)
+            assertEquals(HttpStatusCode.OK, status)
             countries.forEach { it ->
                 assertFalse(it.countryregion.isEmpty())
                 assertFalse(it.lastupdate.isEmpty())
@@ -45,9 +40,9 @@ class CountriesControllerTest {
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=-34&lon=-64")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
-            val expectedCountries = listOf("AR" , "BO" , "BR" , "CL" , "PY" , "PE" , "UY")
+            val expectedCountries = listOf("AR", "BO", "BR", "CL", "PY", "PE", "UY")
 
-            assertEquals(status, HttpStatusCode.OK)
+            assertEquals(HttpStatusCode.OK, status)
             assertEquals(7, countries.size)
             countries.forEach { it ->
                 assertTrue(expectedCountries.contains(it.countrycode?.iso2))
@@ -65,12 +60,12 @@ class CountriesControllerTest {
     fun testGetCountriesByNearestLocation_sendStringsAsLatAndLon_BadRequest() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=-34&lon=pepe")) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.BadRequest)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
 
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=pepe&lon=-64")) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.BadRequest)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
     }
 
@@ -79,9 +74,9 @@ class CountriesControllerTest {
         with(handleRequest(HttpMethod.Get, "/api/countries/US")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
-            assertEquals(status, HttpStatusCode.OK)
-            assertEquals("US" , country.countrycode?.iso2)
-            assertEquals("US" , country.countryregion)
+            assertEquals(HttpStatusCode.OK, status)
+            assertEquals("US", country.countrycode?.iso2)
+            assertEquals("US", country.countryregion)
         }
     }
 
@@ -89,7 +84,7 @@ class CountriesControllerTest {
     fun testGetCountryByIsoCode2_notFound() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/api/countries/PEPE")) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.NotFound)
+            assertEquals(HttpStatusCode.NotFound, status)
         }
     }
 
@@ -98,9 +93,9 @@ class CountriesControllerTest {
         with(handleRequest(HttpMethod.Get, "/api/countries?name=indonesia")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
-            assertEquals(status, HttpStatusCode.OK)
-            assertEquals("ID" , country.countrycode?.iso2)
-            assertEquals("Indonesia" , country.countryregion)
+            assertEquals(HttpStatusCode.OK, status)
+            assertEquals("ID", country.countrycode?.iso2)
+            assertEquals("Indonesia", country.countryregion)
         }
     }
 
@@ -108,7 +103,7 @@ class CountriesControllerTest {
     fun testGetCountryByName_notFound() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/api/countries?name=aaa")) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.NotFound)
+            assertEquals(HttpStatusCode.NotFound, status)
         }
     }
 
@@ -129,9 +124,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("KE" , country.countrycode?.iso2)
-            assertEquals("Kenya" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("KE", country.countrycode?.iso2)
+            assertEquals("Kenya", country.countryregion)
             assertNotNull(country.timeseries)
             assertTrue(country.timeseries!!.isNotEmpty())
 
@@ -156,7 +151,7 @@ class CountriesControllerTest {
     fun testGetCountryTimeseries_wrongIso2_NotFound() = withTestApplication(Application::module) {
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=PEPE")) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.NotFound)
+            assertEquals(HttpStatusCode.NotFound, status)
         }
     }
 
@@ -169,10 +164,10 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals(1 , countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertEquals(3, country.timeseries!!.size)
 
             var first = true
@@ -191,9 +186,9 @@ class CountriesControllerTest {
                 previousTimeSerie = it
             }
 
-            assertEquals(8,country.timeseries!!.get(0).number)
-            assertEquals(9,country.timeseries!!.get(1).number)
-            assertEquals(10,country.timeseries!!.get(2).number)
+            assertEquals(8, country.timeseries!!.get(0).number)
+            assertEquals(9, country.timeseries!!.get(1).number)
+            assertEquals(10, country.timeseries!!.get(2).number)
         }
     }
 
@@ -205,9 +200,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertEquals(toDay, country.timeseries!!.size)
 
             var first = true
@@ -238,9 +233,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertTrue(country.timeseries!!.isNotEmpty())
 
             var first = true
@@ -268,7 +263,7 @@ class CountriesControllerTest {
         val toDay = 3
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.BadRequest)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
     }
 
@@ -278,7 +273,7 @@ class CountriesControllerTest {
         val toDay = 3
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.BadRequest)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
     }
 
@@ -288,7 +283,7 @@ class CountriesControllerTest {
         val toDay = "pepe"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.BadRequest)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
     }
 
@@ -301,9 +296,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertEquals(4, country.timeseries!!.size)
 
             var first = true
@@ -322,10 +317,10 @@ class CountriesControllerTest {
                 previousTimeSerie = it
             }
 
-            assertEquals("5/25/20",country.timeseries!!.get(0).date)
-            assertEquals("5/26/20",country.timeseries!!.get(1).date)
-            assertEquals("5/27/20",country.timeseries!!.get(2).date)
-            assertEquals("5/28/20",country.timeseries!!.get(3).date)
+            assertEquals("5/25/20", country.timeseries!!.get(0).date)
+            assertEquals("5/26/20", country.timeseries!!.get(1).date)
+            assertEquals("5/27/20", country.timeseries!!.get(2).date)
+            assertEquals("5/28/20", country.timeseries!!.get(3).date)
         }
     }
 
@@ -337,9 +332,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertTrue(country.timeseries!!.isNotEmpty())
 
             var first = true
@@ -369,9 +364,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertTrue(country.timeseries!!.isNotEmpty())
 
             var first = true
@@ -412,9 +407,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertTrue(country.timeseries!!.isEmpty())
         }
     }
@@ -428,9 +423,9 @@ class CountriesControllerTest {
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
             val country = countries.first()
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals(1,countries.size)
-            assertEquals("AR" , country.countrycode?.iso2)
-            assertEquals("Argentina" , country.countryregion)
+            assertEquals(1, countries.size)
+            assertEquals("AR", country.countrycode?.iso2)
+            assertEquals("Argentina", country.countryregion)
             assertEquals(3, country.timeseries!!.size)
 
             var first = true
@@ -449,9 +444,9 @@ class CountriesControllerTest {
                 previousTimeSerie = it
             }
 
-            assertEquals("3/3/20",country.timeseries!!.get(0).date)
-            assertEquals("3/4/20",country.timeseries!!.get(1).date)
-            assertEquals(toDate,country.timeseries!!.get(2).date)
+            assertEquals("3/3/20", country.timeseries!!.get(0).date)
+            assertEquals("3/4/20", country.timeseries!!.get(1).date)
+            assertEquals(toDate, country.timeseries!!.get(2).date)
 
         }
     }

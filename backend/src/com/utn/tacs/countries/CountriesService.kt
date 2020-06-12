@@ -1,7 +1,10 @@
 package com.utn.tacs.countries
 
-import com.utn.tacs.utils.isDistanceLowerThan
-import com.utn.tacs.*
+import com.utn.tacs.CountryResponse
+import com.utn.tacs.CovidExternalClient
+import com.utn.tacs.TimeSeries
+import com.utn.tacs.TimeSeriesTotal
+import com.utn.tacs.utils.DistanceCalculator
 import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
 import java.time.LocalDate
@@ -12,7 +15,6 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
 
     /**
      * Returns all countries covid data from cache repository or external api
-     *
      * @return List<CountryResponse>
      */
     suspend fun getAllCountries(): List<CountryResponse> {
@@ -29,9 +31,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @return List<CountryResponse>
      */
     suspend fun getNearestCountries(lat: Double, lon: Double): List<CountryResponse> {
-        val countries = getAllCountries().filter { countryData -> isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance)}
-        //countries.forEach { it.timeseries = getCountryTimeSeries(it.countrycode!!.iso2) }
-        return countries
+        return getAllCountries().filter { countryData -> DistanceCalculator.isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }
     }
 
     /**
@@ -63,7 +63,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     suspend fun getCountryLatestByName(name: String): CountryResponse {
         try {
-            return CountryResponse(countriesRepository.getCountryByName("^${name.toLowerCase().capitalize()}"))
+            return CountryResponse(countriesRepository.getCountryByName(name.toLowerCase().capitalize()))
         } catch (e: Exception) {
             throw NotFoundException("There was no country with name $name")
         }
@@ -76,15 +76,9 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @param names List<String>
      * @return CountryResponse
      */
-    suspend fun getCountriesByName(names: List<String>): List<CountryResponse> {
-        try {
-            val countries = ArrayList<CountryResponse>()
-            (if (names.isEmpty()) emptyList() else countriesRepository.getCountriesByName(names).toList()).forEach {
-                countries.add(CountryResponse(it))
-            }
-            return countries
-        } catch (e: IndexOutOfBoundsException) {
-            throw kotlin.IllegalArgumentException("There are no countries in that list")
+    fun getCountriesByName(names: List<String>): List<CountryResponse> {
+        return countriesRepository.getCountriesByName(names).map {
+            CountryResponse(it)
         }
     }
 
@@ -102,13 +96,13 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @throws BadRequestException
      */
     suspend fun getCountryTimesSeries(
-        countriesCodes: List<String>,
-        fromDay: Int?,
-        toDay: Int?,
-        fromDate: String?,
-        toDate: String?
+            countriesCodes: List<String>,
+            fromDay: Int?,
+            toDay: Int?,
+            fromDate: String?,
+            toDate: String?
     ): List<CountryResponse> {
-        val countries = countriesCodes.map{ getCountryLatestByIsoCode(it.toUpperCase()) }
+        val countries = countriesCodes.map { getCountryLatestByIsoCode(it.toUpperCase()) }
         for (country in countries) {
             var timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
             if (null != fromDay) {
@@ -119,35 +113,39 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
             }
             try {
                 if (null != fromDate && fromDate.isNotEmpty()) {
-                    timeseries = timeseries.dropWhile { LocalDate.of(
-                        it.date.split("/").get(2).toInt(),
-                        it.date.split("/").get(0).toInt(),
-                        it.date.split("/").get(1).toInt()
-                    ) < LocalDate.of(
-                        fromDate.split("/").get(2).toInt(),
-                        fromDate.split("/").get(0).toInt(),
-                        fromDate.split("/").get(1).toInt()
-                    ) }
+                    timeseries = timeseries.dropWhile {
+                        LocalDate.of(
+                                it.date.split("/").get(2).toInt(),
+                                it.date.split("/").get(0).toInt(),
+                                it.date.split("/").get(1).toInt()
+                        ) < LocalDate.of(
+                                fromDate.split("/").get(2).toInt(),
+                                fromDate.split("/").get(0).toInt(),
+                                fromDate.split("/").get(1).toInt()
+                        )
+                    }
                 }
                 if (null != toDate && toDate.isNotEmpty()) {
-                    timeseries = timeseries.dropLastWhile { LocalDate.of(
-                        it.date.split("/").get(2).toInt(),
-                        it.date.split("/").get(0).toInt(),
-                        it.date.split("/").get(1).toInt()
-                    ) > LocalDate.of(
-                        toDate.split("/").get(2).toInt(),
-                        toDate.split("/").get(0).toInt(),
-                        toDate.split("/").get(1).toInt()
-                    ) }
+                    timeseries = timeseries.dropLastWhile {
+                        LocalDate.of(
+                                it.date.split("/").get(2).toInt(),
+                                it.date.split("/").get(0).toInt(),
+                                it.date.split("/").get(1).toInt()
+                        ) > LocalDate.of(
+                                toDate.split("/").get(2).toInt(),
+                                toDate.split("/").get(0).toInt(),
+                                toDate.split("/").get(1).toInt()
+                        )
+                    }
                 }
             } catch (e: IndexOutOfBoundsException) {
                 throw BadRequestException("Wrong dates format")
             }
             country.timeseries = timeseries
             country.timeSeriesTotal = TimeSeriesTotal(
-                timeseries.sumBy { it.confirmed },
-                timeseries.sumBy { it.deaths },
-                timeseries.sumBy { it.recovered }
+                    timeseries.sumBy { it.confirmed },
+                    timeseries.sumBy { it.deaths },
+                    timeseries.sumBy { it.recovered }
             )
         }
         return countries
@@ -159,7 +157,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @param country Country
      * @return List<TimeSeries>
      */
-    suspend private fun getCountryTimeSeries(countryIso2Code: String): List<TimeSeries> {
-        return getCountryTimeSeriesFromApi("iso2=${countryIso2Code}")
+    private suspend fun getCountryTimeSeries(countryIso2Code: String): List<TimeSeries> {
+        return CovidExternalClient.getCountryTimeSeriesFromApi("iso2=${countryIso2Code}")
     }
 }

@@ -2,23 +2,25 @@ package com.utn.tacs.user
 
 import com.mongodb.MongoException
 import com.mongodb.client.MongoDatabase
+import com.typesafe.config.ConfigFactory
 import com.utn.tacs.User
+import com.utn.tacs.utils.Encoder
+import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import org.litote.kmongo.id.toId
-import com.typesafe.config.ConfigFactory
-import io.ktor.features.NotFoundException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 const val USERS_COLLECTION_NAME = "users"
+
 class UsersRepository(private val database: MongoDatabase) {
     private val adminUserName = ConfigFactory.load().getString("adminUser.name")
     private val adminUserEmail = ConfigFactory.load().getString("adminUser.email")
     private val adminUserPass = ConfigFactory.load().getString("adminUser.pass")
+
     init {
-        getUserByEmailAndPass(adminUserEmail, adminUserPass) ?:
-            createUser( User( adminUserName, adminUserEmail, adminUserPass, "Argentina",true))
+        getUserByEmail(adminUserEmail) ?: createUser(User(adminUserName, adminUserEmail, adminUserPass, "Argentina", true))
     }
 
     /**
@@ -58,8 +60,14 @@ class UsersRepository(private val database: MongoDatabase) {
      * @param password String
      * @return User?
      */
-    fun getUserByEmailAndPass(email: String, password: String): User? {
-        return database.getCollection<User>(USERS_COLLECTION_NAME).findOne(User::email eq email, User::password eq password)
+    fun getUserByEmailAndPass(email: String, password: String): User {
+        val user = database.getCollection<User>(USERS_COLLECTION_NAME).findOne(User::email eq email)
+        //This changes, because the hashing function can produce different encodings and checking using only equal could not be enough.
+        if (user != null && Encoder.matches(password, user.password)) {
+            return user
+        } else {
+            throw NotFoundException("User does not exists or password is invalid")
+        }
     }
 
     /**
@@ -93,8 +101,8 @@ class UsersRepository(private val database: MongoDatabase) {
      * @throws Exception
      */
     fun delete(user: User) {
-        val deleted = database.getCollection<User>(USERS_COLLECTION_NAME).deleteOneById(user._id.toString())
-        if (! deleted.wasAcknowledged()) {
+        val deleted = database.getCollection<User>(USERS_COLLECTION_NAME).deleteOne(User::_id eq user._id)
+        if (!deleted.wasAcknowledged()) {
             throw Exception("User not deleted")
         }
     }

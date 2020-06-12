@@ -67,7 +67,7 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                 } catch (e: NumberFormatException) {
                     call.respond(HttpStatusCode.BadRequest)
                 } catch (e: BadRequestException) {
-                    call.respond(HttpStatusCode.BadRequest.description(e.message ?: "malformed request"))
+                    call.respond(HttpStatusCode.BadRequest.description(e.message ?: "Malformed request"))
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)
                 }

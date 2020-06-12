@@ -1,4 +1,4 @@
-package com.utn.tacs
+package com.utn.tacs.exception
 
 import io.ktor.http.HttpStatusCode
 

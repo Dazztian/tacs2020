@@ -2,11 +2,11 @@ package com.utn.tacs
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.utn.tacs.account.AccountRepository
-import com.utn.tacs.account.AuthorizationService
+import com.utn.tacs.auth.AuthorizationService
 import com.utn.tacs.auth.JwtConfig
 import com.utn.tacs.countries.CountriesRepository
 import com.utn.tacs.countries.CountriesService
+import com.utn.tacs.exception.HttpBinError
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
@@ -33,8 +33,8 @@ import org.litote.kmongo.id.jackson.IdJacksonModule
 val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
 val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
 val usersService = UsersService(usersRepository, userListsRepository)
-val accountService = AuthorizationService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
-val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase()))
+val accountService = AuthorizationService(usersRepository, usersService)
+val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase(), CovidExternalClient))
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 

@@ -11,7 +11,6 @@ import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.*
 
 val logger = getLogger()
@@ -79,11 +78,6 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                         logger.error("Error parsing patch request", e)
                         call.respond(HttpStatusCode.BadRequest)
                     }
-                }
-            }
-            route("/api/user/{userId}/countries/list/table/{name}") {
-                get {
-                    call.respondText("Envia los datos e/m/r para una lista de paises");
                 }
             }
         }

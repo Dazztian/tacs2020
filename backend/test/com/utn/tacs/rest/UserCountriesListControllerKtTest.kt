@@ -230,21 +230,4 @@ class UserCountriesListControllerKtTest {
             assertEquals(HttpStatusCode.BadRequest, response.status())
         }
     }
-
-    @Test
-    fun testApiCountriesIdListTable() = testApp {
-        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10") {
-            addJwtHeader(authUser)
-        }) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
-        }
-        with(handleRequest(HttpMethod.Get, "/api/user/1/countries/list/table/10") {
-            addJwtHeader(authUser)
-        }) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("Envia los datos e/m/r para una lista de paises", response.content)
-        }
-    }
-
 }
