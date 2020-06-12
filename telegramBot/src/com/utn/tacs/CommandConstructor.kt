@@ -31,14 +31,14 @@ interface LoginType{
 
 private fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
     when{
-        !healthCheck() -> bot.sendMessage(chatId = chatId, text = textoServerCaido)
+        !RequestManager.healthCheck() -> bot.sendMessage(chatId = chatId, text = unresponsiveServerText)
         type == LoginType.NotRequired -> return true
         else -> {
-            val loggedIn = isLoggedIn(chatId.toString())
+            val loggedIn = RequestManager.isLoggedIn(chatId.toString())
 
             when{
-                loggedIn && type == LoginType.NotLoggedIn -> bot.sendMessage(chatId = chatId, text = textoUsuarioYaLogueado)
-                !loggedIn && type == LoginType.LoggedIn -> bot.sendMessage(chatId = chatId, text = textoUsuarioNoLogueado)
+                loggedIn && type == LoginType.NotLoggedIn -> bot.sendMessage(chatId = chatId, text = UserLoggedInText)
+                !loggedIn && type == LoginType.LoggedIn -> bot.sendMessage(chatId = chatId, text = UserNotLoggedInText)
                 else -> return true
             }
         }
@@ -77,7 +77,7 @@ private fun commandHandlerBuilder(method :updateHandlerArgs, type :LoginType) :C
     return { bot, update, args->
         val chatId = update.message!!.chat.id
         when{
-            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = textoArgumentsExpected)
+            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = ArgumentsExpectedText)
             else -> if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update, args))
         }
     }
@@ -89,7 +89,7 @@ private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandlerArgs,
     return { bot, update, args ->
         val chatId = update.callbackQuery!!.message!!.chat.id
         when{
-            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = textoArgumentsExpected)
+            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = ArgumentsExpectedText)
             else -> if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update, args))
         }
     }

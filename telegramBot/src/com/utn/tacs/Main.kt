@@ -7,7 +7,7 @@ import com.utn.tacs.handlers.startCommands
 import java.io.File
 
 
-//Map of last important messages separatad by each telegram user Id
+//Map of last important messages separated by each telegram user Id
 val lastImportantMessages = mutableMapOf<Long, PreviousMessageWrapper>()
 
 fun main(args: Array<String>) {

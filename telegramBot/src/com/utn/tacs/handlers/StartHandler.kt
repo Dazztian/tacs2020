@@ -1,6 +1,5 @@
 package com.utn.tacs.handlers
 
-import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.updater.Updater
@@ -51,7 +50,7 @@ fun startCommands(updater :Updater){
 }
 
 fun startCommand(chatId :Long, firstName :String?) :List<TelegramMessageWrapper>{
-    return if(isLoggedIn(chatId.toString()))
+    return if(RequestManager.isLoggedIn(chatId.toString()))
         listOf(TelegramMessageWrapper(
                 chatId = chatId,
                 text = loginText(firstName),
@@ -64,16 +63,16 @@ fun startCommand(chatId :Long, firstName :String?) :List<TelegramMessageWrapper>
 fun helpCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, helpText))
 fun loginCommand(chatId: Long, firstName :String?, args: List<String>) :List<TelegramMessageWrapper>{
     if(args.size != 2){
-        return listOf(TelegramMessageWrapper(chatId, textoLoginHelp))
+        return listOf(TelegramMessageWrapper(chatId, LoginHelpText))
     }
 
-    return if(login(args[0], args[1], chatId.toString()))
+    return if(RequestManager.login(args[0], args[1], chatId.toString()))
         listOf(TelegramMessageWrapper(chatId, loginText(firstName), replyMarkup = startButtons()))
     else
         listOf(TelegramMessageWrapper(chatId, badLogoutText))
 }
 fun logoutCommand(chatId: Long) :List<TelegramMessageWrapper>{
-    return if(logout(chatId.toString()))
+    return if(RequestManager.logout(chatId.toString()))
         listOf(TelegramMessageWrapper(chatId, startText))
     else
         listOf(TelegramMessageWrapper(chatId, errorText))

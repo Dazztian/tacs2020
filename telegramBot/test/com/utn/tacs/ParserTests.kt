@@ -2,14 +2,13 @@ package com.utn.tacs
 
 import org.junit.Test
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
-class Tests {
 
+class ParserTests {
     @Test
-    fun organizarEnCaracteresTest(){
-        val result = organizarEnCaracteres(listOf("12345", "123456", "123", "45", "123", "12345", "123", "123456"), 5)
+    fun organizeInCharactersTest(){
+        val result = organizeInCharacters(listOf("12345", "123456", "123", "45", "123", "12345", "123", "123456"), 5)
 
         assertEquals(listOf("12345", "12345", "123", "12345", "123"), result)
     }

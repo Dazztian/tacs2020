@@ -23,7 +23,7 @@ interface RequestModelInterface{
     //Retorna el header de la tabla
     fun tableHeader() :String
     //Returns the a table with the list
-    fun toTable() :List<String> = organizarEnCaracteres(listOf(tableHeader()) + toTableRowString(), 4084)
+    fun toTable() :List<String> = organizeInCharacters(listOf(tableHeader()) + toTableRowString(), 4084)
                                         .map { row -> "<pre>\n$row</pre>" }
 }
 sealed class RequestModel :RequestModelInterface

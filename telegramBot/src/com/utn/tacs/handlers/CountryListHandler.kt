@@ -1,6 +1,5 @@
 package com.utn.tacs.handlers
 
-import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
 import com.github.kotlintelegrambot.entities.InlineKeyboardButton
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.ParseMode
@@ -38,7 +37,7 @@ fun newListButtonNoMarkup() = listOf(
 
 fun countryListCommands(updater : Updater){
     listOf(
-        createCallbackQueryHandler("countries", LoginType.NotRequired) { _, update->
+        createCommandHandler("countries", LoginType.NotRequired) { _, update->
             countriesCommand(update.message!!.chat.id)
         },
 
@@ -80,19 +79,19 @@ fun countryListCommands(updater : Updater){
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
-fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, "Paises aceptados:\n" + allCountriesNames()?.joinToString(separator = "\n").toString()))
+fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + RequestManager.allCountriesNames()?.joinToString(separator = "\n").toString()))
 
 fun myListsCommand(chatId: Long) :List<TelegramMessageWrapper>{
-    return when(val listas = getCountryLists(chatId.toString())){
+    return when(val countriesLists = RequestManager.getCountryLists(chatId.toString())){
         null, emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
         else -> listOf(TelegramMessageWrapper(
                 chatId, myListsText,
-                replyMarkup = InlineKeyboardMarkup(listas.map { countriesList -> listOf(countriesList.toButton()) } +
+                replyMarkup = InlineKeyboardMarkup(countriesLists.map { countriesList -> listOf(countriesList.toButton()) } +
                         newListButtonNoMarkup())))
     }
 }
 fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
-    return when(val countriesList = buildTableArray(getListCountries(listId, chatId.toString()))){
+    return when(val countriesList = buildTableArray(RequestManager.getListCountries(listId, chatId.toString()))){
         emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))))
         else -> {
             val telegramMessageWrappers = mutableListOf<TelegramMessageWrapper>()
@@ -116,13 +115,13 @@ fun addListCommand(chatId: Long) :List<TelegramMessageWrapper>{
 }
 
 fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessageWrapper>{
-    if(healthCheck() && isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
+    if(RequestManager.healthCheck() && RequestManager.isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
         val lastMessage = lastImportantMessages[userId]
 
         return when(lastMessage!!.messageType){
             MessageType.ADD_COUNTRY  -> {
                 val countriesList = text.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toSet()
-                val response = addCountries(chatId.toString(), lastMessage.countryListId, countriesList)
+                val response = RequestManager.addCountries(chatId.toString(), lastMessage.countryListId, countriesList)
 
                 if (response == "Saved"){
                     lastImportantMessages.remove(userId)
@@ -134,7 +133,7 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessa
             MessageType.NEW_LIST -> {
                 val countriesList = text.trim().splitToSequence("\n").filter{ it.isNotEmpty() }.toMutableList()
                 val listName = countriesList[0]
-                val response = newCountriesList(chatId.toString(), listName, countriesList.drop(1))
+                val response = RequestManager.newCountriesList(chatId.toString(), listName, countriesList.drop(1))
 
                 if (response.startsWith("OK")){
                     lastImportantMessages.remove(userId)
@@ -157,5 +156,5 @@ fun checkCommand(chatId :Long, args :List<String>) :List<TelegramMessageWrapper>
     return listOf(TelegramMessageWrapper(
             chatId = chatId,
             parseMode = ParseMode.HTML,
-            text = getCountryByName(args[0])?.toTable()?.get(0) ?: countryNotFoundText))
+            text = RequestManager.getCountryByName(args[0])?.toTable()?.get(0) ?: countryNotFoundText))
 }

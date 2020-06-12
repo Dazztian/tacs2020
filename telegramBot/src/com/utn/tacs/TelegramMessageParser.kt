@@ -41,7 +41,7 @@ fun buildTableArray(list :List<RequestModel>?) :List<String> {
     return if (list == null || list.isEmpty()){
         emptyList()
     }else{
-        organizarEnCaracteres(listOf(list[0].tableHeader()) + list.map { p -> p.toTableRowString() }, 4084)
+        organizeInCharacters(listOf(list[0].tableHeader()) + list.map { p -> p.toTableRowString() }, 4084)
             .map { row -> "<pre>\n$row</pre>" }
     }
 }
@@ -53,7 +53,7 @@ fun buildTableArray(list :List<RequestModel>?) :List<String> {
  * @param maxCharPorString Int
  * @return List<String>
  */
-fun organizarEnCaracteres(list :List<String>, maxCharPorString :Int) :List<String>{
+fun organizeInCharacters(list :List<String>, maxCharPorString :Int) :List<String>{
     val ret = mutableListOf<String>()
     var acc = ""
     for(s in list){

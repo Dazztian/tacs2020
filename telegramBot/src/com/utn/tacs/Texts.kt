@@ -6,9 +6,9 @@ fun loginText(name: String?) = startMessageBuilder(name ?: "errorName")
 fun startMessageBuilder(firstName :String) =    "Welcome $firstName!  \uD83D\uDE04\n\n" +
         "To see your lists press \"My Lists\"\n" +
         "To see command info press \"Help\"\n" +
-        "Remember to use telegram in horizonral mode for a better experience!"
+        "Remember to use telegram in horizontal mode for a better experience!"
 
-const val helpText =    "- This bot maintains a registry of the coronavirus advances in the world\n" +
+const val helpText =    "- This bot maintains a registry of the Coronavirus advances in the world\n" +
         "- To begin create an account in $urlBase\n" +
         "- To login write /login followed by your username and password\n" +
         "(Example: /login user pass)\n\n" +
@@ -25,9 +25,10 @@ const val startText =   "Welcome to the Group 4 Telegram Bot!  \uD83D\uDCBB\n\n"
 
 const val errorText = "Unknown error occurred"
 const val badLogoutText = "Username or password incorrect   \uD83D\uDE15"
-const val textoLoginHelp =  "To begin write /login followed by your username and password\n" +
+const val LoginHelpText =  "To begin write /login followed by your username and password\n" +
         "(Example: /login user pass)"
 
+const val acceptedCountriesText = "accepted countries:\n"
 const val myListsText = "Select one of the lists"
 const val textNoLists = "This user has no lists"
 const val textNoCountries = "This list has no countries"
@@ -40,16 +41,16 @@ const val addCountryText =  "Send me a list of the countries you want to add to 
         "Example:\nArgentina\nBrazil\nChile"
 
 const val countryNotFoundText = "Error: Country not found\n"+
-                                "User /paises to check the name of the " +
+                                "User /countries to check the name of the " +
                                 "country you are trying to look"
 
 
-const val textoServerCaido = "An error occurred while connecting to the server \uD83D\uDE1F"
-const val textoUsuarioNoLogueado = "The current user is not logged in\n" +
+const val unresponsiveServerText = "An error occurred while connecting to the server \uD83D\uDE1F"
+const val UserNotLoggedInText = "The current user is not logged in\n" +
         "To login write: \n" +
-        "/login {usuario} {contraseña}"
-const val textoUsuarioYaLogueado = "The current user is already logged in. \n" +
+        "/login {user} {password}"
+const val UserLoggedInText = "The current user is already logged in. \n" +
         "To change users write: \n" +
         "/logout"
-const val textoArgumentsExpected =  "Error while trying to use a command without arguments\n" +
+const val ArgumentsExpectedText =  "Error while trying to use a command without arguments\n" +
         "For help use /help"
