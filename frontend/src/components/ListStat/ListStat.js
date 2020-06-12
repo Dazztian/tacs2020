@@ -17,6 +17,7 @@ import { Typography } from "../Wrappers";
 import Dot from "../Sidebar/components/Dot";
 
 import TableComponent from "../Table/Table"
+import TableComponentb from "../Table/Tablebkp"
 
 // styles
 import useStyles from "../../views/user/dashboard/styles";
@@ -27,40 +28,12 @@ const api = new Api()
 const ListStat = ({ data })=>{
   let sec;
 
-    const [unArray,setUnArray] = useState([{}])
-    const [loading,setLoading] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     
     //esta funcion podria ir definida en el archivo api.js
     const submitData = async (unPais)=>{
       try{
-      let res = await fetch("http://localhost:8080/api/countries/"+ unPais+ "/timeseries",{
-          method:"GET",
-          headers:{
-              'Content-Type': 'application/json'
-          }
-      })
-      let elemento = await res.json()
       
-      let maxCantDias =  Math.max(...elemento.timeseries.map( item => { return [item.number]}))
-  
-      //ARRAY de elementos ordenanados de menor a mayor POR FECHA
-      let timeseriesOrdenado= elemento.timeseries.sort( (a,b) =>{
-        return  new Date(a.date) - new Date(b.date);
-      });        
-             
-      let promArray = timeseriesOrdenado.map(({number, date, ...keepAttrs}) => keepAttrs)
-  
-      let timeSeriesFiltrado = await Promise.all(promArray)
-  
-      let result = {codigo: elemento.countrycode.iso3,
-                       confirmed: elemento.confirmed,
-                       deaths: elemento.deaths,
-                       recovered: elemento.recovered,
-                       diasMaximos: maxCantDias,
-                       timeseries: timeSeriesFiltrado}        
-  
-      setUnArray(result)
       
       }
       catch(err) {
@@ -80,18 +53,39 @@ const ListStat = ({ data })=>{
     // local
   var [mainChartState, setMainChartState] = useState("Infected");
   
-  const series = [
+  const series = [ //suponiendo consulta de fromDay=1 toDay=4
       {
-        name: "Pais1",
-        data: [31, 40, 28, 51, 42, 109, 100],
+        countryname: "Argentina",
+        offset:0,
+        timeseridate:         [3/3/2020,4/3/2020,5/3/2020,6/3/2020],
+        timeseriesinfected:   [31, 40, 28, 51],
+        timeseriesreconvered: [31, 40, 28, 51],
+        timeseriesdeath:      [31, 40, 28, 51],
+        "confirmed": 25987,
+        "deaths": 735,
+        "recovered": 7991,
       },
       {
-        name: "Pais2",
-        data: [11, 32, 45, 32, 34, 52, 41],
+        name: "Uruguay",
+        offset:8,
+        timerseriesdate:      [11/3/2020,12/3/2020,13/3/2020,14/3/2020],
+        timeseriesinfected:   [11, 32, 45, 32],
+        timeseriesreconvered: [31, 40, 28, 51],
+        timeseriesdeath:      [31, 40, 28, 51],
+        "confirmed": 25987,
+        "deaths": 735,
+        "recovered": 7991,
       },
       {
-        name: "Pais3",
-        data: [7, 48, 12, 32, 63, 8, 72],
+        name: "Brasil",
+        offset:11,
+        timerseriesdate:      [14/3/2020,15/3/2020,16/3/2020,17/3/2020],
+        timeseriesinfected:   [11, 32, 45, 32],
+        timeseriesreconvered: [31, 40, 28, 51],
+        timeseriesdeath:      [31, 40, 28, 51],
+        "confirmed": 25987,
+        "deaths": 735,
+        "recovered": 7991,
       },
     ];
   
@@ -109,7 +103,7 @@ const ListStat = ({ data })=>{
 
 return(
     <>
-  <Grid container spacing={2}>
+  <Grid container spacing={1}>
   <Grid item lg={5} md={6} sm={12} xs={12}>
     <Widget 
       upperTitle
@@ -118,7 +112,8 @@ return(
       header={
         <div className={classes.mainChartHeader}/> }
     >
-        <TableComponent data={data.near} />
+        <TableComponent data={data} />
+      
     </Widget>
   </Grid>
 
@@ -143,7 +138,7 @@ return(
               container
               spacing={1}
               alignItems="center"
-              justify="left"
+              
             >
             <Grid item xs={3} md={3} >
               <TextField
@@ -197,7 +192,7 @@ return(
             container
             spacing={1}             
             alignItems="center"
-            justify="right"> 
+            > 
           <Grid > 
           <Select
               value={mainChartState}
@@ -227,7 +222,7 @@ return(
             options={themeOptions(theme)}
             series={series}
             type="area"
-            height={350}
+            height="auto"
             />
     </Widget>
   </Grid>

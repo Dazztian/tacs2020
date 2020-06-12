@@ -253,6 +253,57 @@ export default {
       "timeseries": []
     },
     {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
       "_id": "5ede4f65853cd27b821cecf9",
       "countryregion": "Bolivia",
       "lastupdate": "2020-06-08T14:42:00.008Z",

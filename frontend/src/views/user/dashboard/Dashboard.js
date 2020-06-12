@@ -56,9 +56,8 @@ const api = new Api();
 export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
-
   // local
-  var [mainChartState, setMainChartState] = useState("monthly");
+  var [nearCountries, setNearCountries] = useState([]);
   var [isLoading, setIsLoading] = useState(true);
 
   async function fetchLocal() {
@@ -71,20 +70,20 @@ export default function Dashboard(props) {
         localStorage.setItem('tracker_country_Iso', countryIso)
       }
       setIsLoading(false)
-
-      const countryData = await api.getCountryDataByIsoDate(iso,Date.now(),Date.now())
-
-      PieChartData[0].value = countryData.overallTotals.recovered
-      PieChartData[1].value = countryData.overallTotals.confirmed
-      PieChartData[2].value = countryData.overallTotals.deaths
+      console.log(Date.now())
+      const data = await api.getCountryDataByDate(iso,Date.now()-1,Date.now())
+      const countryData = data[0]
+      PieChartData[0].value = countryData.recovered 
+      PieChartData[1].value = countryData.confirmed 
+      PieChartData[2].value = countryData.deaths
       
-      newCases = countryData.confirmed
-      newRecovered = countryData.recovered
-      newDeath = countryData.deaths
+      newCases = countryData.timeseries[1].confirmed-countryData.timeseries[0].confirmed
+      newRecovered = countryData.timeseries[1].recovered-countryData.timeseries[0].recovered
+      newDeath = countryData.timeseries[1].deaths-countryData.timeseries[0].deaths
 
-      rateInfected = (newCases*100/countryData.overallTotals.confirmed).toFixed(2)
-      rateRecovered = (newRecovered*100/countryData.overallTotals.recovered).toFixed(2)
-      rateDeath = (newDeath*100/countryData.overallTotals.deaths).toFixed(2)
+      rateInfected = (newCases*100/countryData.confirmed).toFixed(2)
+      rateRecovered = (newRecovered*100/countryData.recovered).toFixed(2)
+      rateDeath = (newDeath*100/countryData.deaths).toFixed(2)
 
     } catch(error) {
       console.log(error)
@@ -93,7 +92,8 @@ export default function Dashboard(props) {
 
   async function fetchNearData() {
     try {
-
+      const near = await api.getNearCountries()
+      setNearCountries(near)
     } catch(error) {
       console.log(error)
     }
@@ -346,7 +346,7 @@ export default function Dashboard(props) {
         </Grid>
         <Grid item xs={12}>
           <PageTitle title= {"Near you"} />
-          <ListStats data={mock}/>
+          <ListStats data={nearCountries}/>
         </Grid>
         </Grid>
       </div>

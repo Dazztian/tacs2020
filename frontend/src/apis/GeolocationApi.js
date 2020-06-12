@@ -1,4 +1,3 @@
-const axios = require('axios');
 
 function getLocation(options) {
     return new Promise(function(resolve, reject) {

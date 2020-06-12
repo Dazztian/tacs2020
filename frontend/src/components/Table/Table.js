@@ -41,11 +41,13 @@ const rowAlign = "center"
 export default function TableComponent({data}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
-  const rowsPerPage = 5
+  const [rowsPerPage, setRowsPerPage] = React.useState(8);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   return (
       <TableContainer>
@@ -67,14 +69,23 @@ export default function TableComponent({data}) {
                   <StyledTableCell align={rowAlign}>{deaths}</StyledTableCell>
                 </StyledTableRow>
               ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: (30) * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
           </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[rowsPerPage]}
+        rowsPerPageOptions={[10]}
         component="div"
         count={data.length}
-        rowsPerPage={rowsPerPage}
+        rowsPerPage={8}
         page={page}
+        SelectProps={{
+          inputProps: { 'aria-label': 'rows per page' },
+          native: true,
+        }}
         onChangePage={handleChangePage}
       />
       </TableContainer>

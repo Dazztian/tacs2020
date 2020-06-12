@@ -27,12 +27,13 @@ import Api from "../../apis/Api"
 import { getCountry } from "../../apis/GeolocationApi";
 
 const api = new Api()
+let countryList = []
 
 function Login(props) {
   var classes = useStyles();
   // global
   var userDispatch = useUserDispatch();
-  // local
+  
   var [isLoading, setIsLoading] = useState(false);
   var [loginError, setLoginError] = useState(null);
   var [signUpError, setSignupError] = useState(null);
@@ -41,11 +42,10 @@ function Login(props) {
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
   var [countryValue, setCountryValue] = useState("");
+  
 
-  let countryMap
-  let countryList = []
 
-  const handleLoginWithGoogle = async () => {
+   const handleLoginWithGoogle = async () => {
     
   }
 
@@ -105,9 +105,13 @@ function Login(props) {
 
   async function fetchCountries(){
       const res = await api.getCountryList()
-      if(true/*res.ok*/){
-        const data = await res.json()
-        console.log(data)
+      if(res.ok){
+      countryList = await res.json()
+      //const countryList = await api.getCountryList()
+      localStorage.setItem('countriesList',countryList)
+      console.log(countryList)
+      } else {
+        console.log(res.errorMessage)
       }
   }
 
@@ -297,8 +301,8 @@ function Login(props) {
               >
                 {
                 countryList.map((country) => (
-                  <MenuItem key={country} value={country}>
-                    {country}
+                  <MenuItem key={country.name} value={country.name}>
+                    {country.name}
                   </MenuItem>
                 ))}
               </TextField>

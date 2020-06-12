@@ -4,14 +4,15 @@ class Api {
 
     constructor() {
       this.authToken = localStorage.getItem("id_token");
+      this.userSessionId = localStorage.getItem("id_session");
+      this.countryMap = localStorage.getItem("countriesList");
     }
   
     headers = {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
     };
   
-    BASE_URL = 'https://32ddbafd6091.ngrok.io/api';
+    BASE_URL = 'https://32ddbafd6091.ngrok.io';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -20,9 +21,24 @@ class Api {
       } : this.headers;
     }
 
+    countrNameConvertor(countriesNamesArray){
+
+    }
+
   
     async getCountryList(){
-      return await fetch(`${this.BASE_URL}/countries`, {
+      /*try{
+        const data = mock.countriesNameISo 
+  
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve(data);
+          }, 500);
+        })
+      }catch(error){
+        console.log(error)
+      }*/
+      return await fetch(`${this.BASE_URL}/api/countries/names`, {
         method:'GET',
         headers: this.createHeaders(),
       });
@@ -30,7 +46,7 @@ class Api {
 
   async getCountryDataByDate(iso,dateinicial,datefinal) {
     try{
-      const data = mock.countryByIso 
+      const data = mock.singleCountryLastday
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -53,9 +69,9 @@ class Api {
       }*/
   }
 
-  async getCountryDataByDays(iso,dateinicial,datefinal) {
+  async getCountryDataByDays(iso,startDay,endDay) {
     try{
-      const data = mock.countryByIso 
+      const data = mock.nearWithOffset 
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -114,7 +130,7 @@ class Api {
     }catch(error){
       console.log(error)
     }
-    /*return await fetch(`${BASE_URL}/`, {
+    /*return await fetch(`${BASE_URL}/api/login`, {
           method:'POST',
           headers: headers,
           body: JSON.stringify(item),
@@ -134,7 +150,7 @@ class Api {
     }catch(error){
       console.log(error)
     }
-    /*return await fetch(`${BASE_URL}/`, {
+    /*return await fetch(`${BASE_URL}/api/signup`, {
           method:'POST',
           headers: headers,
           body: JSON.stringify(item),
