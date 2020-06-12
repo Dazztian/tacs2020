@@ -1,17 +1,23 @@
 package com.utn.tacs
 
-import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.utn.tacs.account.AccountRepository
+import com.utn.tacs.account.AccountService
+import com.utn.tacs.countries.CountriesRepository
+import com.utn.tacs.countries.CountriesService
 
 import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
+import com.utn.tacs.telegram.TelegramRepository
 import com.utn.tacs.user.UsersRepository
+import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.client.HttpClient
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
@@ -21,14 +27,21 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.util.pipeline.PipelineInterceptor
+import io.ktor.util.pipeline.PipelinePhase
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
+val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
+val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
+val usersService = UsersService(usersRepository, userListsRepository)
+val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
+val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase()))
 
 //Changed the package to work with intellij.
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application.module() {
-
+fun Application. module() {
 
     install(DefaultHeaders)
     install(CORS) {
@@ -49,24 +62,25 @@ fun Application.module() {
         }
     }
 
-
     routes()
 }
 
-fun Application.contentNegotiator(){
+fun Application.contentNegotiator() {
     install(ContentNegotiation) {
         jackson {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             setDefaultPrettyPrinter(DefaultPrettyPrinter())
             registerModule(IdJacksonModule())
-
         }
     }
 }
+
 fun Application.routes() {
     healthCheckRoutes()
-    countriesRoutes()
-    userCountriesListRoutes(UserListsRepository(MongoClientGenerator.getDataBase()))
-    users(UsersRepository(MongoClientGenerator.getDataBase()))
-    login(UsersRepository(MongoClientGenerator.getDataBase()))
+    countriesRoutes(countriesService)
+    userCountriesListRoutes(usersService)
+    users(usersService)
+    login(accountService)
+    adminReports(AdminReportsService(usersRepository, userListsRepository))
+    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService, countriesService)
 }

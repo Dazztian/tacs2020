@@ -2,82 +2,98 @@ package com.utn.tacs.rest
 
 import com.utn.tacs.UserCountriesListModificationRequest
 import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.getLogger
+import com.utn.tacs.exception.UnAuthorizedException
+import com.utn.tacs.exception.UserAlreadyExistsException
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
+import io.ktor.request.header
 import io.ktor.response.respondText
 import io.ktor.routing.*
+import org.bson.types.ObjectId
+import org.litote.kmongo.id.toId
 import org.litote.kmongo.toId
 
 val logger = getLogger()
 
-
-fun Application.userCountriesListRoutes(userListsRepository: UserListsRepository) {
+fun Application.userCountriesListRoutes(usersService: UsersService) {
     routing {
-        route("/api/user/{userId}/countries") {
+        route("/api/user/{userId}/lists") {
             get {
-                val userId: String = call.parameters["userId"]!!.toString()
-                call.respond(userListsRepository.getUserLists(userId))
+                try {
+                    val userId: String = call.parameters["userId"]!!.toString()
+                    authorizeUser(call.request.header("Authorization") ?: "", userId)
+                    call.respond(usersService.getUserLists(userId))
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
             }
             post {
                 val userId: String = call.parameters["userId"]!!.toString()
                 try {
+                    authorizeUser(call.request.header("Authorization") ?: "", userId)
                     val request = call.receive<UserCountriesListModificationRequest>()
-                    val response = userListsRepository.createUserList(userId.toId(), request.name!!, request.countries!!)
-                    if (response != null) {
-                        call.respond(HttpStatusCode.Created, response.toString())
-                    } else {
-                        call.respond(HttpStatusCode.InternalServerError)
-                    }
+                    call.respond(usersService.createUserList(userId, request.name!!, request.countries!!) ?: HttpStatusCode.BadRequest)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: UserAlreadyExistsException) {
+                    call.respond(HttpStatusCode.BadRequest)
                 } catch (e: Exception) {
                     logger.error("Request could not be parsed...", e)
                     call.respond(HttpStatusCode.BadRequest, "Please check that body complies to { name: \"name\", countries: [\"countries\"]}")
                 }
             }
         }
-        route("/api/user/{userId}/countries/list/{name}") {
+        route("/api/user/{userId}/lists/{listId}") {
             get {
                 val userId: String = call.parameters["userId"]!!.toString()
-                val listName: String = call.parameters["name"].toString()
-
-                val response = userListsRepository.getUserList(userId, listName)
-                if (response != null) {
-                    call.respond(response)
-                } else {
-                    call.respond(HttpStatusCode.NoContent)
+                val listId: String = call.parameters["listId"]!!.toString()
+                try {
+                    authorizeUser(call.request.header("Authorization") ?: "", userId)
+                    call.respond(usersService.getUserList(userId, listId) ?: HttpStatusCode.BadRequest)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
                 }
             }
             delete {
-                val userId: String = call.parameters["userId"]!!.toString()
-                val listName: String = call.parameters["name"].toString()
-                val response = userListsRepository.delete(userId.toId(), listName)
-
-                if (response != null && response) {
+                try {
+                    val userId: String = call.parameters["userId"]!!.toString()
+                    val listId: String = call.parameters["listId"]!!.toString()
+                    authorizeUser(call.request.header("Authorization") ?: "", userId)
+                    usersService.deleteUserList(userId, listId)
                     call.respond(HttpStatusCode.Accepted)
-                } else if (response != null && !response) {
-                    call.respond(HttpStatusCode.NotModified)
-                } else {
+                } catch (e: NotFoundException) {
                     call.respond(HttpStatusCode.NotFound)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } catch (e : Exception) {
+                    call.respond(HttpStatusCode.NotModified)
                 }
             }
-            //Adds new countries to one specific list.
             patch {
                 val userId: String = call.parameters["userId"]!!.toString()
-                val listName: String = call.parameters["name"].toString()
-
+                val listId: String = call.parameters["listId"]!!.toString()
                 try {
+                    authorizeUser(call.request.header("Authorization") ?: "", userId)
                     val request = call.receive<UserCountriesListModificationRequest>()
-
-                    val response = userListsRepository.update(userId.toId(), listName, request.name, request.countries)
-
-                    if (response != null) {
-                        call.respond(HttpStatusCode.Accepted, response.toString())
-                    } else {
-                        call.respond(HttpStatusCode.NotModified)
-                    }
+                    call.respond(usersService.updateUserList(userId, listId, request))
+                } catch (e: NotFoundException) {
+                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: UnAuthorizedException) {
+                    call.respond(HttpStatusCode.Unauthorized)
                 } catch (e: Exception) {
                     logger.error("Error parsing patch request", e)
                     call.respond(HttpStatusCode.BadRequest)

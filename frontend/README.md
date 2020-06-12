@@ -1,106 +1,35 @@
-# React Material Admin — Material-UI Dashboard Template
+# Esta branch esta destinada a tener la ultima version de la webapp, que será mergeada con master para finalizar el proyecto.
 
-Built with [React](https://facebook.github.io/react/), [Material-UI](https://material-ui.com), [React Router](https://reacttraining.com/react-router/).
-**No jQuery and Bootstrap!**
+# Probar el front
+1. yarn install
+2. npm start
 
-**This version uses React 16.8.6, React Router v5, MaterialUI v4, built with React Hooks and React Context (No Redux)**
+# Para crear un usuario 
+Se puede ingresar con cualquier usuario y password
+Siempre ingresa al home del usuario. No es posible crear nuevos usuarios como administradores
 
-[Demo](https://flatlogic.com/admin-dashboards/react-material-admin/demo). Use any credentials to log in.
-
-[![image](https://user-images.githubusercontent.com/24964748/55800639-df780300-5adc-11e9-84b7-7c2437088516.png)](https://flatlogic.com/admin-dashboards/react-material-admin/demo)
-
-## Full Version
-
-This is a limited version of [**Full React Material Admin**](https://flatlogic.com/templates/react-material-admin-full/demo) with more components, pages and theme support.
-
-## Features
-
-- React (**16.8.6**)
-- React Hooks
-- React Context
-- **No jQuery and Bootstrap!**
-- Mobile friendly layout (responsive)
-- Create-react-app under the hood
-- React Router v5
-- Material-UI v4
-- Modular Architecture
-- CSS-in-JS styles
-- Webpack build
-- Stylish, clean, responsive layout
-- Authentication
-
-## Pages
-
-We have implemented some basic pages, so you can see our template in action.
-
-- Dashboard
-- Typography
-- Tables
-- Notifications
-- Charts
-- Icons
-- Maps
-- Login
-- Error
-
-## Quick Start
-
-#### 1. Get the latest version
-
-You can start by cloning the latest version of React Dashboard on your
-local machine by running:
-
-```shell
-$ git clone https://github.com/flatlogic/react-material-admin.git MyApp
-$ cd MyApp
+# Para ingresar como usuario 
 ```
+Username: user
+Password: user
+```
+En principio el **home** del usuario se va a usar para mostrar el estado de los paises mas proximos a uno, cumpliendo con la historia de usuario que lo pedia
 
-#### 2. Run `yarn install`
+**Listas** con sus sub items tambien tienen como fin las historias de crear editar y borrar listas del usuario
 
-This will install both run-time project dependencies and developer tools listed
-in [package.json](package.json) file.
+**Stats** esta destinado a mostrar las estadisticas de la lista a seleccionar
 
-#### 3. Run `yarn start`
+# Para ingresar con google
+WIP 
 
-Runs the app in the development mode.
+# Para ingresar como admin
+```
+Username: admin
+Password: admin
+```
+El **home** del admin va a tener las stats sobre las listas registradas en el sistema segun la historia de usuario
+**Search user** para buscar usuarios tambien por requerimiento
 
-Open http://localhost:3000 to view it in the browser. Whenever you modify any of the source files inside the `/src` folder,
-the module bundler ([Webpack](http://webpack.github.io/)) will recompile the
-app on the fly and refresh all the connected browsers.
+**Countries & Lists** se podra ver la cantidad de listas de usuarios que contiene algun pais en particular
 
-#### 4. Run `yarn build`
 
-Builds the app for production to the build folder.
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.
-Your app is ready to be deployed!
-
-## Support
-
-For any additional information please refer to [Flatlogic homepage](https://flatlogic.com).
-
-## How can I support developers?
-
-- Star our GitHub repo :star:
-- [Tweet about it](https://twitter.com/intent/tweet?text=Amazing%20dashboard%20built%20with%20NodeJS,%20React%20and%20Bootstrap!&url=https://github.com/flatlogic/react-material-template&via=flatlogic).
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
-- Follow [@flatlogic on Twitter](https://twitter.com/flatlogic).
-- Subscribe to Flatlogic newsletter at [flatlogic.com](https://flatlogic.com/)
-- Like our page on [Facebook](https://www.facebook.com/flatlogic/) :thumbsup:
-
-## More from Flatlogic
-
-- [React Native Starter](https://github.com/flatlogic/react-native-starter) - 🚀 A powerful react native starter template that bootstraps development of your mobile application
-- [Sing App](https://github.com/flatlogic/sing-app) - 💥 Free and open-source admin dashboard template built with Bootstrap 4
-- [Awesome Bootstrap Checkboxes & Radios](https://github.com/flatlogic/awesome-bootstrap-checkbox) - ✅ Pure css way to make inputs look prettier
-- [React Dashboard](https://github.com/flatlogic/react-dashboard) - 🔥 React Dashboard - isomorphic admin dashboard template with GraphQL
-- [Light Blue Dashboard](https://github.com/flatlogic/light-blue-dashboard) - 💦 Free and open-source admin dashboard template built with Bootstrap
-
-## Premium themes
-
-Looking for premium themes and templates? Check out more [admin dashboard templates at flatlogic.com](https://flatlogic.com/admin-dashboards).
-
-## License
-
-[MIT](https://github.com/flatlogic/react-material-dashboard/blob/master/LICENSE.txt).

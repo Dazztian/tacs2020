@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getCountry } from "../../../apis/GeolocationApi"
 import {
   Grid,
-  LinearProgress,
   Select,
   OutlinedInput,
   MenuItem,
+  CircularProgress,
+  Box
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import {
@@ -21,47 +23,187 @@ import {
   XAxis,
 } from "recharts";
 
+// api
+import Api from '../../../apis/Api';
+
 // styles
 import useStyles from "./styles";
 
+
 // components
-import mock from "./mock";
 import Widget from "../../../components/Widget";
 import PageTitle from "../../../components/PageTitle";
 import { Typography } from "../../../components/Wrappers";
 import Dot from "../../../components/Sidebar/components/Dot";
-import Table from "../../../components/Table/Table";
-import BigStat from "../../../components/BigStat/BigStat";
+import ListStats from "../../../components/ListStat/ListStat";
+import mock from "./mock";
 
-const mainChartData = getMainChartData();
 const PieChartData = [
+<<<<<<< HEAD
   { name: "Group A", value: 666, color: "primary" },
   { name: "Group B", value: 300, color: "secondary" },
   { name: "Group C", value: 300, color: "warning" },
   { name: "Group D", value: 200, color: "success" },
+=======
+  { name: "", value: 0, color: "success" },
+  { name: "", value: 0, color: "warning" },
+  { name: "", value: 0, color: "secondary" }, 
+>>>>>>> c15401e265512a2db30ce533ba9031062b1f060c
 ];
+let newCases
+let newRecovered
+let newDeath
+
+let rateInfected
+let rateRecovered
+let rateDeath
+
+const api = new Api();
 
 export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
-
   // local
-  var [mainChartState, setMainChartState] = useState("monthly");
+  var [nearCountries, setNearCountries] = useState([]);
+  var [isLoading, setIsLoading] = useState(true);
+
+  async function fetchLocal() {
+    try {
+      let iso = localStorage.getItem('tracker_country_Iso')
+      if (!iso){
+        const {countryIso,countryName} = await getCountry()
+        iso = countryIso
+        localStorage.setItem('tracker_country', countryName)
+        localStorage.setItem('tracker_country_Iso', countryIso)
+      }
+      setIsLoading(false)
+      console.log(Date.now())
+      const data = await api.getCountryDataByDate(iso,Date.now()-1,Date.now())
+      const countryData = data[0]
+      PieChartData[0].value = countryData.recovered 
+      PieChartData[1].value = countryData.confirmed 
+      PieChartData[2].value = countryData.deaths
+      
+      newCases = countryData.timeseries[1].confirmed-countryData.timeseries[0].confirmed
+      newRecovered = countryData.timeseries[1].recovered-countryData.timeseries[0].recovered
+      newDeath = countryData.timeseries[1].deaths-countryData.timeseries[0].deaths
+
+      rateInfected = (newCases*100/countryData.confirmed).toFixed(2)
+      rateRecovered = (newRecovered*100/countryData.recovered).toFixed(2)
+      rateDeath = (newDeath*100/countryData.deaths).toFixed(2)
+
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
+  async function fetchNearData() {
+    try {
+      const near = await api.getNearCountries()
+      setNearCountries(near)
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
+    fetchLocal()
+    fetchNearData()
+  },[]);
 
   return (
     <>
-      <PageTitle title="Dashboard"/>
-      <Grid container spacing={4}>
-        <Grid item lg={3} md={4} sm={6} xs={12}>
+    {isLoading 
+    ? <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{ minHeight: '80vh' }}
+      >
+        <Grid item xs={3}>
+          <CircularProgress size={100}/>
+        </Grid>   
+      </Grid> 
+    : <div>
+      <PageTitle title= {localStorage.getItem('tracker_country') + " today"} />
+      <Grid container spacing={1}>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
           <Widget
-            title="Visits Today"
             upperTitle
             bodyClass={classes.fullHeightBody}
-            className={classes.card}
+            header={
+              <div className={classes.mainChartHeader}>
+                <Typography
+                  variant="h5"
+                  color="text"
+                  colorBrightness="secondary"
+                >
+                  New confirmed
+                </Typography>
+                </div>
+            }
           >
             <div className={classes.visitsNumberContainer}>
               <Typography size="xl" weight="medium">
-                12, 678
+                {newCases}
+              </Typography>
+              <LineChart
+                width={55}
+                height={30}
+                data={[
+                  { value: 10 },
+                  { value: 15 },
+                  { value: 10 },
+                  { value: 17 },
+                  { value: 18 },
+                ]}
+                margin={{ left: theme.spacing(2) }}
+              >
+                <Line
+                  type="natural"
+                  dataKey="value"
+                  stroke={theme.palette.warning.main}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </div>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography color="text" colorBrightness="secondary">
+                  Growth rate
+                </Typography>
+              <Typography size="md">+{rateInfected}%</Typography>
+              </Grid>
+            </Grid>
+          </Widget>
+        </Grid>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
+        <Widget
+            upperTitle
+            bodyClass={classes.fullHeightBody}
+            header={
+              <div className={classes.mainChartHeader}>
+                <Typography
+                  variant="h5"
+                  color="text"
+                  colorBrightness="secondary"
+                >
+                  New recovered
+                </Typography>
+                </div>
+            }
+          >
+            <div className={classes.visitsNumberContainer}>
+              <Typography size="xl" weight="medium">
+                {newRecovered}
               </Typography>
               <LineChart
                 width={55}
@@ -92,176 +234,93 @@ export default function Dashboard(props) {
             >
               <Grid item>
                 <Typography color="text" colorBrightness="secondary">
-                  Registrations
+                  Growth rate
                 </Typography>
-                <Typography size="md">860</Typography>
-              </Grid>
-              <Grid item>
-                <Typography color="text" colorBrightness="secondary">
-                  Sign Out
-                </Typography>
-                <Typography size="md">32</Typography>
-              </Grid>
-              <Grid item>
-                <Typography color="text" colorBrightness="secondary">
-                  Rate
-                </Typography>
-                <Typography size="md">3.25%</Typography>
+                <Typography size="md">+{rateRecovered}%</Typography>
               </Grid>
             </Grid>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={8} sm={6} xs={12}>
-          <Widget
-            title="App Performance"
+        <Grid item lg={3} md={4} sm={6} xs={6}>
+        <Widget
             upperTitle
-            className={classes.card}
             bodyClass={classes.fullHeightBody}
-          >
-            <div className={classes.performanceLegendWrapper}>
-              <div className={classes.legendElement}>
-                <Dot color="warning" />
+            header={
+              <div className={classes.mainChartHeader}>
                 <Typography
+                  variant="h5"
                   color="text"
                   colorBrightness="secondary"
-                  className={classes.legendElementText}
                 >
-                  Integration
+                  New deceased
                 </Typography>
-              </div>
-              <div className={classes.legendElement}>
-                <Dot color="primary" />
+                </div>
+            }
+          >
+            <div className={classes.visitsNumberContainer}>
+              <Typography size="xl" weight="medium">
+                {newDeath}
+              </Typography>
+              <LineChart
+                width={55}
+                height={30}
+                data={[
+                  { value: 10 },
+                  { value: 15 },
+                  { value: 10 },
+                  { value: 17 },
+                  { value: 18 },
+                ]}
+                margin={{ left: theme.spacing(2) }}
+              >
+                <Line
+                  type="natural"
+                  dataKey="value"
+                  stroke={theme.palette.error.main}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </div>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography color="text" colorBrightness="secondary">
+                  Growth rate
+                </Typography>
+              <Typography size="md">+{rateDeath}%</Typography>
+              </Grid>
+            </Grid>
+          </Widget>
+        </Grid>
+        <Grid item lg={3} md={4} sm={6} xs={6}>
+          <Widget
+            upperTitle
+            bodyClass={classes.fullHeightBody}
+            header={
+              <div className={classes.mainChartHeader}>
                 <Typography
+                  variant="h5"
                   color="text"
                   colorBrightness="secondary"
-                  className={classes.legendElementText}
                 >
-                  SDK
+                  Overall total
                 </Typography>
-              </div>
-            </div>
-            <div className={classes.progressSection}>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                Integration
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={30}
-                classes={{ barColorPrimary: classes.progressBar }}
-                className={classes.progress}
-              />
-            </div>
-            <div>
-              <Typography
-                size="md"
-                color="text"
-                colorBrightness="secondary"
-                className={classes.progressSectionTitle}
-              >
-                SDK
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={55}
-                classes={{ barColorPrimary: classes.progressBar }}
-                className={classes.progress}
-              />
-            </div>
-          </Widget>
-        </Grid>
-        <Grid item lg={3} md={8} sm={6} xs={12}>
-          <Widget
-            title="Server Overview"
-            upperTitle
-            className={classes.card}
-            bodyClass={classes.fullHeightBody}
+                </div>
+            }
           >
-            <div className={classes.serverOverviewElement}>
-              <Typography
-                color="text"
-                colorBrightness="secondary"
-                className={classes.serverOverviewElementText}
-              >
-                60% / 37°С / 3.3 Ghz
-              </Typography>
-              <div className={classes.serverOverviewElementChartWrapper}>
-                <ResponsiveContainer height={50} width="99%">
-                  <AreaChart data={getRandomData(10)}>
-                    <Area
-                      type="natural"
-                      dataKey="value"
-                      stroke={theme.palette.secondary.main}
-                      fill={theme.palette.secondary.light}
-                      strokeWidth={2}
-                      fillOpacity="0.25"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            <div className={classes.serverOverviewElement}>
-              <Typography
-                color="text"
-                colorBrightness="secondary"
-                className={classes.serverOverviewElementText}
-              >
-                54% / 31°С / 3.3 Ghz
-              </Typography>
-              <div className={classes.serverOverviewElementChartWrapper}>
-                <ResponsiveContainer height={50} width="99%">
-                  <AreaChart data={getRandomData(10)}>
-                    <Area
-                      type="natural"
-                      dataKey="value"
-                      stroke={theme.palette.primary.main}
-                      fill={theme.palette.primary.light}
-                      strokeWidth={2}
-                      fillOpacity="0.25"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            <div className={classes.serverOverviewElement}>
-              <Typography
-                color="text"
-                colorBrightness="secondary"
-                className={classes.serverOverviewElementText}
-              >
-                57% / 21°С / 3.3 Ghz
-              </Typography>
-              <div className={classes.serverOverviewElementChartWrapper}>
-                <ResponsiveContainer height={50} width="99%">
-                  <AreaChart data={getRandomData(10)}>
-                    <Area
-                      type="natural"
-                      dataKey="value"
-                      stroke={theme.palette.warning.main}
-                      fill={theme.palette.warning.light}
-                      strokeWidth={2}
-                      fillOpacity="0.25"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </Widget>
-        </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Revenue Breakdown" upperTitle className={classes.card}>
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <ResponsiveContainer width="100%" height={144}>
+                <ResponsiveContainer width="100%" height={82}>
                   <PieChart margin={{ left: theme.spacing(2) }}>
                     <Pie
                       data={PieChartData}
-                      innerRadius={45}
-                      outerRadius={60}
+                      innerRadius={30}
+                      outerRadius={40}
                       dataKey="value"
                     >
                       {PieChartData.map((entry, index) => (
@@ -293,160 +352,12 @@ export default function Dashboard(props) {
           </Widget>
         </Grid>
         <Grid item xs={12}>
-          <Widget
-            bodyClass={classes.mainChartBody}
-            header={
-              <div className={classes.mainChartHeader}>
-                <Typography
-                  variant="h5"
-                  color="text"
-                  colorBrightness="secondary"
-                >
-                  Daily Line Chart
-                </Typography>
-                <div className={classes.mainChartHeaderLabels}>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="warning" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Tablet
-                    </Typography>
-                  </div>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="primary" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Mobile
-                    </Typography>
-                  </div>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="primary" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Desktop
-                    </Typography>
-                  </div>
-                </div>
-                <Select
-                  value={mainChartState}
-                  onChange={e => setMainChartState(e.target.value)}
-                  input={
-                    <OutlinedInput
-                      labelWidth={0}
-                      classes={{
-                        notchedOutline: classes.mainChartSelectRoot,
-                        input: classes.mainChartSelect,
-                      }}
-                    />
-                  }
-                  autoWidth
-                >
-                  <MenuItem value="daily">Daily</MenuItem>
-                  <MenuItem value="weekly">Weekly</MenuItem>
-                  <MenuItem value="monthly">Monthly</MenuItem>
-                </Select>
-              </div>
-            }
-          >
-            <ResponsiveContainer width="100%" minWidth={500} height={350}>
-              <ComposedChart
-                margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
-                data={mainChartData}
-              >
-                <YAxis
-                  ticks={[0, 2500, 5000, 7500]}
-                  tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
-                  stroke={theme.palette.text.hint + "80"}
-                  tickLine={false}
-                />
-                <XAxis
-                  tickFormatter={i => i + 1}
-                  tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
-                  stroke={theme.palette.text.hint + "80"}
-                  tickLine={false}
-                />
-                <Area
-                  type="natural"
-                  dataKey="desktop"
-                  fill={theme.palette.background.light}
-                  strokeWidth={0}
-                  activeDot={false}
-                />
-                <Line
-                  type="natural"
-                  dataKey="mobile"
-                  stroke={theme.palette.primary.main}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={false}
-                />
-                <Line
-                  type="linear"
-                  dataKey="tablet"
-                  stroke={theme.palette.warning.main}
-                  strokeWidth={2}
-                  dot={{
-                    stroke: theme.palette.warning.dark,
-                    strokeWidth: 2,
-                    fill: theme.palette.warning.main,
-                  }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </Widget>
+          <PageTitle title= {"Near you"} />
+          <ListStats data={nearCountries}/>
         </Grid>
-        {mock.bigStat.map(stat => (
-          <Grid item md={4} sm={6} xs={12} key={stat.product}>
-            <BigStat {...stat} />
-          </Grid>
-        ))}
-        <Grid item xs={12}>
-          <Widget
-            title="Support Requests"
-            upperTitle
-            noBodyPadding
-            bodyClass={classes.tableWidget}
-          >
-            <Table data={mock.table} />
-          </Widget>
         </Grid>
-      </Grid>
+      </div>
+      }
     </>
   );
-}
-
-// #######################################################################
-function getRandomData(length, min, max, multiplier = 10, maxDiff = 10) {
-  var array = new Array(length).fill();
-  let lastValue;
-
-  return array.map((item, index) => {
-    let randomValue = Math.floor(Math.random() * multiplier + 1);
-
-    while (
-      randomValue <= min ||
-      randomValue >= max ||
-      (lastValue && randomValue - lastValue > maxDiff)
-    ) {
-      randomValue = Math.floor(Math.random() * multiplier + 1);
-    }
-
-    lastValue = randomValue;
-
-    return { value: randomValue };
-  });
-}
-
-function getMainChartData() {
-  var resultArray = [];
-  var tablet = getRandomData(31, 3500, 6500, 7500, 1000);
-  var desktop = getRandomData(31, 1500, 7500, 7500, 1500);
-  var mobile = getRandomData(31, 1500, 7500, 7500, 1500);
-
-  for (let i = 0; i < tablet.length; i++) {
-    resultArray.push({
-      tablet: tablet[i].value,
-      desktop: desktop[i].value,
-      mobile: mobile[i].value,
-    });
-  }
-
-  return resultArray;
 }

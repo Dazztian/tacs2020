@@ -9,9 +9,11 @@ buildscript {
         /*I liked this plugin, this transforms all in a very big fat jar. Can be removed and done manually.*/
         classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.1"
     }
 }
 
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: "com.github.johnrengelman.shadow"
@@ -53,6 +55,7 @@ dependencies {
     testImplementation "io.mockk:mockk:$mockk_version"
     implementation "org.litote.kmongo:kmongo:$kmongo_version"
     implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_version"
+    compile group: 'org.json', name: 'json', version: '20090211'
 }
 
 shadowJar {

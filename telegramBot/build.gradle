@@ -27,18 +27,13 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 kotlin {
-    // For ARM, should be changed to iosArm32 or iosArm64
-    // For Linux, should be changed to e.g. linuxX64
-    // For MacOS, should be changed to e.g. macosX64
-    // For Windows, should be changed to e.g. mingwX64
     sourceSets {
-        // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
-        // in gradle.properties file and re-import your project in IDE.
         mingwTest {
         }
 
         sourceSets {
             main.kotlin.srcDirs = [ 'src' ]
+            test.kotlin.srcDirs = [ 'test' ]
         }
     }
 }
@@ -57,7 +52,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
     compile 'com.github.kotlin-telegram-bot:kotlin-telegram-bot:master'
-    compile 'com.github.paniaton:tacs2020:master' //Para tener las clases del back
+    compile 'com.github.paniaton:tacs2020:master-SNAPSHOT' //Para tener las clases del back
+    implementation 'com.github.kittinunf.fuel:fuel:2.2.2'
+    compile 'org.litote.kmongo:kmongo-id:4.0.1'
+    implementation 'com.beust:klaxon:5.0.1'
+    testCompile 'junit:junit:4.12'
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+    testCompile "org.testcontainers:testcontainers:$test_containers_version"
+    testCompile "org.testcontainers:junit-jupiter:$test_containers_version"
 }
 
 shadowJar {

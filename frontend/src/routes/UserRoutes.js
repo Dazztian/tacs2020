@@ -39,9 +39,13 @@ function LayoutUser(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
+<<<<<<< HEAD
             {/*<Redirect from="/user" to="/user/dashboard" />*/}
+=======
+            <Redirect from="/user" to="/user/home" />
+>>>>>>> c15401e265512a2db30ce533ba9031062b1f060c
             <Switch>
-              <Route path="/user/dashboard" component={Dashboard} />
+              <Route path="/user/home" component={Dashboard} />
               <Route path="/user/createlists" />
               <Route path="/user/editlists" />
               <Route path="/user/deletelists" />

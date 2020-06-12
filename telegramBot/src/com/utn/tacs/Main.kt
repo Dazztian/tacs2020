@@ -4,24 +4,62 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.dispatcher.command
-import com.github.kotlintelegrambot.entities.ChatAction.UPLOAD_PHOTO
-import com.github.kotlintelegrambot.entities.InlineKeyboardButton
-import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
-import com.github.kotlintelegrambot.entities.ParseMode.HTML
-import com.google.gson.reflect.TypeToken
+import com.github.kotlintelegrambot.dispatcher.message
+import com.github.kotlintelegrambot.entities.*
+import com.utn.tacs.handlers.addCountryListCommands
 import com.utn.tacs.handlers.addStartCommands
-import java.io.File
-import java.net.HttpURLConnection
-import java.net.URL
+import javax.swing.text.html.HTML
+import com.github.kotlintelegrambot.extensions.filters.Filter
+
+
+//Map of last important messages separatad by each telegram user Id
+val lastImportantMessages = mutableMapOf<Long, MessageWrapper>()
 
 fun main(args: Array<String>) {
     val bot = bot {
         token = "1250247908:AAEWItlMvAubZPRyZJt9H2mCANIxWrsii68"
 
         addStartCommands(updater)
+        addCountryListCommands(updater)
+
         dispatch {
+            /*command("a") { bot, update->
+
+                val keyboardMarkup = InlineKeyboardMarkup(
+                                        inlineKeyboard = listOf(
+                                                    listOf(InlineKeyboardButton("test", callbackData = "cfguiokjhgfdtyuj"))
+                                            ))
+                bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = "HOLA",
+                        parseMode = ParseMode.MARKDOWN,
+                        replyMarkup = keyboardMarkup
+                )
+            }
+            callbackQuery("cfguiokjhgfdtyuj") { bot, update ->
+                update.callbackQuery?.let {
+                    val chatId = it.message?.chat?.id ?: return@callbackQuery
+
+                    bot.sendMessage(
+                            chatId = chatId,
+                            text = "EL texto era: " + it.message?.text
+                    )
+                }
+            }
+            message(Filter.Text){ bot, update ->
+                lastImportantMessages[update.message!!.from!!.id] = MessageWrapper(MessageType.ADD_COUNTRY, null)
+                bot.sendMessage(update.message!!.chat.id, text = "Saved")
+            }
+            command("last") { bot, update->
+                bot.sendMessage(
+                        chatId = update.message!!.chat.id,
+                        text = "Last message: "+ (lastImportantMessages[update.message!!.from!!.id]?.messageType ?: "null")
+                )
+
+            }*/
 
             // DATABASE
+            /*
             command("db"){ bot, update->
                 val response = getResponse(URL("http://localhost:8080/api/countries/tree"))
                 val dataList :Array<CountryData> = gson.fromJson(response, object : TypeToken<Array<CountryData>>() {}.type)
@@ -42,6 +80,7 @@ fun main(args: Array<String>) {
                         text = TelegramMessageParser().parse(countryData)
                 )
             }
+
 
             //  TABLA HARDCODEADA
             command("tabla") { bot, update->
@@ -124,12 +163,8 @@ fun main(args: Array<String>) {
                 val result = bot.sendPhoto(chatId = update.message!!.chat.id, photo = File(System.getProperty("user.dir")+"\\cat.jpg"))
                 bot.sendMessage(chatId = update.message!!.chat.id, text = "sent")
             }
+             */
         }
     }
     bot.startPolling()
-}
-
-fun getResponse(url : URL) :String{
-    val connection = url.openConnection() as HttpURLConnection
-    return connection.inputStream.bufferedReader().readText()
 }

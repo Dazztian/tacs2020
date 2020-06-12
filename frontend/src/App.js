@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 
 // Rutas de
-import Layout from "./routes/Layout";
 import LayoutUser from "./routes/UserRoutes";
 import LayoutAdmin from "./routes/AdminRoutes";
 
@@ -28,7 +27,6 @@ export default function App() {
     <Router>
       <Switch>
         <PublicRoute exact path="/" />
-        <Route path="/app" component={Layout} />
         <PrivateRouteUser path="/user" />
         <PrivateRouteAdmin path="/admin" />
         <PublicRoute path="/login" />
@@ -49,7 +47,7 @@ export default function App() {
             ) : (
               <Redirect
                 to={{
-                  pathname: "/user",
+                  pathname: "/user/home",
                   state: { from: props.location }
                 }}
               />
@@ -76,7 +74,7 @@ export default function App() {
             isAdmin ? (
               <Redirect
                 to={{
-                  pathname: "/admin",
+                  pathname: "/admin/home",
                   state: { from: props.location }
                 }}
               />
