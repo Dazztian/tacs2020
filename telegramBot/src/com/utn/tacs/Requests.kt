@@ -67,7 +67,7 @@ class RequestManager{
         }
 
         //Returns the coutry lists from the logged in user
-        fun getCountryLists(telegramUserId :String) :List<CountriesList>?{
+        fun getCountryLists(telegramUserId :String) :List<CountriesList>{
             return try {
                 val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList?telegramId=$telegramUserId")
                     .responseString()
@@ -80,7 +80,7 @@ class RequestManager{
                     else -> emptyList()
                 }
             } catch (exc :Exception) {
-                null
+                emptyList()
             }
         }
 
@@ -105,7 +105,7 @@ class RequestManager{
 
 
         //Returns all countries
-        fun allCountries() :Array<Country>?{
+        fun allCountries() :Array<Country>{
             return try {
                 val (_, response, result) = Fuel.get(urlBase+"api/countries/").responseString()
 
@@ -117,12 +117,12 @@ class RequestManager{
                     else -> arrayOf()
                 }
             } catch (exc :Exception) {
-                null
+                arrayOf()
             }
         }
 
         //Returns all countries names
-        fun allCountriesNames() :Array<String>?{
+        fun allCountriesNames() :Array<UserNamesResponse>{
             return try {
                 val (_, response, result) = Fuel.get(urlBase+"api/countries/names").responseString()
 
@@ -130,16 +130,17 @@ class RequestManager{
                 val responseJson = payload.toString()
 
                 when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Array<String>::class.java)
-                    else -> arrayOf()
+                    200 -> Gson().fromJson(responseJson, Array<UserNamesResponse>::class.java)
+                    else -> emptyArray()
                 }
             } catch (exc :Exception) {
-                null
+                println(exc.message)
+                emptyArray()
             }
         }
 
         //Returns the last country values from a list
-        fun getListCountries(listId :String, telegramId :String) :List<Country>?{
+        fun getListCountries(listId :String, telegramId :String) :List<Country>{
             return try {
                 val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList/$listId?telegramId=$telegramId")
                     .responseString()
@@ -149,10 +150,10 @@ class RequestManager{
 
                 when (response.statusCode) {
                     200 -> Gson().fromJson(responseJson, Array<Country>::class.java).toList()
-                    else -> null
+                    else -> emptyList()
                 }
             } catch (exc :Exception) {
-                null
+                emptyList()
             }
         }
 

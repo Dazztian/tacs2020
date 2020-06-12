@@ -28,7 +28,13 @@ class CountryListHandlerTests {
 
     @Test
     fun countriesCommandTest(){
-        every { RequestManager.allCountriesNames() } returns arrayOf("Argentina","Chile")
+        every { RequestManager.allCountriesNames() } returns emptyArray()
+
+        assertEquals(listOf(TelegramMessageWrapper(chatId, acceptedCountriesText)),
+            countriesCommand(chatId)
+        )
+
+        every { RequestManager.allCountriesNames() } returns arrayOf(UserNamesResponse("Argentina","iso2"),UserNamesResponse("Chile","iso2"))
 
         assertEquals(listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + "Argentina\nChile")),
             countriesCommand(chatId)

@@ -28,7 +28,7 @@ const val badLogoutText = "Username or password incorrect   \uD83D\uDE15"
 const val LoginHelpText =  "To begin write /login followed by your username and password\n" +
         "(Example: /login user pass)"
 
-const val acceptedCountriesText = "accepted countries:\n"
+const val acceptedCountriesText = "Accepted countries:\n"
 const val myListsText = "Select one of the lists"
 const val textNoLists = "This user has no lists"
 const val textNoCountries = "This list has no countries"

@@ -97,3 +97,8 @@ data class TelegramMessageWrapper(
         val disableNotification: Boolean? = null,
         val replyToMessageId: Long? = null,
         val replyMarkup: ReplyMarkup? = null)
+
+data class UserNamesResponse(
+    val name: String?,
+    val iso2: String?
+)

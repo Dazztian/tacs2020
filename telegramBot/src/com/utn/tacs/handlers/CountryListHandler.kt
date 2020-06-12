@@ -79,11 +79,14 @@ fun countryListCommands(updater : Updater){
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
-fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + RequestManager.allCountriesNames()?.joinToString(separator = "\n").toString()))
+fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> =
+    listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + RequestManager.allCountriesNames()
+        .mapNotNull { it.name }.sortedWith(String.CASE_INSENSITIVE_ORDER)
+        .joinToString(separator = "\n")))
 
 fun myListsCommand(chatId: Long) :List<TelegramMessageWrapper>{
     return when(val countriesLists = RequestManager.getCountryLists(chatId.toString())){
-        null, emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
+        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
         else -> listOf(TelegramMessageWrapper(
                 chatId, myListsText,
                 replyMarkup = InlineKeyboardMarkup(countriesLists.map { countriesList -> listOf(countriesList.toButton()) } +
