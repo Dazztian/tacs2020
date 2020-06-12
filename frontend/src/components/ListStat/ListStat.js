@@ -26,17 +26,13 @@ import Api from "../../apis/Api"
 const api = new Api()
 
 const ListStat = ({ data })=>{
-  let sec;
+  let offfinal
+  let offinicial
 
   var theme = useTheme();
   var classes = useStyles();
 
-    // local
-  const [mainChartState, setMainChartState] = useState("Infected");
-  const [isLoading, setIsLoading] = useState(false);
-
-
-  const series = [
+  let ser = [
     {
       name: "Argentina",
       data: [1, 1, 2, 8]
@@ -51,9 +47,15 @@ const ListStat = ({ data })=>{
   }
   ]
 
-  const data = [ //suponiendo consulta de fromDay=1 toDay=4
+    // local
+  const [mainChartState, setMainChartState] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [series, setSeries] = useState(ser)
+
+  const rows = [ //suponiendo consulta de fromDay=1 toDay=4
       {
         countryname: "Argentina",
+        iso2: "AR",
         offset:6,
         timeseridate:         [3/3/2020,4/3/2020,5/3/2020,6/3/2020],
         timeseriesinfected:   [1, 1, 2, 8],
@@ -64,7 +66,20 @@ const ListStat = ({ data })=>{
         "recovered": 7991,
       },
       {
-        name: "Uruguay",
+        countryname: "Brasil",
+        iso2: "BR",
+        offset:1,
+        timerseriesdate:      [26/2/2020,27/2/2020,28/2/2020,29/2/2020],
+        timeseriesinfected:   [1, 1, 2, 3],
+        timeseriesreconvered: [0, 0, 0, 0],
+        timeseriesdeath:      [0, 0, 0, 0],
+        "confirmed": 772416,
+        "deaths": 39680,
+        "recovered": 413916,
+      },
+      {
+        countryname: "Uruguay",
+        iso2: "UY",
         offset:14,
         timerseriesdate:      [13/3/2020,14/3/2020,15/3/2020,16/3/2020],
         timeseriesinfected:   [4, 6, 8, 29],
@@ -74,35 +89,41 @@ const ListStat = ({ data })=>{
         "deaths": 735,
         "recovered": 7991,
       },
-      {
-        name: "Brasil",
-        offset:1,
-        timerseriesdate:      [26/2/2020,27/2/2020,28/2/2020,29/2/2020],
-        timeseriesinfected:   [1, 1, 2, 3],
-        timeseriesreconvered: [0, 0, 0, 0],
-        timeseriesdeath:      [0, 0, 0, 0],
-        "confirmed": 25987,
-        "deaths": 735,
-        "recovered": 7991,
-      },
     ];
   
-  async function handleFetchOffset(){
+  async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
-    const res = await api
+    const isoList = []
+    const res = await api.getCountryDataByDays(isoList,offinicial,offfinal)
       if(true/*res.ok*/) {
         
       } else { //este else va por el res.ok
-        //userDispatch({ type: "LOGIN_FAILURE" });
         
       }
       setIsLoading(false);
+      setMainChartState("Infected");
     } 
+    
+    async function alterChartData(newChartState){
+      let promArr = []
+      switch (newChartState){
+        case "Infected" : 
+              promArr = await rows.map(row => {return {name: row.countryname, data: row.timeseriesinfected}})
+              break;
+        case "Recovered" :
+              promArr = await rows.map(row => {return {name: row.countryname, data: row.timeseriesreconvered}})
+              break;
+        case "Death" : 
+              promArr = await rows.map(row => {return {name: row.countryname, data: row.timeseriesdeath}})
+              break;
+        default: 
+              break; 
+      }
+      setSeries(await Promise.all(promArr))
+    }
 
     useEffect(() => {
-      switch (mainChartState){
-        case
-      }
+      alterChartData(mainChartState);
     }, [mainChartState]); 
 
 return(
@@ -156,7 +177,7 @@ return(
                   {step: 1,}
                 }
                 onChange={(event) => { 
-                  sec=event.target.value
+                  offinicial=event.target.value
                 } }
                 InputLabelProps={{
                   shrink: true,
@@ -175,7 +196,7 @@ return(
                   {step: 1,}
                 }
                 onChange={(event) => { 
-                  sec=event.target.value
+                  offfinal=event.target.value
                 } }
                 InputLabelProps={{
                   shrink: true,
@@ -184,7 +205,7 @@ return(
             </Grid>
           <Grid item>
             <Button xs={2} md={2} variant="outlined" color="primary" onClick={() =>{
-              handleFetchOffset()
+              handleFetchOffset(offinicial,offfinal)
             }
             }>
               Submit

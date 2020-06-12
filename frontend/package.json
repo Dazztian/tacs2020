@@ -21,11 +21,7 @@
     "react-native-web": "^0.12.2",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.0.1",
-<<<<<<< HEAD
-    "react-scripts": "^3.0.1",
-=======
     "react-scripts": "^3.4.1",
->>>>>>> c15401e265512a2db30ce533ba9031062b1f060c
     "react-syntax-highlighter": "^11.0.2",
     "react-toastify": "^5.5.0",
     "recharts": "^1.8.5",
