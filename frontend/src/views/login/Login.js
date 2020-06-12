@@ -21,7 +21,7 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-import { useUserDispatch,  } from "../../context/UserContext";
+import { useUserDispatch } from "../../context/UserContext";
 import { loginUser, createUser } from "../../apis/PublicApi"
 import Api from "../../apis/Api"
 import { getCountry } from "../../apis/GeolocationApi";
@@ -45,7 +45,7 @@ function Login(props) {
   
 
 
-   const handleLoginWithGoogle = async () => {
+  const handleLoginWithGoogle = async () => {
     
   }
 
@@ -61,7 +61,7 @@ function Login(props) {
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('tracker_name', user.name)
-          localStorage.setItem('countryIso', user.name)
+          localStorage.setItem('countriesList',countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } 
@@ -85,6 +85,7 @@ function Login(props) {
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('id_token', token)
           localStorage.setItem('tracker_name', user.name)
+          localStorage.setItem('countriesList',countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
@@ -104,15 +105,14 @@ function Login(props) {
   }
 
   async function fetchCountries(){
-      const res = await api.getCountryList()
-      if(res.ok){
-      countryList = await res.json()
-      //const countryList = await api.getCountryList()
-      localStorage.setItem('countriesList',countryList)
-      console.log(countryList)
+      //const res = await api.getCountryList()
+      //if(true/*res.ok*/){
+      //countryList = await res.json()
+      countryList = await api.getCountryList()
+      /*console.log(countryList)
       } else {
         console.log(res.errorMessage)
-      }
+      }*/
   }
 
   useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
@@ -291,8 +291,8 @@ function Login(props) {
                   },
                 }}
                 select
-                value={countryValue}
-                onChange={e => setCountryValue(e.target.value)}
+                value={countryValue.country}
+                onChange={e => setCountryValue({'country': e.target.value,'iso2': e.target.key})}
                 margin="normal"
                 placeholder="Country"
                 type="Country"
@@ -301,7 +301,7 @@ function Login(props) {
               >
                 {
                 countryList.map((country) => (
-                  <MenuItem key={country.name} value={country.name}>
+                  <MenuItem key={country.iso2} value={country.name}>
                     {country.name}
                   </MenuItem>
                 ))}

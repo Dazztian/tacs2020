@@ -28,61 +28,59 @@ const api = new Api()
 const ListStat = ({ data })=>{
   let sec;
 
-    const [isLoading, setIsLoading] = useState(false);
-    
-    //esta funcion podria ir definida en el archivo api.js
-    const submitData = async (unPais)=>{
-      try{
-      
-      
-      }
-      catch(err) {
-          console.log(err)
-          //window.alert(err)
-      }
-  }
-  
-    useEffect(() => {
-
-    }, []);    
-    
-
-    var theme = useTheme();
-    var classes = useStyles();
+  var theme = useTheme();
+  var classes = useStyles();
 
     // local
-  var [mainChartState, setMainChartState] = useState("Infected");
-  
-  const series = [ //suponiendo consulta de fromDay=1 toDay=4
+  const [mainChartState, setMainChartState] = useState("Infected");
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const series = [
+    {
+      name: "Argentina",
+      data: [1, 1, 2, 8]
+    },
+    {
+      name: "Uruguay",
+      data: [4, 6, 8, 29],
+    },
+    {      
+      name: "Brasil",
+      data: [1, 1, 2, 3]
+  }
+  ]
+
+  const data = [ //suponiendo consulta de fromDay=1 toDay=4
       {
         countryname: "Argentina",
-        offset:0,
+        offset:6,
         timeseridate:         [3/3/2020,4/3/2020,5/3/2020,6/3/2020],
-        timeseriesinfected:   [31, 40, 28, 51],
-        timeseriesreconvered: [31, 40, 28, 51],
-        timeseriesdeath:      [31, 40, 28, 51],
+        timeseriesinfected:   [1, 1, 2, 8],
+        timeseriesreconvered: [0, 0, 0, 0],
+        timeseriesdeath:      [0, 0, 0, 0],
         "confirmed": 25987,
         "deaths": 735,
         "recovered": 7991,
       },
       {
         name: "Uruguay",
-        offset:8,
-        timerseriesdate:      [11/3/2020,12/3/2020,13/3/2020,14/3/2020],
-        timeseriesinfected:   [11, 32, 45, 32],
-        timeseriesreconvered: [31, 40, 28, 51],
-        timeseriesdeath:      [31, 40, 28, 51],
+        offset:14,
+        timerseriesdate:      [13/3/2020,14/3/2020,15/3/2020,16/3/2020],
+        timeseriesinfected:   [4, 6, 8, 29],
+        timeseriesreconvered: [0, 0, 0, 0],
+        timeseriesdeath:      [0, 0, 0, 0],
         "confirmed": 25987,
         "deaths": 735,
         "recovered": 7991,
       },
       {
         name: "Brasil",
-        offset:11,
-        timerseriesdate:      [14/3/2020,15/3/2020,16/3/2020,17/3/2020],
-        timeseriesinfected:   [11, 32, 45, 32],
-        timeseriesreconvered: [31, 40, 28, 51],
-        timeseriesdeath:      [31, 40, 28, 51],
+        offset:1,
+        timerseriesdate:      [26/2/2020,27/2/2020,28/2/2020,29/2/2020],
+        timeseriesinfected:   [1, 1, 2, 3],
+        timeseriesreconvered: [0, 0, 0, 0],
+        timeseriesdeath:      [0, 0, 0, 0],
         "confirmed": 25987,
         "deaths": 735,
         "recovered": 7991,
@@ -91,7 +89,7 @@ const ListStat = ({ data })=>{
   
   async function handleFetchOffset(){
     setIsLoading(true);
-    const res = await api.loginUser()
+    const res = await api
       if(true/*res.ok*/) {
         
       } else { //este else va por el res.ok
@@ -100,6 +98,12 @@ const ListStat = ({ data })=>{
       }
       setIsLoading(false);
     } 
+
+    useEffect(() => {
+      switch (mainChartState){
+        case
+      }
+    }, [mainChartState]); 
 
 return(
     <>

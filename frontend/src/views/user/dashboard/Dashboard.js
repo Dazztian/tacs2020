@@ -39,16 +39,9 @@ import ListStats from "../../../components/ListStat/ListStat";
 import mock from "./mock";
 
 const PieChartData = [
-<<<<<<< HEAD
-  { name: "Group A", value: 666, color: "primary" },
-  { name: "Group B", value: 300, color: "secondary" },
-  { name: "Group C", value: 300, color: "warning" },
-  { name: "Group D", value: 200, color: "success" },
-=======
   { name: "", value: 0, color: "success" },
   { name: "", value: 0, color: "warning" },
   { name: "", value: 0, color: "secondary" }, 
->>>>>>> c15401e265512a2db30ce533ba9031062b1f060c
 ];
 let newCases
 let newRecovered
@@ -78,7 +71,7 @@ export default function Dashboard(props) {
       }
       setIsLoading(false)
       console.log(Date.now())
-      const data = await api.getCountryDataByDate(iso,Date.now()-1,Date.now())
+      const data = await api.getCountryDataByDate([iso],Date.now()-1,Date.now())
       const countryData = data[0]
       PieChartData[0].value = countryData.recovered 
       PieChartData[1].value = countryData.confirmed 

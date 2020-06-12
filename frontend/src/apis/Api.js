@@ -27,7 +27,7 @@ class Api {
 
   
     async getCountryList(){
-      /*try{
+      try{
         const data = mock.countriesNameISo 
   
         return new Promise(resolve => {
@@ -37,14 +37,15 @@ class Api {
         })
       }catch(error){
         console.log(error)
-      }*/
+      }
+      /*
       return await fetch(`${this.BASE_URL}/api/countries/names`, {
         method:'GET',
         headers: this.createHeaders(),
-      });
+      });*/
     }
 
-  async getCountryDataByDate(iso,dateinicial,datefinal) {
+  async getCountryDataByDate(isoList,dateinicial,datefinal) {
     try{
       const data = mock.singleCountryLastday
 
@@ -56,7 +57,7 @@ class Api {
     }catch(error){
       console.log(error)
     }
-    /*const res = await await fetch(this.BASE_URL, {
+    /*const res = await await fetch(`${this.BASE_URL}/api/countries/timeseries?`, {
           method:'POST',
           headers: this.createHeaders(),
           body: JSON.stringify(item),
