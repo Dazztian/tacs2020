@@ -46,7 +46,7 @@ const useRowStyles = makeStyles({
   },
 });
 
-export default function TableComponent({data}) {
+export default function ColapsableTable({data}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const rowsPerPage = 5
@@ -57,7 +57,7 @@ export default function TableComponent({data}) {
 
   return (
     <React.Fragment>
-      <TableContainer className={Paper}>
+      <TableContainer>
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
             <TableRow>

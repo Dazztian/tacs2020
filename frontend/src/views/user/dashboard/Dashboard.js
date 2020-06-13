@@ -70,7 +70,6 @@ export default function Dashboard(props) {
         localStorage.setItem('tracker_country_Iso', countryIso)
       }
       setIsLoading(false)
-      console.log(Date.now())
       const data = await api.getCountryDataByDate([iso],Date.now()-1,Date.now())
       const countryData = data[0]
       PieChartData[0].value = countryData.recovered 
@@ -122,7 +121,8 @@ export default function Dashboard(props) {
     : <div>
       <PageTitle title= {localStorage.getItem('tracker_country') + " today"} />
       <Grid container spacing={5}>
-      <Grid container lg={6} md={6} sm={12} xs={12} spacing={1}>
+      <Grid item lg={6} md={6} sm={12} xs={12}>
+      <Grid container spacing={2}>
         <Grid item lg={6} md={6} sm={6} xs={6}>
           <Widget
             upperTitle
@@ -346,13 +346,16 @@ export default function Dashboard(props) {
           </Widget>
         </Grid>
         </Grid>
+      </Grid> 
+
         <Grid item lg={6} md={6} sm={12} xs={12}>
+        
             <TableComponent data={nearCountries} />
           </Grid>
         </Grid>
         <Grid item xs={12}>
-            <PageTitle title= {"Near you"} />
-            <ListStats data={nearCountries}/>
+        <PageTitle title= {"Timeline search"} />
+            <ListStats data={[/*PASAR LISTA DE ISO*/]}/>
           </Grid>
       </div>
       }

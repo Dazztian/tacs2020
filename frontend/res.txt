@@ -1,3 +1,34 @@
+Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL
+Para cada pais de la lista
+El nombre del pais
+El total acumulado de e m r - osea la ultima medicion
+El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
+
+Lo mismo {{localPath}}/api/countries?{lat=-34&lon=-64}
+Para cada pais de la lista
+El iso2 del pais
+El nombre del pais
+El total acumulado de e m r - osea la ultima medicion
+El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
+
+Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL&fromDay=0&toDate=5 
+Para cada pais de la lista 
+Algo asi 
+{
+  countryname: "Argentina",
+    offset:6,
+    timeseridate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
+    timeseriesinfected:   [1, 1, 2, 8, 12, 14],
+    timeseriesreconvered: [0, 0, 1, 2, 4, 5],
+    timeseriesdeath:      [0, 0, 0, 1, 3, 6],
+    "confirmed": 25987,
+    "deaths": 735,
+    "recovered": 7991
+}
+
+
+
+
 GET countries en gral
 {{localPath}}/api/countries
 [
@@ -3267,6 +3298,7 @@ Get NEAREST COUNTRIES
   }
 ]
 
+
 Asi esta ahora
 {{localPath}}/api/countries/{US}/timeseries
 Asi deberia quedar
@@ -3275,7 +3307,142 @@ Asi deberia quedar
 >A parte deberia dar el total de la suma de infectados muertos y recuperados en ese intervalo de dias
 >Ademas deberia devoler la lista ordenada por fecha
 Esto deberia responder
-res = {
+res = 
+
+[
+  {
+  "_id": "5ede4adc853cd27b821cecc6",
+  "countryregion": "Ar",
+  "countryname: "Argentina",
+  "lastupdate": "2020-06-08T13:42:00.008Z",
+  "timeseries": [ //tiene q ser una lista ordenada
+    {
+      "number": 0,
+      "confirmed": 1851520,
+      "deaths": 107175,
+      "recovered": 479258,
+      "date": "6/3/20"
+    },
+    {
+      "number": 1,
+      "confirmed": 1577147,
+      "deaths": 94702,
+      "recovered": 298418,
+      "date": "5/21/20"
+    },
+    {
+      "number": 2,
+      "confirmed": 219,
+      "deaths": 12,
+      "recovered": 7,
+      "date": "3/5/20"
+    },
+  ],
+  totalInTimeseries:  {
+    "confirmed": 1942363,
+    "deaths": 110514,
+    "recovered": 506367,
+    }
+},{
+  "_id": "5ede4adc853cd27b821cecc6",
+  "countryregion": "US",
+  "countryname: "Estados unidos",
+  "lastupdate": "2020-06-08T13:42:00.008Z",
+  "timeseries": [ //tiene q ser una lista ordenada
+    {
+      "number": 0,
+      "confirmed": 1851520,
+      "deaths": 107175,
+      "recovered": 479258,
+      "date": "6/3/20"
+    },
+    {
+      "number": 1,
+      "confirmed": 1577147,
+      "deaths": 94702,
+      "recovered": 298418,
+      "date": "5/21/20"
+    },
+    {
+      "number": 2,
+      "confirmed": 219,
+      "deaths": 12,
+      "recovered": 7,
+      "date": "3/5/20"
+    },
+  ],
+  totalInTimeseries:  {
+    "confirmed": 1942363,
+    "deaths": 110514,
+    "recovered": 506367,
+    }
+},{
+  "_id": "5ede4adc853cd27b821cecc6",
+  "countryregion": "US",
+  "countryname: "Estados unidos",
+  "lastupdate": "2020-06-08T13:42:00.008Z",
+  "timeseries": [ //tiene q ser una lista ordenada
+    {
+      "number": 0,
+      "confirmed": 1851520,
+      "deaths": 107175,
+      "recovered": 479258,
+      "date": "6/3/20"
+    },
+    {
+      "number": 1,
+      "confirmed": 1577147,
+      "deaths": 94702,
+      "recovered": 298418,
+      "date": "5/21/20"
+    },
+    {
+      "number": 2,
+      "confirmed": 219,
+      "deaths": 12,
+      "recovered": 7,
+      "date": "3/5/20"
+    },
+  ],
+  totalInTimeseries:  {
+    "confirmed": 1942363,
+    "deaths": 110514,
+    "recovered": 506367,
+    }
+},{
+  "_id": "5ede4adc853cd27b821cecc6",
+  "countryregion": "US",
+  "countryname: "Estados unidos",
+  "lastupdate": "2020-06-08T13:42:00.008Z",
+  "timeseries": [ //tiene q ser una lista ordenada
+    {
+      "number": 0,
+      "confirmed": 1851520,
+      "deaths": 107175,
+      "recovered": 479258,
+      "date": "6/3/20"
+    },
+    {
+      "number": 1,
+      "confirmed": 1577147,
+      "deaths": 94702,
+      "recovered": 298418,
+      "date": "5/21/20"
+    },
+    {
+      "number": 2,
+      "confirmed": 219,
+      "deaths": 12,
+      "recovered": 7,
+      "date": "3/5/20"
+    },
+  ],
+  totalInTimeseries:  {
+    "confirmed": 1942363,
+    "deaths": 110514,
+    "recovered": 506367,
+    }
+},{
   "_id": "5ede4adc853cd27b821cecc6",
   "countryregion": "US",
   "countryname: "Estados unidos",
@@ -3309,6 +3476,9 @@ res = {
     "recovered": 506367,
     }
 }
+]
+
+
 
 {{localPath}}/api/countries/{US}
 >debe responder los valores de la ultima medicion (del ultimo dia, que es lo que hace ahora)

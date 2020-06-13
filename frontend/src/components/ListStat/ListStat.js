@@ -37,6 +37,7 @@ const ListStat = ({ data })=>{
   const [numDaysArray,setNumDays] = useState([])
   const [dayFinal,setOffDayFinal] = useState(0)
   const [dayInicial,setOffDayInicial] = useState(0)
+
   async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
     const isoList = []
@@ -223,7 +224,6 @@ return(
       header={
         <div className={classes.mainChartHeader}/> }
     >
-        
         <ColapsableTable data={data}/>
     </Widget>
   </Grid>
