@@ -22,7 +22,7 @@ import {
   YAxis,
   XAxis,
 } from "recharts";
-
+import TableComponent from "../../../components/Table/Table"
 // api
 import Api from '../../../apis/Api';
 
@@ -121,8 +121,9 @@ export default function Dashboard(props) {
       </Grid> 
     : <div>
       <PageTitle title= {localStorage.getItem('tracker_country') + " today"} />
-      <Grid container spacing={1}>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
+      <Grid container spacing={5}>
+      <Grid container lg={6} md={6} sm={12} xs={12} spacing={1}>
+        <Grid item lg={6} md={6} sm={6} xs={6}>
           <Widget
             upperTitle
             bodyClass={classes.fullHeightBody}
@@ -178,7 +179,7 @@ export default function Dashboard(props) {
             </Grid>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
+        <Grid item lg={6} md={6} sm={6} xs={6}>
         <Widget
             upperTitle
             bodyClass={classes.fullHeightBody}
@@ -234,7 +235,7 @@ export default function Dashboard(props) {
             </Grid>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
+        <Grid  item lg={6} md={6} sm={6} xs={6}> 
         <Widget
             upperTitle
             bodyClass={classes.fullHeightBody}
@@ -290,7 +291,7 @@ export default function Dashboard(props) {
             </Grid>
           </Widget>
         </Grid>
-        <Grid item lg={3} md={4} sm={6} xs={6}>
+        <Grid item lg={6} md={6} sm={6} xs={6}>
           <Widget
             upperTitle
             bodyClass={classes.fullHeightBody}
@@ -344,11 +345,15 @@ export default function Dashboard(props) {
             </Grid>
           </Widget>
         </Grid>
+        </Grid>
+        <Grid item lg={6} md={6} sm={12} xs={12}>
+            <TableComponent data={nearCountries} />
+          </Grid>
+        </Grid>
         <Grid item xs={12}>
-          <PageTitle title= {"Near you"} />
-          <ListStats data={nearCountries}/>
-        </Grid>
-        </Grid>
+            <PageTitle title= {"Near you"} />
+            <ListStats data={nearCountries}/>
+          </Grid>
       </div>
       }
     </>

@@ -49,8 +49,8 @@ const useRowStyles = makeStyles({
 export default function TableComponent({data}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
-  const rowsPerPage = 2
-
+  const rowsPerPage = 5
+  const rowAlign = "center"
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -62,10 +62,10 @@ export default function TableComponent({data}) {
         <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
-              <StyledTableCell align="right">Country</StyledTableCell>
-              <StyledTableCell align="right">Infected</StyledTableCell>
-              <StyledTableCell align="right">Recovered</StyledTableCell>
-              <StyledTableCell align="right">Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Country</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
@@ -102,12 +102,12 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell align="right" component="th" scope="row">
+        <TableCell align="center" component="th" scope="row">
           {row.countryregion}
         </TableCell>
-        <TableCell align="right">{row.confirmed}</TableCell>
-        <TableCell align="right">{row.deaths}</TableCell>
-        <TableCell align="right">{row.recovered}</TableCell>
+        <TableCell align="center">{row.confirmed}</TableCell>
+        <TableCell align="center">{row.deaths}</TableCell>
+        <TableCell align="center">{row.recovered}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

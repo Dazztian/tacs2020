@@ -41,7 +41,7 @@ const rowAlign = "center"
 export default function TableComponent({data}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(8);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -61,8 +61,8 @@ export default function TableComponent({data}) {
             </TableRow>
         </TableHead>
         <TableBody>
-            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ _id, countryregion, confirmed, deaths, recovered}) => (
-                <StyledTableRow align={rowAlign} key={_id}>
+            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ countryregion, confirmed, deaths, recovered}) => (
+                <StyledTableRow align={rowAlign} key={countryregion}>
                   <StyledTableCell align={rowAlign}>{countryregion}</StyledTableCell>
                   <StyledTableCell align={rowAlign}>{confirmed}</StyledTableCell>
                   <StyledTableCell align={rowAlign}>{recovered}</StyledTableCell>
@@ -77,10 +77,10 @@ export default function TableComponent({data}) {
           </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10]}
+        rowsPerPageOptions={[rowsPerPage]}
         component="div"
         count={data.length}
-        rowsPerPage={8}
+        rowsPerPage={rowsPerPage}
         page={page}
         SelectProps={{
           inputProps: { 'aria-label': 'rows per page' },
