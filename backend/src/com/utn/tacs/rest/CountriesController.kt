@@ -1,5 +1,6 @@
 package com.utn.tacs.rest
 
+import com.utn.tacs.UserNamesResponse
 import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
@@ -35,6 +36,11 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     logger.error("Parameters where not correct...", e)
                     call.respond(HttpStatusCode.NotFound)
                 }
+            }
+            get("/names") {
+                call.respond(countriesService.getAllCountries()
+                    .filter { it.countrycode != null}
+                    .map { UserNamesResponse(it.countryregion, it.countrycode!!.iso2) } )
             }
             get("/{iso2}") {
                 try {
