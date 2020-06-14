@@ -8,6 +8,9 @@ import ReactDOM from "react-dom";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
 
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { FixedSizeList } from 'react-window';
 
 const EditarListas = ()=>{
     let sec;
@@ -16,6 +19,8 @@ const EditarListas = ()=>{
     const [unArray,setUnArray] = useState([{name:null,paises:[]}])
     const [count,setCount] = useState(0)
     const [loading,setLoading] = useState(false)
+
+    const [unArrayListasDePaises,setunArrayListasDePaises] = useState([{}])
 
     /*----------------------------PARA CORRERLO ONLINE--------------------------------
     const id_user= "5ee3a85273699c3db95bd3e1"
@@ -81,8 +86,60 @@ const EditarListas = ()=>{
 
     }
 
+    const obtenerTodosLosPaises=  async ()=>{
+      try{
+          let res = await fetch( BASE_URL +"/api/user/"+ id_user + "/lists" ,{
+          method:"get",
+          headers:{
+              'Accept': 'application/json',
+              'Authorization' : 'Bearer '+ token
+              }
+          })
+          let elemento = await res.json();
+
+          let promArray = elemento.map( item=>{ return {name:item.name, id:item.id,
+               paises:item.countries.map(pais => [pais]) } })
+
+          let resultArray = await Promise.all(promArray)
+
+          setUnArray(resultArray)  
+         
+
+      }
+      catch(err) {
+          console.log(err)
+          window.alert(err)
+      }
+
+  }
+
+
+    /*-----------------ESTE CODIGO ES EL QUE GENERA EL SELECT LIST-----------------*/
+    const Column = ({ index, style }) => (
+      <ListItem button style={style} key={index} 
+       onClick={()=>obtenerTodosLosPaises()}
+      >
+      <ListItemText primary={unArrayListasDePaises[index].name} 
+                    secondary={unArrayListasDePaises[index].id}//Queda pendiente ver como ocultar el id
+      /> {/*obtener lista por id*/}
+      </ListItem>
+    );
+     
+    const Example = () => (
+      <FixedSizeList
+        height={125}
+        itemCount={unArrayListasDePaises.length}
+        itemSize={150}
+        layout="horizontal"
+        width={450}
+      >
+        {Column}
+      </FixedSizeList>
+    )
+    /*-----------------ACA TERMINA EL CODIGO  QUE GENERA EL SELECT LIST---------------*/
+
+
     useEffect(() => {
-        //updateLista("5ee63e9ead140055ea0d76be","Perreo a poca luz",["Argentina","Chile","Peru"])
         obtenerListaDePaisesXUsuario()
     }, [count]); 
 
@@ -94,12 +151,12 @@ const EditarListas = ()=>{
 
             {unArray.map(elemento =>{ return [
               
-            <Grid container spacing={4}>
-            <Grid item lg={10} md={4} sm={6} xs={12}>
+            <Grid container spacing={4} >
+            {/*<Grid item lg={10} md={4} sm={6}>*/}
+            <Grid item lg={12}  sm={6} >
 
-            {/*<div className={classes.mainChartHeader}>*/}
             <Grid   
-              item lg={8} md={9} sm={10} xs={9}        
+              item lg={12} md={1} sm={1}      
               container
               spacing={1}
               alignItems="center"
@@ -122,16 +179,22 @@ const EditarListas = ()=>{
                 }}
               />
             </Grid>
-          <Grid item>
-            <Button xs={2} md={2} variant="contained" color="primary" 
-            onClick={(e)=>updateLista(elemento.id, sec, [].concat.apply([], elemento.paises)  ) }
-            //console.log(elemento.paises) }
+          <Grid item xs={3} md={3}>
+            <Button  variant="contained" color="primary" 
+            onClick={(e)=>updateLista(elemento.id, sec, flatenizarNombrePaises(elemento)   ) }
             >    
               Cambiar Nombre
             </Button>
+          </Grid>
+          <Grid item xs={3}>
+            <Example />{/*Componente que te permite elegir la lista a mostrar */}
           </Grid> 
+          <Grid item xs={3}   justify="flex-end">
+            <Button  variant="contained" color="secondary"
+            onClick={()=>console.log("boton para agregar paises")}> Agregar paises
+            </Button>
+          </Grid>
         </Grid>
-        {/*</div>*/}
 
             <MUIDataTable
             title={ elemento.name}
@@ -159,3 +222,7 @@ const EditarListas = ()=>{
 
 
 export default EditarListas 
+
+function flatenizarNombrePaises(elemento) {
+  return [].concat.apply([], elemento.paises);
+}

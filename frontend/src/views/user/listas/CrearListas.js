@@ -50,9 +50,9 @@ const CrearListas = ()=>{
         }
     }
 
-    const id_user= "5ee3a85273699c3db95bd3e1"
-    const token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTNhODUyNzM2OTljM2RiOTViZDNlMSIsImV4cCI6MTU5MjAxNDA2Nn0.Ux5REf5nKHTTgkDAJrwjYnJbsbAVGnnzf_EHZlf6xDM"
-    const BASE_URL = 'https://eca5bc85109d.ngrok.io';
+    const id_user= "5ee63779ad140055ea0d76ba"
+    const BASE_URL = 'http://localhost:8080';
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTYzNzc5YWQxNDAwNTVlYTBkNzZiYSIsImV4cCI6MTU5MjE4MTc4NX0.fiFuq27BhdjLLJwoo8bHi1oJV60kMum59wvfQfoeO1g"
 
     const crearListaDePaisesXUsuario = async ()=>{
         try{
