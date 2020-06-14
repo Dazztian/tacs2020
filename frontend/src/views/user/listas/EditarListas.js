@@ -124,7 +124,7 @@ const EditarListas = ()=>{
             </Grid>
           <Grid item>
             <Button xs={2} md={2} variant="contained" color="primary" 
-            onClick={(e)=>updateLista(elemento.id, sec, elemento.paises[0] ) }
+            onClick={(e)=>updateLista(elemento.id, sec, [].concat.apply([], elemento.paises)  ) }
             //console.log(elemento.paises) }
             >    
               Cambiar Nombre
