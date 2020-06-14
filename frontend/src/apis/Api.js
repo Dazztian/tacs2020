@@ -45,7 +45,7 @@ class Api {
       });*/
     }
 
-  async getCountryDataByDate(isoList,dateinicial,datefinal) {
+  async getCountriesDataByDate(isoList,dateinicial,datefinal) {
     try{
       const data = mock.singleCountryLastday
 
@@ -70,9 +70,34 @@ class Api {
       }*/
   }
 
-  async getCountryDataByDays(iso,startDay,endDay) {
+  async getCountriesDataByDays(iso,startDay,endDay) {
     try{
       const data = mock.nearWithOffset 
+
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data);
+        }, 500);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*const res = await await fetch(this.BASE_URL, {
+          method:'POST',
+          headers: this.createHeaders(),
+          body: JSON.stringify(item),
+        });
+
+      if(res.ok)
+        const data = await res.json()
+      
+      return data.timeseries
+      }*/
+  }
+
+  async getCountriesData(isoList) {
+    try{
+      const data = mock.countriesLastday 
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -98,6 +123,30 @@ class Api {
   async getNearCountries() {
     try{
       const data = mock.near
+
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data);
+        }, 500);
+      })
+
+      /*let position = await getLocation()
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}}`, {
+        method: 'GET',
+        headers: this.createHeaders()
+      });*/
+
+    }catch(e){
+      console.log(e)
+    }
+  }
+
+  async getNearCountriesOrder() {
+    try{
+      const data = mock.nearordered
 
       return new Promise(resolve => {
         setTimeout(() => {

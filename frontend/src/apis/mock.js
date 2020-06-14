@@ -821,7 +821,7 @@ near : [
 ],
 nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
   {
-    countryname: "Argentina",
+    countryregion: "Argentina",
     iso2: "AR",
     offset:6,
     timeseridate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
@@ -833,7 +833,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "recovered": 7991,
   },
   {
-    countryname: "Brasil",
+    countryregion: "Brasil",
     iso2: "BR",
     offset:1,
     timerseriesdate:      ["26/2/2020","27/2/2020","28/2/2020","29/2/2020","1/3/2020","2/3/2020"],
@@ -856,6 +856,62 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "deaths": 735,
     "recovered": 7991,
   }],
+  nearordered: [  {
+    "countryregion": "Argentina",
+    "countrycode": "AR",
+    "confirmed": 25987,
+    "deaths": 735,
+    "recovered": 7991,
+    "newCases": 1226,
+    "newRecovered": 423,
+    "newDeath": 18
+  },{
+    "countryregion": "Bolivia",
+    "countrycode": "BL",
+    "confirmed": 15281,
+    "deaths": 512,
+    "recovered": 2261,
+    "newCases": 626,
+    "newRecovered": 123,
+    "newDeath": 9
+  },{
+    "countryregion": "Brazil",
+    "countrycode": "BR",
+    "confirmed": 772416,
+    "deaths": 39680,
+    "recovered": 413916,
+    "newCases": 19049,
+    "newRecovered": 1276,
+    "newDeath": 481
+  },{
+    "countryregion": "Chile",
+    "countrycode": "CL",
+    "confirmed": 148456,
+    "deaths": 2475,
+    "recovered": 121780,
+    "newCases": 1234,
+    "newRecovered": 323,
+    "newDeath": 43
+  },{
+    "countryregion": "Paraguay",
+    "countrycode": "PY",
+    "confirmed": 1202,
+    "deaths": 11,
+    "recovered": 619,
+    "newCases": 1226,
+    "newRecovered": 423,
+    "newDeath": 18
+  },{
+    "countryregion": "Uruguay",
+    "countrycode": "UY",
+    "confirmed": 847,
+    "deaths": 23,
+    "recovered": 758,
+    "newCases": 1226,
+    "newRecovered": 423,
+    "newDeath": 18
+  }
+],
 singleCountryLastday : [
   {
     "countryregion": "Argentina",

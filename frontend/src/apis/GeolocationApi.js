@@ -8,11 +8,9 @@ function getLocation(options) {
 async function getCountry(){
     try {
       const position = await getLocation()
-      console.log(position.coords.latitude)
-      console.log(position.coords.longitude)
       return new Promise(resolve => {
         setTimeout(() => {
-          resolve({countryIso: 'AR', countryName: 'Peronia'});
+          resolve({countryIso: 'AR', countryName: 'Argentina'});
         }, 1000);
       });
       

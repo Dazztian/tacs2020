@@ -1,5 +1,6 @@
 Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL
 Para cada pais de la lista
+El iso2 del pais
 El nombre del pais
 El total acumulado de e m r - osea la ultima medicion
 El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
@@ -11,11 +12,21 @@ El nombre del pais
 El total acumulado de e m r - osea la ultima medicion
 El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
 
+{
+  countryregion: "Argentina",
+  countrycode: "AR",
+  confirmed: 25987,
+  deaths: 735,
+  recovered: 7991,
+
+}
+
 Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL&fromDay=0&toDate=5 
 Para cada pais de la lista 
 Algo asi 
 {
-  countryname: "Argentina",
+  countryregion: "Argentina",
+  countrycode: "AR",
     offset:6,
     timeseridate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
     timeseriesinfected:   [1, 1, 2, 8, 12, 14],
@@ -25,8 +36,6 @@ Algo asi
     "deaths": 735,
     "recovered": 7991
 }
-
-
 
 
 GET countries en gral
