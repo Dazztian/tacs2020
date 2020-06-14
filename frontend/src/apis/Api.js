@@ -11,7 +11,7 @@ class Api {
       'Content-Type': 'application/json'
     };
   
-    BASE_URL = 'https://32ddbafd6091.ngrok.io/api';
+    BASE_URL = 'https://eca5bc85109d.ngrok.io';
 
     createHeaders() {
       return !!this.authToken ? {
