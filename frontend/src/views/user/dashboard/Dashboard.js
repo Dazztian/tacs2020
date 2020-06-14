@@ -13,21 +13,22 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 
 import TableComponent from "../../../components/Table/Table";
+import TotalStats from "../../../components/Table/TableEnhanced";
 
 const api = new Api();
 
 export default function Dashboard(props) {
-
   // local
   var [localCountry, setLocalIso] = useState("");
   var [isLoading, setIsLoading] = useState(true);
   var [nearCountriesOrder, setNearCountriesOrder] = useState();
+  var [isoList, setIsoList] = useState();
 
   async function fetchNearData() {
     try {
       const nearOrder = await api.getNearCountriesOrder()
       setNearCountriesOrder(nearOrder)
-      console.log(nearOrder)
+      setIsoList(await Promise.all(nearOrder.map(n => n.iso2)))
     } catch(error) {
       console.log(error)
     }
@@ -35,12 +36,12 @@ export default function Dashboard(props) {
 
   async function fetchLocal() {
     try {
-      localStorage.removeItem('tracker_country_Iso')
       let iso = localStorage.getItem('tracker_country_Iso')
+      console.log(iso)
       if (!iso){
         const {countryIso,countryName} = await getCountry()
         iso = countryIso
-        console.log(iso)
+
         localStorage.setItem('tracker_country', countryName)
         localStorage.setItem('tracker_country_Iso', countryIso)
       }
@@ -87,15 +88,13 @@ export default function Dashboard(props) {
     : <div>
         <Grid container>
           <Grid item xs={12}>
-          {console.log(localCountry)}
-          {console.log(nearCountriesOrder)}
-          <TableComponent setIsLoading={setIsLoading} initialCountryIso={localCountry} totalCountries={nearCountriesOrder}/>
+          <TotalStats initialCountryIso={localCountry} totalCountries={nearCountriesOrder}/>
           </Grid>
         </Grid>
         <Grid container>
           <Grid item xs={12}>
             <PageTitle title= {"Timeline search"} />
-            <ListStats data={[/*PASAR LISTA DE ISO*/]}/>
+            <ListStats isoList={isoList}/>
           </Grid>
         </Grid>
       </div>

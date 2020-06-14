@@ -252,8 +252,8 @@ return (
                             <PieChart margin={{ left: theme.spacing(2) }}>
                             <Pie
                                 data={pieChartData}
-                                innerRadius={30}
-                                outerRadius={40}
+                                innerRadius={0}
+                                outerRadius={42}
                                 dataKey="value"
                             >
                                 {pieChartData.map((entry, index) => (

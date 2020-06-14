@@ -12,8 +12,8 @@ import {
 } from "@material-ui/core";
 import ApexCharts from "react-apexcharts";
 import { useTheme } from "@material-ui/styles";
-import Widget from "../Widget";
-import { Typography } from "../Wrappers";
+import Widget from "../Widget/Widget";
+import { Typography } from "../Wrappers/Wrappers";
 import Dot from "../Sidebar/components/Dot";
 
 import ColapsableTable from "../Table/ColapsableTable"
@@ -24,8 +24,8 @@ import useStyles from "../../views/user/dashboard/styles";
 import Api from "../../apis/Api"
 const api = new Api()
 
-const ListStat = ({ data })=>{
-
+const ListStat = ({ isoList })=>{
+  console.log(isoList)
   var theme = useTheme();
   var classes = useStyles();
 
@@ -40,10 +40,9 @@ const ListStat = ({ data })=>{
 
   async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
-    const isoList = []
     
     const res = await api.getCountriesDataByDays(isoList,offinicial,offfinal)
-    
+
       if(true/*res.ok*/) {
         //const data = await res.json()
         const data = res
@@ -61,7 +60,7 @@ const ListStat = ({ data })=>{
 
     async function createDays(data){
       let dayArray = []
-      const final = await data.filter( r => r.offset===1 )[0].timerseriesdate.length
+      const final = await data.filter( r => r.offset===1 )[0].timeseriedate.length
       console.log(final)
       for(let i=1;i<=final;i++){
         dayArray.push(`Day ${i}`)
@@ -170,7 +169,7 @@ return(
                 dayFinal === undefined || dayInicial === undefined || dayFinal<=dayInicial
               }
               onClick={() =>{
-              handleFetchOffset(dayInicial,dayFinal)
+                handleFetchOffset(dayInicial,dayFinal)
             }
             }>
               Submit
@@ -224,7 +223,8 @@ return(
       header={
         <div className={classes.mainChartHeader}/> }
     >
-        <ColapsableTable data={data}/>
+        {console.log(rows)}
+        { rows.length ? <ColapsableTable rows={rows}/> : <Grid></Grid> }
     </Widget>
   </Grid>
   </Grid>

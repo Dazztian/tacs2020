@@ -15,10 +15,12 @@ El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 m
 {
   countryregion: "Argentina",
   countrycode: "AR",
-  confirmed: 25987,
-  deaths: 735,
-  recovered: 7991,
-
+  confirmed: 25987, //seria el total acumulado, osea la ultima medicion
+  deaths: 735,      //seria el total acumulado, osea la ultima medicion
+  recovered: 7991,  //seria el total acumulado, osea la ultima medicion
+  newCases: 1226,   //seria el incremento desde la ultima medicion timeseries[n]-timeseries[n-1]
+  newRecovered: 423,
+  newDeath: 18
 }
 
 Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL&fromDay=0&toDate=5 
@@ -27,14 +29,14 @@ Algo asi
 {
   countryregion: "Argentina",
   countrycode: "AR",
-    offset:6,
+    offset:6, //dias de diferencia entre el pais que esta mas atras en su dia 1 y la fecha del dia 1 de este pais
     timeseridate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
     timeseriesinfected:   [1, 1, 2, 8, 12, 14],
     timeseriesreconvered: [0, 0, 1, 2, 4, 5],
     timeseriesdeath:      [0, 0, 0, 1, 3, 6],
-    "confirmed": 25987,
-    "deaths": 735,
-    "recovered": 7991
+    confirmed: 14,  //Seria lo que aumento en el periodo timeseriesinfected[n]-timeseriesinfected[1]
+    deaths: 5, //Seria lo que aumento en el periodo
+    recovered: 6 //Seria lo que aumento en el periodo
 }
 
 

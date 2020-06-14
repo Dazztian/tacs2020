@@ -824,7 +824,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     countryregion: "Argentina",
     iso2: "AR",
     offset:6,
-    timeseridate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
+    timeseriedate:         ["3/3/2020","4/3/2020","5/3/2020","6/3/2020","7/3/2020","8/3/2020"],
     timeseriesinfected:   [1, 1, 2, 8, 12, 14],
     timeseriesreconvered: [0, 0, 1, 2, 4, 5],
     timeseriesdeath:      [0, 0, 0, 1, 3, 6],
@@ -836,7 +836,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     countryregion: "Brasil",
     iso2: "BR",
     offset:1,
-    timerseriesdate:      ["26/2/2020","27/2/2020","28/2/2020","29/2/2020","1/3/2020","2/3/2020"],
+    timeseriedate:      ["26/2/2020","27/2/2020","28/2/2020","29/2/2020","1/3/2020","2/3/2020"],
     timeseriesinfected:   [1, 1, 2, 3, 12, 32],
     timeseriesreconvered: [0, 0, 0, 0, 3, 5],
     timeseriesdeath:      [0, 0, 0, 1, 4, 9],
@@ -845,10 +845,10 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "recovered": 413916,
   },
   {
-    countryname: "Uruguay",
+    countryregion: "Uruguay",
     iso2: "UY",
     offset:14,
-    timerseriesdate:      ["13/3/2020","14/3/2020","15/3/2020","16/3/2020","16/3/2020","17/3/2020"],
+    timeseriedate:      ["13/3/2020","14/3/2020","15/3/2020","16/3/2020","16/3/2020","17/3/2020"],
     timeseriesinfected:   [4, 6, 8, 11, 28, 30],
     timeseriesreconvered: [0, 0, 2, 3, 4, 6],
     timeseriesdeath:      [0, 0, 1, 3, 8, 11],
@@ -858,7 +858,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
   }],
   nearordered: [  {
     "countryregion": "Argentina",
-    "countrycode": "AR",
+    "iso2": "AR",
     "confirmed": 25987,
     "deaths": 735,
     "recovered": 7991,
@@ -867,7 +867,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 18
   },{
     "countryregion": "Bolivia",
-    "countrycode": "BL",
+    "iso2": "BL",
     "confirmed": 15281,
     "deaths": 512,
     "recovered": 2261,
@@ -876,7 +876,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 9
   },{
     "countryregion": "Brazil",
-    "countrycode": "BR",
+    "iso2": "BR",
     "confirmed": 772416,
     "deaths": 39680,
     "recovered": 413916,
@@ -885,7 +885,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 481
   },{
     "countryregion": "Chile",
-    "countrycode": "CL",
+    "iso2": "CL",
     "confirmed": 148456,
     "deaths": 2475,
     "recovered": 121780,
@@ -894,7 +894,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 43
   },{
     "countryregion": "Paraguay",
-    "countrycode": "PY",
+    "iso2": "PY",
     "confirmed": 1202,
     "deaths": 11,
     "recovered": 619,
@@ -903,7 +903,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 18
   },{
     "countryregion": "Uruguay",
-    "countrycode": "UY",
+    "iso2": "UY",
     "confirmed": 847,
     "deaths": 23,
     "recovered": 758,

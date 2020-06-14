@@ -46,7 +46,7 @@ const useRowStyles = makeStyles({
   },
 });
 
-export default function ColapsableTable({data}) {
+export default function ColapsableTable({rows}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const rowsPerPage = 5
@@ -66,20 +66,20 @@ export default function ColapsableTable({data}) {
               <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
               <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
               <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Timeseries</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
-        {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
           .map((row) => (
-            <Row key={row._id} row={row} />
+            <Row key={row.iso2} row={row} />
           ))}
-
         </TableBody>
       </Table>
       <TablePagination
         rowsPerPageOptions={[rowsPerPage]}
         component="div"
-        count={data.length}
+        count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -106,22 +106,39 @@ function Row(props) {
           {row.countryregion}
         </TableCell>
         <TableCell align="center">{row.confirmed}</TableCell>
-        <TableCell align="center">{row.deaths}</TableCell>
         <TableCell align="center">{row.recovered}</TableCell>
+        <TableCell align="center">{row.deaths}</TableCell>
+        <TableCell align="center">{row.offset}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
+              <Typography variant="h3" gutterBottom component="div">
                 Offset
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell align="center">Infected</TableCell>
+                    <TableCell align="center">Recovered</TableCell>
+                    <TableCell align="center">Deceased</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  { row.timeseriedate.map((value, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">
+                        {value}
+                      </TableCell >
+                      <TableCell align="center">{row.timeseriesinfected[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesreconvered[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesdeath[index]}</TableCell>
+                    </TableRow>
+                    ))
+                  }
+
                 </TableBody>
               </Table>
             </Box>

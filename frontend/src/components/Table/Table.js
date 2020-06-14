@@ -28,7 +28,6 @@ const StyledTableCell = withStyles((theme) => ({
   body: {
     fontSize: 14,
   }
-
 }))(TableCell);
 
 const StyledTableRow = withStyles((theme) => ({
@@ -41,30 +40,32 @@ const StyledTableRow = withStyles((theme) => ({
 
 const rowAlign = "center"
 
-export default function TableComponent({setIsLoading,initialCountryIso,totalCountries}) {
+export default function TableComponent({initialCountryIso,totalCountries}) {
   console.log(initialCountryIso)
   console.log(totalCountries)
-  //let actualCountryIso = initialCountryIso
+  let actualCountryIso = initialCountryIso
   //const [actualCountryIso,setMainCountryIso] = useState(initialCountryIso)
   const [actualCountryData,setMainCountryData] = useState()
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [isItemSelected, setItemSelected] = useState()
 
   const classes = useStyles();
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  async function updateMainCountry(actualCountryIso){
+  async function updateMainCountry(actualCountryIson){
     console.log(totalCountries)
-    const data = await totalCountries.filter(country => country.countrycode===actualCountryIso)[0]
+    actualCountryIso = actualCountryIson
+    const data = await totalCountries.filter(country => country.iso2===actualCountryIso)[0]
     console.log(data)
-    setMainCountryData(await totalCountries.filter(country => country.countrycode===actualCountryIso)[0])
+    setMainCountryData(await totalCountries.filter(country => country.iso2===actualCountryIso)[0])
   }
 
   useEffect(() => {
-      updateMainCountry(initialCountryIso);
-  },[initialCountryIso])
+      updateMainCountry(actualCountryIso);
+  },[actualCountryIso])
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalCountries.length - page * rowsPerPage);
 
@@ -90,8 +91,15 @@ export default function TableComponent({setIsLoading,initialCountryIso,totalCoun
               </TableRow>
           </TableHead>
           <TableBody>
-              {totalCountries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ countrycode, countryregion, confirmed, deaths, recovered}) => (
-                  <StyledTableRow onClick={() => updateMainCountry(countrycode)} align={rowAlign} key={countrycode}>
+              {totalCountries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ iso2, countryregion, confirmed, deaths, recovered}) => (
+                  <StyledTableRow 
+                    onClick={() => updateMainCountry(iso2)}
+                    role="checkbox"
+                    aria-checked={iso2===actualCountryIso}
+                    align={rowAlign} 
+                    key={iso2}
+                    selected={isItemSelected}
+                    >
                     <StyledTableCell align={rowAlign}>{countryregion}</StyledTableCell>
                     <StyledTableCell align={rowAlign}>{confirmed}</StyledTableCell>
                     <StyledTableCell align={rowAlign}>{recovered}</StyledTableCell>
