@@ -50,9 +50,9 @@ const CrearListas = ()=>{
         }
     }
 
-    const id_user= "5ee63779ad140055ea0d76ba"
+    const id_user= "5ee6c4f20d586f7f37cc6acb"
     const BASE_URL = 'http://localhost:8080';
-    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTYzNzc5YWQxNDAwNTVlYTBkNzZiYSIsImV4cCI6MTU5MjE4MTc4NX0.fiFuq27BhdjLLJwoo8bHi1oJV60kMum59wvfQfoeO1g"
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTZjNGYyMGQ1ODZmN2YzN2NjNmFjYiIsImV4cCI6MTU5MjIxODAwM30.taZvg1x4fHQ7m3oehpgdW18eFZTQ3u3X84spIRdN7Mw"
 
     const crearListaDePaisesXUsuario = async ()=>{
         try{

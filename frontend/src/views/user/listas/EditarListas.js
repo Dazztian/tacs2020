@@ -23,7 +23,7 @@ const EditarListas = ()=>{
     const state = { rowsSelected: [] };
     let nuevoNombreLista;
 
-    const [nombreElegido,setNombreElegido] = useState(false)
+    const [paisElegido,setPaisElegido] = useState(false)
 
     const [unArrayListasDePaises,setunArrayListasDePaises] = useState([{}])
 
@@ -34,9 +34,9 @@ const EditarListas = ()=>{
     */
 
     /*----------------------------PARA CORRERLO LOCAL--------------------------------*/
-    const id_user= "5ee63779ad140055ea0d76ba"
+    const id_user= "5ee6c4f20d586f7f37cc6acb"
     const BASE_URL = 'http://localhost:8080';
-    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTYzNzc5YWQxNDAwNTVlYTBkNzZiYSIsImV4cCI6MTU5MjE4MTc4NX0.fiFuq27BhdjLLJwoo8bHi1oJV60kMum59wvfQfoeO1g"
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTZjNGYyMGQ1ODZmN2YzN2NjNmFjYiIsImV4cCI6MTU5MjIxODAwM30.taZvg1x4fHQ7m3oehpgdW18eFZTQ3u3X84spIRdN7Mw"
 
     const obtenerListaDePaises = async ()=>{
       try{
@@ -124,7 +124,6 @@ const EditarListas = ()=>{
         
     }, [count]); 
 
-    //var classes = useStyles();
 
     return(
             <>
@@ -169,7 +168,7 @@ const EditarListas = ()=>{
               <Grid item xs={3}   justify="flex-end">
                 <Button  variant="contained" color="secondary"
                 onClick={()=>// REVISAR ESTO !!!!(listarray[listarray.length - 1])}
-                updateLista(elemento.id, nuevoNombreLista, flatenizarNombrePaises(listarray[listarray.length - 1])   )}
+                paisElegido? updateLista(elemento.id, elemento.name, flatenizarNombrePaises(listarray[listarray.length - 1])): window.alert("Primero tenés que escoger los paises de la lista") }
                 >
                 Actualizar paises de la lista
                 </Button>
@@ -206,7 +205,7 @@ const EditarListas = ()=>{
                   rowsSelected: state.rowsSelected,
                   onRowsSelect:  (rowsSelected, allRows) => { //console.log(unArrayTodosLosPaises[rowsSelected.dataIndex])
                   listarray.push(allRows.map( item => unArrayTodosLosPaises[item.dataIndex]) );
-                  //setPaisElegido(true)
+                  setPaisElegido(true)
                 },
               }
               }
