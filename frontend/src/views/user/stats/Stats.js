@@ -9,54 +9,35 @@ import {
 import Api from '../../../apis/Api';
 
 // components
-import PageTitle from "../../../components/PageTitle";
+import PageTitle from "../../../components/PageTitle/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
+
+import TableComponent from "../../../components/Table/Table";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
 const api = new Api();
 
-export default function Dashboard(props) {
+export default function UserListStats(props) {
   // local
-  var [localCountry, setLocalIso] = useState("");
-  var [isLoading, setIsLoading] = useState(true);
-  var [nearCountriesOrder, setNearCountriesOrder] = useState();
+  var [userList, setUserList] = useState();
   var [isoList, setIsoList] = useState();
+  var [isLoading, setIsLoading] = useState(true);
 
-  async function fetchNearData() {
+  async function fetchUserList() {
     try {
-      const nearOrder = await api.getNearCountriesOrder()
-      setNearCountriesOrder(nearOrder)
-      setIsoList(await Promise.all(nearOrder.map(n => n.iso2)))
+
     } catch(error) {
       console.log(error)
     }
   }
 
-  async function fetchLocal() {
-    try {
-      let iso = localStorage.getItem('tracker_country_Iso')
-      console.log(iso)
-      if (!iso){
-        const {countryIso,countryName} = await getCountry()
-        iso = countryIso
-
-        localStorage.setItem('tracker_country', countryName)
-        localStorage.setItem('tracker_country_Iso', countryIso)
-      }
-      setIsLoading(false)
-      setLocalIso(iso)
-    } catch(error) {
-      console.log(error)
-    }
-  }
 
   useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
     async function getInitialData(){
-      await fetchNearData()
-      await fetchLocal()
-
+      await fetchUserList()
+      setIsLoading(false)
     }
-    getInitialData();
+    getInitialData()
   },[]);
 
   return (
@@ -74,10 +55,19 @@ export default function Dashboard(props) {
           <CircularProgress size={100}/>
         </Grid>   
       </Grid> 
-    : <div>
+    : <Grid container
+        direction="column"
+        alignItems="center"
+        justify="center"    
+      >
+
+      </Grid>
+    }
+    {!!userList && 
+      <div>
         <Grid container>
           <Grid item xs={12}>
-          <TotalStats initialCountryIso={localCountry} totalCountries={nearCountriesOrder}/>
+          <TotalStats initialCountryIso={userList[0].iso2} totalCountries={userList}/>
           </Grid>
         </Grid>
         <Grid container>
@@ -87,7 +77,7 @@ export default function Dashboard(props) {
           </Grid>
         </Grid>
       </div>
-      }
+    }
     </>
   );
 }

@@ -1,31 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import {
   Grid,
-  LinearProgress,
-  CircularProgress,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  TextField,
-  InputLabel,
-  Button
 } from "@material-ui/core";
 
 import {
     ResponsiveContainer,
-    ComposedChart,
-    AreaChart,
     LineChart,
     Line,
-    Area,
     PieChart,
     Pie,
     Cell,
-    YAxis,
-    XAxis,
   } from "recharts";
 
-import ApexCharts from "react-apexcharts";
 import { useTheme } from "@material-ui/styles";
 
 
@@ -33,26 +19,36 @@ import { useTheme } from "@material-ui/styles";
 import { Typography } from "../Wrappers";
 import Dot from "../Sidebar/components/Dot";
 import Widget from "../Widget";
-import TableComponent from "../Table/Table"
-import PageTitle from "../PageTitle";
 
 // styles
 import useStyles from "../../views/user/dashboard/styles";
 
 const ListTotalStats = ({actualCountryData})=>{
-  console.log(actualCountryData)
+    console.log(actualCountryData)
   var theme = useTheme();
   var classes = useStyles();
-
+    /*const [newCases,setNewCases] = useState(actualCountryData.newCases)
+    const [newRecovered,setNewRecovered] = useState(actualCountryData.newRecovered)
+    const [newDeath,setNewDeath] = useState(actualCountryData.newDeath)
+    const [pieChartData,setPieChartData] = useState(
+        [
+            { name: "", value: actualCountryData.recovered, color: "success" },
+            { name: "", value: actualCountryData.confirmed, color: "warning" },
+            { name: "", value: actualCountryData.deaths, color: "secondary" }, 
+        ])
+    const [rateInfected,setRateInfected] = useState((actualCountryData.newCases*100/actualCountryData.confirmed).toFixed(2))
+    const [rateRecovered,setRateRecovered] = useState((actualCountryData.newRecovered*100/actualCountryData.recovered).toFixed(2))
+    const [rateDeath,setRateDeath] = useState((actualCountryData.newDeath*100/actualCountryData.deaths).toFixed(2))
+    */
   let pieChartData = [
     { name: "", value: actualCountryData.recovered, color: "success" },
     { name: "", value: actualCountryData.confirmed, color: "warning" },
     { name: "", value: actualCountryData.deaths, color: "secondary" }, 
   ]
 
-  const newCases = actualCountryData.newCases
-  const newRecovered = actualCountryData.newRecovered
-  const newDeath = actualCountryData.newDeath
+    const newCases = actualCountryData.newCases
+    const newRecovered = actualCountryData.newRecovered
+    const newDeath = actualCountryData.newDeath
    
     const rateInfected = (actualCountryData.newCases*100/actualCountryData.confirmed).toFixed(2)
     const rateRecovered = (actualCountryData.newRecovered*100/actualCountryData.recovered).toFixed(2)
@@ -253,7 +249,7 @@ return (
                             <Pie
                                 data={pieChartData}
                                 innerRadius={0}
-                                outerRadius={42}
+                                outerRadius={35}
                                 dataKey="value"
                             >
                                 {pieChartData.map((entry, index) => (

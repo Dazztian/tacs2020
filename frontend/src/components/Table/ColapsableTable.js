@@ -66,7 +66,7 @@ export default function ColapsableTable({rows}) {
               <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
               <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
               <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
-              <StyledTableCell align={rowAlign}>Timeseries</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Offset</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
@@ -115,7 +115,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h3" gutterBottom component="div">
-                Offset
+                Timeline
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>

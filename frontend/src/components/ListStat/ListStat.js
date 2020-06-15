@@ -119,7 +119,7 @@ return(
             <Grid item xs={3} md={3} >
               <TextField
                 id="filled-number"
-                label="Offset start"
+                label="Start day"
                 type="number"
                 margin='dense'
                 size='small'
@@ -138,10 +138,9 @@ return(
               />
             </Grid>
             <Grid item xs={3} md={3} >
-              
               <TextField
                 id="filled-number"
-                label="Offset end"
+                label="End day"
                 type="number"
                 margin='dense'
                 size='small'

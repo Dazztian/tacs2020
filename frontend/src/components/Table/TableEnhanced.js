@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,47 +7,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import ListTotalStats from "../ListStat/ListTotalStat";
 import PageTitle from "../PageTitle";
 
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 const headCells = [
   { id: 'Country', numeric: true, disablePadding: false, label: 'Country' },
@@ -68,10 +29,6 @@ const StyledTableCell = withStyles((theme) => ({
     }}))(TableCell);
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
 
   return (
     <TableHead>
@@ -81,20 +38,8 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align={headCell.numeric ? 'center' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
+            {headCell.label}
           </StyledTableCell>
         ))}
       </TableRow>
@@ -127,10 +72,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EnhancedTable({initialCountryIso,totalCountries}) {
-  let isoinicial = initialCountryIso
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState(initialCountryIso);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -139,7 +81,6 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
 
   const handleClick = async (event, iso2) => {
     if(iso2!==selected){
-        const data = await totalCountries.filter(country => country.iso2===iso2)[0]
         setMainCountryData(await totalCountries.filter(country => country.iso2===iso2)[0])
         setSelected(iso2);
     }
@@ -147,7 +88,7 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
 
   useEffect((event)=>{
     handleClick(event,initialCountryIso)
-  },[isoinicial])
+  },[initialCountryIso])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -182,17 +123,12 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
           >
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
               rowCount={totalCountries.length}
             />
             <TableBody>
-              {stableSort(totalCountries, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {totalCountries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.iso2);
-
                   return (
                     <TableRow
                       hover

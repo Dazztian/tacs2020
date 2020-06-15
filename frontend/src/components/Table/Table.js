@@ -41,8 +41,6 @@ const StyledTableRow = withStyles((theme) => ({
 const rowAlign = "center"
 
 export default function TableComponent({initialCountryIso,totalCountries}) {
-  console.log(initialCountryIso)
-  console.log(totalCountries)
   let actualCountryIso = initialCountryIso
   //const [actualCountryIso,setMainCountryIso] = useState(initialCountryIso)
   const [actualCountryData,setMainCountryData] = useState()
