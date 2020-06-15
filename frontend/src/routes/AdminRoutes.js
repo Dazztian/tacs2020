@@ -37,7 +37,7 @@ function LayoutAdmin(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
-            <Redirect from="/admin" to="/admin/home" />
+            {/*<Redirect from="/admin" to="/admin/home" />*/}
             <Switch>
               <Route path="/admin/home" component={Dashboard} />
               <Route path="/admin/usersearch"/>

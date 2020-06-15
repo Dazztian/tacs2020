@@ -17,8 +17,9 @@ const BorrarListas = ()=>{
     const [loading,setLoading] = useState(false)
 
     
-    const id_user= "5ee3911bd0a2646d1b8f1279"
-    const token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTM5MTFiZDBhMjY0NmQxYjhmMTI3OSIsImV4cCI6MTU5MjAwODEyM30.IOk4miqYmBhI6S3fgFSv4fRYvylUgj3Jo9a94s6_Pig"
+    const id_user= "5ee7832eccd6b51684d61dd0"
+    const BASE_URL = 'http://localhost:8080';
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTc4MzJlY2NkNmI1MTY4NGQ2MWRkMCIsImV4cCI6MTU5MjI2NjcwMn0.kFiKa2zV5vHF18NG_khjR8xKpmpLKk6BMYFPcntI0_M"
 
     const obtenerListaDePaisesXUsuario = async ()=>{
         try{
