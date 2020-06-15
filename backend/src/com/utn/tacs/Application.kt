@@ -7,6 +7,7 @@ import com.utn.tacs.auth.JwtConfig
 import com.utn.tacs.countries.CountriesRepository
 import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.exception.HttpBinError
+import com.utn.tacs.exception.exceptionHandler
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
@@ -14,10 +15,7 @@ import com.utn.tacs.telegram.TelegramRepository
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.MongoClientGenerator
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.application.install
+import io.ktor.application.*
 import io.ktor.auth.Authentication
 import io.ktor.auth.OAuthServerSettings
 import io.ktor.auth.authentication
@@ -58,13 +56,7 @@ fun Application.module() {
     install(CallLogging)
     authentication(usersRepository)
     contentNegotiator()
-
-    install(StatusPages) {
-        exception<Throwable> { cause ->
-            val error = HttpBinError(code = HttpStatusCode.InternalServerError, request = call.request.local.uri, message = cause.toString(), cause = cause)
-            call.respond(error)
-        }
-    }
+    exceptionHandler()
 
     routes()
 }

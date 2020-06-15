@@ -1,5 +1,6 @@
 package com.utn.tacs.user
 
+import com.github.dockerjava.api.exception.UnauthorizedException
 import com.mongodb.client.MongoDatabase
 import com.utn.tacs.User
 import com.utn.tacs.utils.Encoder
@@ -45,7 +46,7 @@ class UsersRepositoryTest {
     fun testGetUserByEmailAndPass() {
         val repository = UsersRepository(mongoDatabase)
         assertEquals(user1, repository.getUserByEmailAndPass(user1.email, "password1"))
-        assertThrows<NotFoundException> { repository.getUserByEmailAndPass(user1.email, "not_real_password") }
+        assertThrows<com.utn.tacs.exception.UnauthorizedException> { repository.getUserByEmailAndPass(user1.email, "not_real_password") }
     }
 
     @Test

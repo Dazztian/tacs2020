@@ -134,7 +134,7 @@ class UserCountriesListControllerKtTest {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
             setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it}\"" }} ]}")
         }) {
-            assertEquals(HttpStatusCode.BadRequest, response.status())
+            assertEquals(HttpStatusCode.NotFound, response.status())
         }
 
         with(handleRequest(HttpMethod.Post, "/api/user/" + userId + "/lists") {
@@ -184,11 +184,11 @@ class UserCountriesListControllerKtTest {
         }
 
         every { usersService.deleteUserList(userId, ucl3.name) } throws NotFoundException()
-        with(handleRequest(HttpMethod.Delete, "/api/user/userId3/lists/TEST_3")
+        with(handleRequest(HttpMethod.Delete, "/api/user/userId/lists/TEST_3")
         {
             addJwtHeader(authUser)
         }) {
-            assertEquals(HttpStatusCode.NotModified, response.status())
+            assertEquals(HttpStatusCode.NotFound, response.status())
         }
 
     }

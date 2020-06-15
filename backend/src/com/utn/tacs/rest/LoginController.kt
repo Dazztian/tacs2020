@@ -30,22 +30,13 @@ fun Application.login(authorizationService: AuthorizationService, usersService: 
     routing {
         route("/api/login") {
             post {
-                try {
                     val loginData = call.receive<LoginRequest>()
                     val user = authorizationService.auth(loginData.email, loginData.password)
                     call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
-                } catch (e: UnauthorizedException) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError)
-                }
             }
         }
         route("/api/signup") {
             post {
-                try {
                     val signUpData = call.receive<SignUpRequest>()
                     val user = authorizationService.signUp(SignUpRequest(
                             signUpData.name.trim().toLowerCase(),
@@ -55,11 +46,6 @@ fun Application.login(authorizationService: AuthorizationService, usersService: 
                             false
                     ))
                     call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
-                } catch (e: UserAlreadyExistsException) {
-                    call.respond(HttpStatusCode.BadRequest.description(e.message ?: ""))
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
             }
         }
         authenticate("google-oauth") {

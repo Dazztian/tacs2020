@@ -93,8 +93,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * @throws NotFoundException
      */
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries))
-                ?: throw NotFoundException()
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
                 id,
                 listName,
