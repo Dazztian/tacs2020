@@ -4,13 +4,9 @@ import Button from '@material-ui/core/Button';
 import { Grid, Container,TextField, } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
-import ReactDOM from "react-dom";
+
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { FixedSizeList } from 'react-window';
 
 const EditarListas = ()=>{
 
@@ -187,7 +183,7 @@ const EditarListas = ()=>{
                   filterType: 'dropdown',
                   responsive: 'stacked',
                   rowsPerPage: 10,
-                  onRowsDelete:  (e) => {  console.log( quitarElementosDelArray(flatenizarNombrePaises(elemento.paises), flatenizarNombrePaises(e.data.map(item => elemento.paises[item.dataIndex]) )) )}
+                  onRowsDelete:  (e) => {  updateLista(elemento.id, elemento.name,quitarElementosDelArray(flatenizarNombrePaises(elemento.paises), flatenizarNombrePaises(e.data.map(item => elemento.paises[item.dataIndex]) )) )}
               }
               }
               />
