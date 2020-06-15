@@ -83,6 +83,20 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     }
 
     /**
+     * Gets countries iso2 code name
+     * @sample [Argentina]
+     *
+     * @param names List<String>
+     * @return List<String>
+     */
+    fun getIsoByName(names: List<String>): List<String> {
+        return when{
+            names.isEmpty() -> emptyList()
+            else -> countriesRepository.getCountriesByName(names).map { it.countrycode!!.iso2 }
+        }
+    }
+
+    /**
      * Get one country covid timeseries by iso2 codes for required countries
      *
      * @param countriesCodes List<String>

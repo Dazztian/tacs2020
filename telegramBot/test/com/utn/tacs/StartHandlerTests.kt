@@ -57,7 +57,7 @@ class StartHandlerTests {
 
         every { RequestManager.login("username", "pass", chatId.toString()) } returns false
 
-        assertEquals(listOf(TelegramMessageWrapper(chatId, badLogoutText)), loginCommand(chatId, firstName, listOf("user", "pass")))
+        assertEquals(listOf(TelegramMessageWrapper(chatId, badLogoutText)), loginCommand(chatId, firstName, listOf("username", "pass")))
     }
 
     @Test

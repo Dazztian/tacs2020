@@ -4,9 +4,9 @@ import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.*
 import java.time.LocalDate
 
-
-typealias updateHandler = (Bot, Update) -> List<TelegramMessageWrapper>
-typealias updateHandlerArgs = (Bot, Update, List<String>) -> List<TelegramMessageWrapper>
+typealias responseMessages = List<TelegramMessageWrapper>
+typealias updateHandler = (Bot, Update) -> responseMessages
+typealias updateHandlerArgs = (Bot, Update, List<String>) -> responseMessages
 
 interface MessageType{
     object ADD_COUNTRY : MessageType
@@ -76,12 +76,29 @@ data class Country(
 }
 
 data class TimeSerie(
-        val number: Int,
-        val confirmed: Int,
-        val deaths: Int,
-        val recovered: Int,
-        val date: String
-)
+        var number: Int?,
+        val confirmed: Int?,
+        val deaths: Int?,
+        val recovered: Int?,
+        val date: String?
+) :RequestModel(){
+    override fun toTableRowString(): String {
+        return createTableRowString(
+                mapOf(  (date ?: "") to 11,
+                        (confirmed?.toString() ?: "0") to 10,
+                        (deaths?.toString() ?: "0") to 9,
+                        (recovered?.toString() ?: "0") to 10))
+    }
+
+    override fun tableHeader(): String = timeseriesTableHeader
+
+    companion object{
+        fun tableHeader(): String = timeseriesTableHeader
+    }
+}
+
+const val timeseriesTableHeader =   "|    Date    | Confirmed |  Deaths  | Recovered |\n"+
+                                    "|:----------:|:---------:|:--------:|:---------:|\n"
 
 data class UserCountriesListResponse(
         val id: String,
@@ -101,4 +118,22 @@ data class TelegramMessageWrapper(
 data class UserNamesResponse(
     val name: String?,
     val iso2: String?
+)
+
+data class CountryResponseTimeseries (
+        val countryregion: String?,
+        val lastupdate: String?,
+        val location: Location?,
+        val countrycode: CountryCode?,
+        val confirmed: Int?,
+        val deaths: Int?,
+        val recovered: Int?,
+        var timeseries: List<TimeSerie>? = listOf(),
+        var timeSeriesTotal: TimeSeriesTotal? = null
+)
+
+data class TimeSeriesTotal(
+        val confirmed: Int,
+        val deaths: Int,
+        val recovered: Int
 )

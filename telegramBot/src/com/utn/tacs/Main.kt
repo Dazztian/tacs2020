@@ -1,7 +1,6 @@
 package com.utn.tacs
 
 import com.github.kotlintelegrambot.bot
-import com.github.kotlintelegrambot.dispatch
 import com.utn.tacs.handlers.countryListCommands
 import com.utn.tacs.handlers.startCommands
 import java.io.File
@@ -11,11 +10,13 @@ import java.io.File
 val lastImportantMessages = mutableMapOf<Long, PreviousMessageWrapper>()
 
 fun main(args: Array<String>) {
+    val f = File("APIKey.txt")
+    if(!f.exists()){
+        println("No API Key specified for the bot")
+        return
+    }
+
     val bot = bot {
-        val f = File("APIKey.txt")
-        if(!f.exists()){
-            println("No API Key specified for the bot")
-        }
         token = f.readText(Charsets.UTF_8)
 
         startCommands(updater)

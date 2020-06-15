@@ -40,6 +40,12 @@ const val addCountryText =  "Send me a list of the countries you want to add to 
         "Each country must be written on a new line and have the exact name from /countries\n\n" +
         "Example:\nArgentina\nBrazil\nChile"
 
+const val textCheckLastNDays =  "Send me the number of days you want to check\n" +
+                                "This request may take several seconds"
+const val textInvalidNumber =   "Invalid number\n\n" +
+                                "Send me \"5\" to get the values of the last 5 days\n" +
+                                "Send me \"1\" to get the values of today"
+
 const val countryNotFoundText = "Error: Country not found\n"+
                                 "User /countries to check the name of the " +
                                 "country you are trying to look"

@@ -13,8 +13,8 @@ fun listButtonsNoMarkup(listId :String) = listOf(
                                                         text = "Refresh",
                                                         callbackData = "Check_list $listId"),
                                                     InlineKeyboardButton(
-                                                        text = "Check last X days", //TODO:
-                                                        callbackData = "Check_last_days_list")
+                                                        text = "Check last X days",
+                                                        callbackData = "Check_days_list $listId")
                                                 ),
                                                 listOf(
                                                     InlineKeyboardButton(
@@ -47,6 +47,9 @@ fun countryListCommands(updater : Updater){
         createCallbackQueryHandler("Check_list", LoginType.LoggedIn) { _, update, args ->
             showList(args[0], update.callbackQuery!!.message!!.chat.id)
         },
+        createCallbackQueryHandler("Check_days_list", LoginType.LoggedIn) { _, update, args ->
+            checkLastNDays(args[0], update.callbackQuery!!.message!!.chat.id)
+        },
 
         createCallbackQueryHandler("Add_country", LoginType.LoggedIn) { _, update, args ->
             addCountryCommand(update.callbackQuery!!.message!!.chat.id, args[0])
@@ -62,29 +65,15 @@ fun countryListCommands(updater : Updater){
         createCommandHandler("check", LoginType.NotRequired) { _, update, args ->
             checkCommand(update.message!!.chat.id, args)
         }
-        /*createCallbackQueryHandler("Countries") { bot, update ->
-            update.callbackQuery?.let {
-                val paises = allCountries()
-
-                bot.sendMessage(
-                    chatId = it.message!!.chat.id,
-                    text = "Volver a inicio",
-                    replyMarkup = InlineKeyboardMarkup(
-                        listOf(
-                            listOf(
-                                InlineKeyboardButton(text = "Volver", callbackData = "Inicio")
-                            ))))
-            }
-        }*/
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
-fun countriesCommand(chatId: Long) :List<TelegramMessageWrapper> =
+fun countriesCommand(chatId: Long) :responseMessages =
     listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + RequestManager.allCountriesNames()
-        .mapNotNull { it.name }.sortedWith(String.CASE_INSENSITIVE_ORDER)
-        .joinToString(separator = "\n")))
+            .mapNotNull { it.name }.sortedWith(String.CASE_INSENSITIVE_ORDER)
+            .joinToString(separator = "\n")))
 
-fun myListsCommand(chatId: Long) :List<TelegramMessageWrapper>{
+fun myListsCommand(chatId: Long) :responseMessages{
     return when(val countriesLists = RequestManager.getCountryLists(chatId.toString())){
         emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
         else -> listOf(TelegramMessageWrapper(
@@ -93,7 +82,7 @@ fun myListsCommand(chatId: Long) :List<TelegramMessageWrapper>{
                         newListButtonNoMarkup())))
     }
 }
-fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
+fun showList(listId: String, chatId :Long) :responseMessages{
     return when(val countriesList = buildTableArray(RequestManager.getListCountries(listId, chatId.toString()))){
         emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))))
         else -> {
@@ -105,19 +94,23 @@ fun showList(listId: String, chatId :Long) :List<TelegramMessageWrapper>{
         }
     }
 }
+fun checkLastNDays(listId: String, chatId :Long) :responseMessages{
+    lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.LAST_X_DAYS, listId)
+    return listOf(TelegramMessageWrapper(chatId, textCheckLastNDays))
+}
 
-fun addCountryCommand(chatId: Long, listId: String) :List<TelegramMessageWrapper>{
+fun addCountryCommand(chatId: Long, listId: String) :responseMessages{
     lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.ADD_COUNTRY, listId)
 
     return listOf(TelegramMessageWrapper(chatId, addCountryText))
 }
-fun addListCommand(chatId: Long) :List<TelegramMessageWrapper>{
+fun addListCommand(chatId: Long) :responseMessages{
     lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
 
     return listOf(TelegramMessageWrapper(chatId, createListText))
 }
 
-fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessageWrapper>{
+fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
     if(RequestManager.healthCheck() && RequestManager.isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
         val lastMessage = lastImportantMessages[userId]
 
@@ -146,7 +139,13 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessa
                 }
             }
             MessageType.LAST_X_DAYS -> {
-                emptyList()
+                val days = text.trim()
+                if (days.toLongOrNull() == null || days.toLong() < 1)
+                    return listOf(TelegramMessageWrapper(chatId, textInvalidNumber))
+
+                lastImportantMessages.remove(userId)
+                buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
+                        .map { row -> TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML) }
             }
             else -> emptyList()
         }
@@ -155,7 +154,7 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :List<TelegramMessa
     return emptyList()
 }
 
-fun checkCommand(chatId :Long, args :List<String>) :List<TelegramMessageWrapper> {
+fun checkCommand(chatId :Long, args :List<String>) :responseMessages {
     return listOf(TelegramMessageWrapper(
             chatId = chatId,
             parseMode = ParseMode.HTML,

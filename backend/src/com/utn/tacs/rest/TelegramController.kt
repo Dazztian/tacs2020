@@ -10,6 +10,7 @@ import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.user.UsersService
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -115,6 +116,16 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                                 }
                             }
                         }
+                    }
+
+
+                    get("/timeseries"){
+                        val listId = call.parameters["listId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+                        val iso2Countries = countriesService.getIsoByName(com.utn.tacs.userListsRepository.getUserList(listId)!!.countries.toList())
+                        val fromDate: String? = call.request.queryParameters["fromDate"]
+                        val toDate: String? = call.request.queryParameters["toDate"]
+
+                        call.respond(countriesService.getCountryTimesSeries(iso2Countries.toList().sorted(), null, null, fromDate, toDate))
                     }
                 }
                 //Creates a new userCountriesList

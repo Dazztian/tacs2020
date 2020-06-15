@@ -4,6 +4,8 @@ import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import java.net.HttpURLConnection
 import java.net.URL
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 const val urlBase = "http://localhost:8080/"
 
@@ -103,24 +105,6 @@ class RequestManager{
             }
         }
 
-
-        //Returns all countries
-        fun allCountries() :Array<Country>{
-            return try {
-                val (_, response, result) = Fuel.get(urlBase+"api/countries/").responseString()
-
-                val (payload, _) = result // payload is a String
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Array<Country>::class.java)
-                    else -> arrayOf()
-                }
-            } catch (exc :Exception) {
-                arrayOf()
-            }
-        }
-
         //Returns all countries names
         fun allCountriesNames() :Array<UserNamesResponse>{
             return try {
@@ -193,6 +177,31 @@ class RequestManager{
                 }
             } catch (exc :Exception) {
                 "Error"
+            }
+        }
+
+        fun getTimesesiesList(listId :String, minusDays: Long) :List<CountryResponseTimeseries>{
+            val today = LocalDateTime.now()
+            val toDateString = today.format(DateTimeFormatter.ofPattern("MM/dd/yy"))
+            val fromDateString = today.minusDays(minusDays).format(DateTimeFormatter.ofPattern("MM/dd/yy"))
+            return try {
+                val url = urlBase+"api/telegram/countryList/$listId/timeseries?" +
+                        "toDate=$toDateString" +
+                        "&fromDate=$fromDateString"
+                val (_, response, result) = Fuel.get(url)
+                        .responseString()
+
+                val (payload, _) = result
+                val responseJson = payload.toString()
+
+                when (response.statusCode) {
+                    200 -> {
+                        Gson().fromJson(responseJson, Array<CountryResponseTimeseries>::class.java).toList()
+                    }
+                    else -> emptyList()
+                }
+            } catch (exc :Exception) {
+                emptyList()
             }
         }
     }
