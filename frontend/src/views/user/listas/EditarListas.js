@@ -187,14 +187,15 @@ const EditarListas = ()=>{
                   filterType: 'dropdown',
                   responsive: 'stacked',
                   rowsPerPage: 10,
+                  onRowsDelete:  (e) => {  console.log( quitarElementosDelArray(flatenizarNombrePaises(elemento.paises), flatenizarNombrePaises(e.data.map(item => elemento.paises[item.dataIndex]) )) )}
               }
               }
               />
-              </Grid><Grid item xs={4}  >
+              </Grid><Grid item xs={5}  >
               <MUIDataTable
               title="FILTRADO"
               data={unArrayTodosLosPaises}
-              columns={["Paises para agregar"]}
+              columns={["Nuevos paises de la lista"]}
               options={{
                   filter: true,
                   selectableRows: 'multiple',
@@ -224,6 +225,11 @@ const EditarListas = ()=>{
 
 export default EditarListas 
 
+
 function flatenizarNombrePaises(elemento) {
   return [].concat.apply([], elemento);
+}
+
+function quitarElementosDelArray(listaOriginal, elementosABorrar){
+  return listaOriginal.filter( ( elemento ) => !elementosABorrar.includes( elemento ) );
 }
