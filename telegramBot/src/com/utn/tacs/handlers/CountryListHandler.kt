@@ -144,8 +144,11 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                     return listOf(TelegramMessageWrapper(chatId, textInvalidNumber))
 
                 lastImportantMessages.remove(userId)
-                buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
-                        .map { row -> TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML) }
+                val telegramMessageWrappers = buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
+                        .map { row -> TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML) }.toMutableList()
+                telegramMessageWrappers[telegramMessageWrappers.lastIndex] =
+                        telegramMessageWrappers[telegramMessageWrappers.lastIndex].copy(replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(lastMessage.countryListId)))
+                telegramMessageWrappers
             }
         }
     }

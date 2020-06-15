@@ -41,7 +41,6 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                     val user = usersRepository.getUserByEmailAndPass(telegramUser.username, telegramUser.password)
 
                     when {
-                        user == null -> call.respond(HttpStatusCode(401, "User not found"))
                         telegramRepository.getTelegramSession(telegramUser) != null -> call.respond(HttpStatusCode(402, "Telegram User already logged on"))
                         else -> call.respond(telegramRepository.createNewTelegramSession(user, telegramUser)
                                 ?: HttpStatusCode.Conflict)
@@ -70,6 +69,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                     }
                 }
                 route("/{listId}") {
+                    //Gets the countries from a UserCountriesList
                     get {
                         val telegramId = call.parameters["telegramId"]
                                 ?: return@get call.respond(HttpStatusCode.BadRequest)
@@ -79,7 +79,10 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                             call.respond(HttpStatusCode(400, "Id not found"))
                         else {
                             val countryList = userListsRepository.getUserList(listId)
-                            call.respond(countriesService.getCountriesByName(countryList!!.countries.toList()))
+                            if (countryList!!.countries.isEmpty())
+                                call.respond(emptyList<String>())
+                            else
+                                call.respond(countriesService.getCountriesByName(countryList.countries.toList()))
                         }
                     }
                     //Adds countries to a countriesList

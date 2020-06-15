@@ -5,8 +5,6 @@ import com.google.gson.Gson
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-const val urlBase = "http://localhost:8080/"
-
 data class Response(
     val status: Status,
     val responseString: String)
