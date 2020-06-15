@@ -12,8 +12,8 @@ import kotlin.math.min
  * @param nameXvalue Map<String, Int>
  * @return String
  */
-fun createTableRowString(nameXvalue:Map<String, Int>): String{
-    val nLines = nameXvalue.map { ceil(it.key.length.toDouble() / it.value) }.max()!!.toInt()
+fun createTableRowString(nameXvalue:List<Pair<String, Int>>): String{
+    val nLines = nameXvalue.map { (key,value) -> ceil(key.length.toDouble() / value) }.max()!!.toInt()
     val lines = MutableList(nLines){ "" }
 
     for(i in 0 until nLines){

@@ -26,9 +26,9 @@ interface LoginType{
     object NotRequired : LoginType
 }
 
-private fun sendTypingAction(bot: Bot, chatId: Long) = bot.sendChatAction(chatId, ChatAction.TYPING)
+fun sendTypingAction(bot: Bot, chatId: Long) = bot.sendChatAction(chatId, ChatAction.TYPING)
 
-private fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
+fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
     sendTypingAction(bot, chatId)
     when{
         !RequestManager.healthCheck() -> bot.sendMessage(chatId = chatId, text = unresponsiveServerText)
@@ -58,7 +58,7 @@ private fun commandHandlerBuilder(method :updateHandler, type :LoginType) :Handl
 }
 
 fun createCallbackQueryHandler(data: String? = null, type: LoginType, body: updateHandler) : CallbackQueryHandler =
-        CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body, type))
+    CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body, type))
 private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandler, type: LoginType) :HandleUpdate {
     return { bot, update ->
         val chatId = update.callbackQuery!!.message!!.chat.id

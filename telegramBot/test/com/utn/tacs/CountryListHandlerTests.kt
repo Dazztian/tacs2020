@@ -34,7 +34,7 @@ class CountryListHandlerTests {
             countriesCommand(chatId)
         )
 
-        every { RequestManager.allCountriesNames() } returns arrayOf(UserNamesResponse("Argentina","iso2"),UserNamesResponse("Chile","iso2"))
+        every { RequestManager.allCountriesNames() } returns arrayOf(CountryNamesResponse("Argentina","iso2"),CountryNamesResponse("Chile","iso2"))
 
         assertEquals(listOf(TelegramMessageWrapper(chatId, acceptedCountriesText + "Argentina\nChile")),
             countriesCommand(chatId)
@@ -43,6 +43,7 @@ class CountryListHandlerTests {
 
     @Test
     fun myListsCommandTest(){
+        val a = RequestManager()
         every { RequestManager.getCountryLists(chatId.toString()) } returns emptyList()
 
         assertEquals(listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton())),
@@ -165,6 +166,41 @@ class CountryListHandlerTests {
 
         addListCommand(chatId)
         assertEquals(listOf(TelegramMessageWrapper(chatId, "ERROR")), messageCommand(chatId, chatId, "name\nArgentina\nBrazil"))
+    }
+
+    @Test
+    fun messageCommandCheckLastNDaysTest(){
+        assertEquals(emptyList(), messageCommand(chatId, chatId, ""))
+
+        every { RequestManager.getTimesesiesList(listId, 1) } returns
+                listOf(CountryResponseTimeseries("Argentina", null, null, null, null, null, null,
+                    listOf( TimeSerie(50,50,50,50,"10-01-2020"),
+                            TimeSerie(10,10,10,10,"11-01-2020")), TimeSeriesTotal(100,100,100)
+                ))
+
+        checkLastNDays(listId, chatId)
+
+        assertEquals(listOf(TelegramMessageWrapper(chatId,
+            "<pre>\n" +
+            "|    Date    | Confirmed |  Deaths  | Recovered |\n" +
+            "|:----------:|:---------:|:--------:|:---------:|\n" +
+            "Argentina:\n" +
+            "| 10-01-2020 | 50        | 50       | 50        |\n" +
+            "| 11-01-2020 | 10        | 10       | 10        |\n" +
+            "</pre>",
+            parseMode= ParseMode.HTML
+        )),
+            messageCommand(chatId, chatId, "1")
+        )
+        assertEquals(0, lastImportantMessages.size)
+
+        every { RequestManager.getTimesesiesList(listId, 1) } returns emptyList()
+
+        checkLastNDays(listId, chatId)
+        assertEquals(emptyList(), messageCommand(chatId, chatId, "1"))
+
+        checkLastNDays(listId, chatId)
+        assertEquals(listOf(TelegramMessageWrapper(chatId, textInvalidNumber)), messageCommand(chatId, chatId, "0"))
     }
 
     @Test

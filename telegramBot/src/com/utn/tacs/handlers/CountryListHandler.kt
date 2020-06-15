@@ -94,10 +94,6 @@ fun showList(listId: String, chatId :Long) :responseMessages{
         }
     }
 }
-fun checkLastNDays(listId: String, chatId :Long) :responseMessages{
-    lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.LAST_X_DAYS, listId)
-    return listOf(TelegramMessageWrapper(chatId, textCheckLastNDays))
-}
 
 fun addCountryCommand(chatId: Long, listId: String) :responseMessages{
     lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.ADD_COUNTRY, listId)
@@ -108,6 +104,10 @@ fun addListCommand(chatId: Long) :responseMessages{
     lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.NEW_LIST, "")
 
     return listOf(TelegramMessageWrapper(chatId, createListText))
+}
+fun checkLastNDays(listId: String, chatId :Long) :responseMessages{
+    lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.LAST_X_DAYS, listId)
+    return listOf(TelegramMessageWrapper(chatId, textCheckLastNDays))
 }
 
 fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
@@ -138,7 +138,7 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                     listOf(TelegramMessageWrapper(chatId, response))
                 }
             }
-            MessageType.LAST_X_DAYS -> {
+            else -> {
                 val days = text.trim()
                 if (days.toLongOrNull() == null || days.toLong() < 1)
                     return listOf(TelegramMessageWrapper(chatId, textInvalidNumber))
@@ -147,7 +147,6 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                 buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
                         .map { row -> TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML) }
             }
-            else -> emptyList()
         }
     }
 

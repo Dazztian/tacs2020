@@ -2,25 +2,41 @@ package com.utn.tacs
 
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
-import java.net.HttpURLConnection
-import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 const val urlBase = "http://localhost:8080/"
 
+data class Response(
+    val status: Status,
+    val responseString: String)
+data class Status(
+    val code:Int,
+    val message :String)
 
 class RequestManager{
     companion object {
+        fun getResponse(url :String) :Response {
+            val (_, response, result) = Fuel.get(url).responseString()
+
+            val (payload, _) = result
+            return Response(Status(response.statusCode, String(response.data)), payload.toString())
+        }
+        fun getResponse(url :String, json :String) :Response {
+            val (_, response, result) = Fuel.post(url)
+                .header("Content-Type", "application/json")
+                .body(json)
+                .responseString()
+
+            val (payload, _) = result
+            return Response(Status(response.statusCode, String(response.data)), payload.toString())
+        }
+
         //Returns if server is running
         fun healthCheck() : Boolean{
             return try {
-                HttpURLConnection.setFollowRedirects(false)
-                val con = URL(urlBase+"configuration").openConnection()
-                con.connectTimeout = 5000 //set timeout to 5 seconds
-
-                val x = (con.inputStream.bufferedReader().readText() == "Application running")
-                x
+                val response = getResponse(urlBase+"configuration")
+                response.responseString == "Application running"
             } catch (exc :Exception) {
                 val a = exc
                 false
@@ -30,13 +46,9 @@ class RequestManager{
         //Returns if telegram user has an active session
         fun isLoggedIn(telegramUserId :String) :Boolean{
             return try {
-                val (_, response, _) = Fuel.get(urlBase+"api/telegram?telegramId=$telegramUserId")
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram?telegramId=$telegramUserId")
 
-                //val (payload, _) = result // payload is a String
-                //val responseJson = payload.toString()
-
-                response.statusCode == 200
+                response.status.code == 200
             } catch (exc :Exception) {
                 false
             }
@@ -45,11 +57,10 @@ class RequestManager{
         //Returns if the user is logged in
         fun login(username :String, password :String, telegramUserId :String) :Boolean{
             return try {
-                val (_, response, _) = Fuel.post(urlBase+"api/telegram/login")
-                    .body(Gson().toJson(TelegramUser(telegramUserId, username, password)).toString())
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/login",
+                    Gson().toJson(TelegramUser(telegramUserId, username, password)).toString())
 
-                response.statusCode == 200
+                response.status.code == 200
             } catch (exc :Exception) {
                 false
             }
@@ -58,11 +69,10 @@ class RequestManager{
         //Returns if the logout was successful
         fun logout(telegramUserId :String) :Boolean{
             return try {
-                val (_, response, _) = Fuel.post(urlBase+"api/telegram/logout")
-                    .body(Gson().toJson(TelegramUser(telegramUserId, null, null)).toString())
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/logout",
+                    Gson().toJson(TelegramUser(telegramUserId, null, null)).toString())
 
-                response.statusCode == 200
+                response.status.code == 200
             } catch (exc :Exception) {
                 false
             }
@@ -71,14 +81,10 @@ class RequestManager{
         //Returns the coutry lists from the logged in user
         fun getCountryLists(telegramUserId :String) :List<CountriesList>{
             return try {
-                val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList?telegramId=$telegramUserId")
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/countryList?telegramId=$telegramUserId")
 
-                val (payload, _) = result // payload is a String
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Array<CountriesList>::class.java).asList()
+                when (response.status.code) {
+                    200 -> Gson().fromJson(response.responseString, Array<CountriesList>::class.java).asList()
                     else -> emptyList()
                 }
             } catch (exc :Exception) {
@@ -89,14 +95,10 @@ class RequestManager{
         //Returns the countryList with the id
         fun getCountryByName(name :String) :Country?{
             return try {
-                val (_, response, result) = Fuel.get(urlBase+"api/countries?name=$name")
-                    .responseString()
+                val response = getResponse(urlBase+"api/countries?name=$name")
 
-                val (payload, _) = result // payload is a String
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Country::class.java)
+                when (response.status.code) {
+                    200 -> Gson().fromJson(response.responseString, Country::class.java)
                     else -> null
                 }
             } catch (exc :Exception) {
@@ -106,15 +108,12 @@ class RequestManager{
         }
 
         //Returns all countries names
-        fun allCountriesNames() :Array<UserNamesResponse>{
+        fun allCountriesNames() :Array<CountryNamesResponse>{
             return try {
-                val (_, response, result) = Fuel.get(urlBase+"api/countries/names").responseString()
+                val response = getResponse(urlBase+"api/countries/names")
 
-                val (payload, _) = result // payload is a String
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Array<UserNamesResponse>::class.java)
+                when (response.status.code) {
+                    200 -> Gson().fromJson(response.responseString, Array<CountryNamesResponse>::class.java)
                     else -> emptyArray()
                 }
             } catch (exc :Exception) {
@@ -126,14 +125,10 @@ class RequestManager{
         //Returns the last country values from a list
         fun getListCountries(listId :String, telegramId :String) :List<Country>{
             return try {
-                val (_, response, result) = Fuel.get(urlBase+"api/telegram/countryList/$listId?telegramId=$telegramId")
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/countryList/$listId?telegramId=$telegramId")
 
-                val (payload, _) = result // payload is a String
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
-                    200 -> Gson().fromJson(responseJson, Array<Country>::class.java).toList()
+                when (response.status.code) {
+                    200 -> Gson().fromJson(response.responseString, Array<Country>::class.java).toList()
                     else -> emptyList()
                 }
             } catch (exc :Exception) {
@@ -143,17 +138,10 @@ class RequestManager{
 
         fun addCountries(telegramUserId: String, listId :String, countries :Set<String>) :String{
             return try {
-                val (_, response, result) = Fuel.post(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId")
-                    .header("Content-Type", "application/json")
-                    .body(Gson().toJson(UserCountriesListModificationRequest("list", countries.toMutableSet())).toString())
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/countryList/$listId/add?telegramId=$telegramUserId",
+                    Gson().toJson(UserCountriesListModificationRequest("list", countries.toMutableSet())).toString())
 
-                return if(response.statusCode == 200){
-                    val (payload, _) = result
-                    payload.toString()
-                }else{
-                    String(response.data)
-                }
+                response.status.message
             } catch (exc :Exception) {
                 "Error"
             }
@@ -161,19 +149,15 @@ class RequestManager{
 
         fun newCountriesList(telegramUserId: String, listName :String, countries :List<String>) :String{
             return try {
-                val (_, response, result) = Fuel.post(urlBase+"api/telegram/countryList?telegramId=$telegramUserId")
-                    .header("Content-Type", "application/json")
-                    .body(Gson().toJson(UserCountriesListModificationRequest(listName, countries.toMutableSet())).toString())
-                    .responseString()
+                val response = getResponse(urlBase+"api/telegram/countryList?telegramId=$telegramUserId",
+                    Gson().toJson(UserCountriesListModificationRequest(listName, countries.toMutableSet())).toString())
 
-                return if(response.statusCode == 200){
-                    val (payload, _) = result
-                    val responseJson = payload.toString()
-                    val userCountriesList = Gson().fromJson(responseJson, UserCountriesListResponse::class.java)
+                return if(response.status.code == 200){
+                    val userCountriesList = Gson().fromJson(response.responseString, UserCountriesListResponse::class.java)
 
                     "OK "+userCountriesList.id
                 }else{
-                    String(response.data)
+                    response.status.message
                 }
             } catch (exc :Exception) {
                 "Error"
@@ -188,15 +172,11 @@ class RequestManager{
                 val url = urlBase+"api/telegram/countryList/$listId/timeseries?" +
                         "toDate=$toDateString" +
                         "&fromDate=$fromDateString"
-                val (_, response, result) = Fuel.get(url)
-                        .responseString()
+                val response = getResponse(url)
 
-                val (payload, _) = result
-                val responseJson = payload.toString()
-
-                when (response.statusCode) {
+                when (response.status.code) {
                     200 -> {
-                        Gson().fromJson(responseJson, Array<CountryResponseTimeseries>::class.java).toList()
+                        Gson().fromJson(response.responseString, Array<CountryResponseTimeseries>::class.java).toList()
                     }
                     else -> emptyList()
                 }

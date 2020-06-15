@@ -39,8 +39,8 @@ data class CountriesList (
 
     override fun toTableRowString(): String {
         return createTableRowString(
-                            mapOf(  (name ?: "") to 19,
-                                    (countries?.size?.toString() ?: "0") to 10))
+            listOf(  (name ?: "") to 19,
+                (countries?.size?.toString() ?: "0") to 10))
     }
 
     override fun tableHeader(): String {
@@ -63,7 +63,7 @@ data class Country(
 ) :RequestModel() {
     override fun toTableRowString(): String {
         return createTableRowString(
-                mapOf(  (countryregion ?: "") to 13,
+            listOf((countryregion ?: "") to 13,
                         (confirmed?.toString() ?: "0") to 10,
                         (deaths?.toString() ?: "0") to 9,
                         (recovered?.toString() ?: "0") to 10))
@@ -84,10 +84,10 @@ data class TimeSerie(
 ) :RequestModel(){
     override fun toTableRowString(): String {
         return createTableRowString(
-                mapOf(  (date ?: "") to 11,
-                        (confirmed?.toString() ?: "0") to 10,
-                        (deaths?.toString() ?: "0") to 9,
-                        (recovered?.toString() ?: "0") to 10))
+            listOf(Pair(date ?: "", 11),
+                Pair(confirmed?.toString() ?: "0", 10),
+                Pair(deaths?.toString() ?: "0", 9),
+                Pair(recovered?.toString() ?: "0", 10)))
     }
 
     override fun tableHeader(): String = timeseriesTableHeader
@@ -115,7 +115,7 @@ data class TelegramMessageWrapper(
         val replyToMessageId: Long? = null,
         val replyMarkup: ReplyMarkup? = null)
 
-data class UserNamesResponse(
+data class CountryNamesResponse(
     val name: String?,
     val iso2: String?
 )
