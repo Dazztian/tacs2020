@@ -21,7 +21,9 @@ const EditarListas = ()=>{
 
     var listarray = new Array();
     const state = { rowsSelected: [] };
-    let sec;
+    let nuevoNombreLista;
+
+    const [nombreElegido,setNombreElegido] = useState(false)
 
     const [unArrayListasDePaises,setunArrayListasDePaises] = useState([{}])
 
@@ -151,7 +153,7 @@ const EditarListas = ()=>{
                   inputProps={
                     {step: 1,}
                   }
-                  onChange={(e) => { sec=e.target.value } }
+                  onChange={(e) => { nuevoNombreLista=e.target.value } }
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -159,7 +161,7 @@ const EditarListas = ()=>{
                 </Grid>
                 <Grid item xs={3} md={3}>
                 <Button  variant="contained" color="primary" 
-                onClick={(e)=>updateLista(elemento.id, sec, flatenizarNombrePaises(elemento.paises)   ) }
+                onClick={(e)=> nuevoNombreLista? updateLista(elemento.id, nuevoNombreLista, flatenizarNombrePaises(elemento.paises) ) : window.alert("Primero tenés que escoger un nuevo nombre")   }
                 >    
                 Cambiar Nombre
                 </Button>
@@ -167,7 +169,7 @@ const EditarListas = ()=>{
               <Grid item xs={3}   justify="flex-end">
                 <Button  variant="contained" color="secondary"
                 onClick={()=>// REVISAR ESTO !!!!(listarray[listarray.length - 1])}
-                updateLista(elemento.id, sec, flatenizarNombrePaises(listarray[listarray.length - 1])   )}
+                updateLista(elemento.id, nuevoNombreLista, flatenizarNombrePaises(listarray[listarray.length - 1])   )}
                 >
                 Actualizar paises de la lista
                 </Button>
