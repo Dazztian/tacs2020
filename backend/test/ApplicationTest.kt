@@ -17,14 +17,5 @@ class ApplicationTest {
             assertEquals("Application running", response.content)
         }
     }
-
-    @Test
-    fun testAuthGoogle() = withTestApplication(Application::module) {
-        with(handleRequest(HttpMethod.Post, "/auth/google")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("Oauth", response.content)
-        }
-    }
-
 }
 

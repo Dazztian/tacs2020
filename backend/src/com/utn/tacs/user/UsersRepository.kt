@@ -114,8 +114,8 @@ class UsersRepository(private val database: MongoDatabase) {
      * @return User
      */
     fun setUserLastLogin(user: User): User {
-        user.lastConection = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
-        database.getCollection<User>(USERS_COLLECTION_NAME).findOneAndUpdate(User::_id eq user._id, set(User::lastConection setTo user.lastConection))
+        user.lastConnection = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
+        database.getCollection<User>(USERS_COLLECTION_NAME).findOneAndUpdate(User::_id eq user._id, set(User::lastConnection setTo user.lastConnection))
         return user
     }
 }

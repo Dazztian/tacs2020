@@ -36,4 +36,5 @@ class AuthorizationService(private val usersRepository: UsersRepository, private
     fun signUp(signUpRequest: SignUpRequest): User {
         return usersService.createUser(signUpRequest)
     }
+
 }
