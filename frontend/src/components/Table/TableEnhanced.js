@@ -72,8 +72,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EnhancedTable({initialCountryIso,totalCountries}) {
+  console.log(initialCountryIso)
+  console.log(totalCountries)
   const classes = useStyles();
-  const [selected, setSelected] = React.useState(initialCountryIso);
+  const [selected, setSelected] = React.useState();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [actualCountryData,setMainCountryData] = React.useState()
@@ -99,9 +101,9 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
     setPage(0);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (name) => !!selected ? selected.indexOf(name) !== -1 : false
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalCountries.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalCountries.length - page * rowsPerPage)
 
   return (
     <div className={classes.root}>

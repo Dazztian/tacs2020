@@ -16,6 +16,7 @@ import SidebarUser from "../components/Sidebar/SidebarUser";
 
 // pages
 import Dashboard from "../views/user/dashboard/Dashboard";
+import Stats from "../views/user/stats/Stats";
 import Listas from "../views/user/listas/Listas";
 import Graficos from "../views/user/graficos/Graficos";
 
@@ -47,7 +48,7 @@ function LayoutUser(props) {
               <Route path="/user/createlists" />
               <Route path="/user/editlists" />
               <Route path="/user/deletelists" />
-              <Route path="/user/liststats" />
+              <Route path="/user/liststats" component={Stats}/>
               <Route path="/user/listas" component={Listas} />
               <Route path="/user/graficos" component={Graficos} />
               <Route path="/user/perfil" />

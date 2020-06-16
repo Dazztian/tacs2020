@@ -1,9 +1,10 @@
-Cuando {{localPath}}/api/countries/timeseries?isoList=US,AR,CL
+Cuando se llama al endpoint sin date o day 
+{{localPath}}/api/countries/timeseries?isoList=US,AR,CL
 Para cada pais de la lista
 El iso2 del pais
 El nombre del pais
 El total acumulado de e m r - osea la ultima medicion
-El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
+El ultimo incremento de e m r -  - osea la dif entre las ultimas 2 mediciones
 
 Lo mismo {{localPath}}/api/countries?{lat=-34&lon=-64}
 Para cada pais de la lista
@@ -12,12 +13,14 @@ El nombre del pais
 El total acumulado de e m r - osea la ultima medicion
 El incremento de la ultima medicion de e m r - osea la dif entre las ultimas 2 mediciones
 
+Cuando se llama al endpoint con day  
+{{localPath}}/api/countries/timeseries?isoList=US,AR,CL&fromDay=1&toDay
 {
   countryregion: "Argentina",
   countrycode: "AR",
-  confirmed: 25987, //seria el total acumulado, osea la ultima medicion
-  deaths: 735,      //seria el total acumulado, osea la ultima medicion
-  recovered: 7991,  //seria el total acumulado, osea la ultima medicion
+  confirmed: 25987, //seria el total acumulado para ese intervalo, osea la ultima medicion
+  deaths: 735,      //seria el total acumulado para ese intervalo, osea la ultima medicion
+  recovered: 7991,  //seria el total acumulado para ese intervalo, osea la ultima medicion
   newCases: 1226,   //seria el incremento desde la ultima medicion timeseries[n]-timeseries[n-1]
   newRecovered: 423,
   newDeath: 18

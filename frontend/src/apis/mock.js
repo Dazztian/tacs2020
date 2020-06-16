@@ -698,127 +698,6 @@ export default {
         "iso2": "LS"
       }
     ],
-near : [
-  {
-    "countryregion": "Argentina",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -38.4161,
-      "lng": -63.6167
-    },
-    "countrycode": {
-      "iso2": "AR",
-      "iso3": "ARG"
-    },
-    "confirmed": 25987,
-    "deaths": 735,
-    "recovered": 7991,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Bolivia",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -16.2902,
-      "lng": -63.5887
-    },
-    "countrycode": {
-      "iso2": "BO",
-      "iso3": "BOL"
-    },
-    "confirmed": 15281,
-    "deaths": 512,
-    "recovered": 2261,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Brazil",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -14.235,
-      "lng": -51.9253
-    },
-    "countrycode": {
-      "iso2": "BR",
-      "iso3": "BRA"
-    },
-    "confirmed": 772416,
-    "deaths": 39680,
-    "recovered": 413916,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Chile",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -35.6751,
-      "lng": -71.543
-    },
-    "countrycode": {
-      "iso2": "CL",
-      "iso3": "CHL"
-    },
-    "confirmed": 148456,
-    "deaths": 2475,
-    "recovered": 121780,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Paraguay",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -23.4425,
-      "lng": -58.4438
-    },
-    "countrycode": {
-      "iso2": "PY",
-      "iso3": "PRY"
-    },
-    "confirmed": 1202,
-    "deaths": 11,
-    "recovered": 619,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Peru",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -9.19,
-      "lng": -75.0152
-    },
-    "countrycode": {
-      "iso2": "PE",
-      "iso3": "PER"
-    },
-    "confirmed": 208823,
-    "deaths": 5903,
-    "recovered": 98031,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  },
-  {
-    "countryregion": "Uruguay",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -32.5228,
-      "lng": -55.7658
-    },
-    "countrycode": {
-      "iso2": "UY",
-      "iso3": "URY"
-    },
-    "confirmed": 847,
-    "deaths": 23,
-    "recovered": 758,
-    "timeseries": [],
-    "timeSeriesTotal": null
-  }
-],
 nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
   {
     countryregion: "Argentina",
@@ -912,45 +791,36 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 18
   }
 ],
-singleCountryLastday : [
-  {
-    "countryregion": "Argentina",
-    "lastupdate": "2020-06-11T20:42:00.008Z",
-    "location": {
-      "lat": -38.4161,
-      "lng": -63.6167
-    },
-    "countrycode": {
-      "iso2": "AR",
-      "iso3": "ARG"
-    },
-    "confirmed": 25987,
-    "deaths": 735,
-    "recovered": 7991,
-    "timeseries": [
-      {
-        "number": 99,
-        "confirmed": 24761,
-        "deaths": 717,
-        "recovered": 7568,
-        "date": "6/9/20"
-      },
-      {
-        "number": 100,
-        "confirmed": 25987,
-        "deaths": 735,
-        "recovered": 7991,
-        "date": "6/10/20"
-      }
-    ],
-    "timeSeriesTotal": {
-      "confirmed": 50748,
-      "deaths": 1452,
-      "recovered": 15559
-    }
-  }
+userLists : [{
+  "id": "5ee7ce3ea5add637dc377b62",
+  "name": "Lista A",
+  "countries": [
+    {"name":"Argentina", "iso2": "AR"},
+    {"name":"Brasil", "iso2": "BR"},
+    {"name":"Uruguay", "iso2": "UY"},
+  ]},{
+  "id": "5ee7ce3ea5add637dc37b62",
+  "name": "AASDASD",
+  "countries": [
+    {"name":"Bahrain", "iso2": "BH"},
+    {"name":"Chad", "iso2": "TD"},
+    {"name":"Croatia", "iso2": "HR"},
+  ]},{
+  "id": "5ee7ce3ea5dd637dc377b62",
+  "name": "QWE List",
+  "countries": [
+    {"name":"Denmark", "iso2": "DK"},
+    {"name":"Egypt", "iso2": "EG"},
+    {"name":"Georgia", "iso2": "GE"},
+  ]},{
+  "id": "5eece3ea5add637dc377b62",
+  "name": "No sabia que poner",
+  "countries": [
+    {"name":"Kuwait", "iso2": "KW"},
+    {"name":"Luxembourg", "iso2": "LU"},
+    {"name":"Maldives", "iso2": "MV"},
+  ]}
 ],
-
 signUp : {
 	"name" : "Nuevo User",
 	"email": "qwe@gmail.com",

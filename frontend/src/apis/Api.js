@@ -97,7 +97,7 @@ class Api {
 
   async getCountriesData(isoList) {
     try{
-      const data = mock.countriesLastday 
+      const data = mock.nearordered 
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -122,7 +122,7 @@ class Api {
   
   async getNearCountries() {
     try{
-      const data = mock.near
+      const data = mock.nearordered
 
       return new Promise(resolve => {
         setTimeout(() => {
@@ -144,9 +144,9 @@ class Api {
     }
   }
 
-  async getNearCountriesOrder() {
+  async getUserLists() {
     try{
-      const data = mock.nearordered
+      const data = mock.userLists
 
       return new Promise(resolve => {
         setTimeout(() => {

@@ -13,6 +13,7 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
+import { useUserState } from "../../../context/UserContext";
 const api = new Api();
 
 export default function Dashboard(props) {
@@ -22,9 +23,12 @@ export default function Dashboard(props) {
   var [nearCountriesOrder, setNearCountriesOrder] = useState();
   var [isoList, setIsoList] = useState();
 
+  var { isAuthenticated, isAdmin } = useUserState();
+
+  
   async function fetchNearData() {
     try {
-      const nearOrder = await api.getNearCountriesOrder()
+      const nearOrder = await api.getNearCountries()
       setNearCountriesOrder(nearOrder)
       setIsoList(await Promise.all(nearOrder.map(n => n.iso2)))
     } catch(error) {
@@ -61,6 +65,7 @@ export default function Dashboard(props) {
 
   return (
     <>
+    {console.log(localStorage.getItem('countriesList'))}
     {isLoading 
     ? <Grid
         container

@@ -28,7 +28,7 @@ const structure = [
   { id: 0, label: "Home", link: "/user/home", icon: <HomeIcon /> },
   {
     id: 1,
-    label: "Lists",
+    label: "Lists", link: "/user/list",
     children: [
       { label: "Create", link: "/user/createlists" },
       { label: "Edit", link: "/user/editlists" },

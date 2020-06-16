@@ -42,7 +42,6 @@ function Login(props) {
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
   var [countryValue, setCountryValue] = useState("");
-  
 
 
   const handleLoginWithGoogle = async () => {
@@ -61,6 +60,7 @@ function Login(props) {
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('tracker_name', user.name)
+
           localStorage.setItem('countriesList',countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
@@ -85,7 +85,7 @@ function Login(props) {
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('id_token', token)
           localStorage.setItem('tracker_name', user.name)
-          localStorage.setItem('countriesList',countryList)
+          console.log(countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
@@ -108,7 +108,9 @@ function Login(props) {
       //const res = await api.getCountryList()
       //if(true/*res.ok*/){
       //countryList = await res.json()
+    
       countryList = await api.getCountryList()
+      console.log(countryList)
       /*console.log(countryList)
       } else {
         console.log(res.errorMessage)
