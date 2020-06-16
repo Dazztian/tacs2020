@@ -21,8 +21,7 @@ apply plugin: 'kotlinx-serialization'
 
 group 'com.utn.tacs'
 version '0.0.1'
-mainClassName = "io.ktor.server.netty.EngineMain"
-
+mainClassName = 'com.utn.tacs.ApplicationKt'
 
 sourceSets {
     main.kotlin.srcDirs = [ 'src' ]
@@ -61,7 +60,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName = 'covid19-grupo3'
+    archiveBaseName = 'covid19-grupo4'
     classifier = null
     archiveVersion = null
 }

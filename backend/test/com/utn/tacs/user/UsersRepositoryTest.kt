@@ -88,17 +88,13 @@ class UsersRepositoryTest {
         @BeforeClass
         @JvmStatic
         fun before() {
-
             mongoContainer.start()
 
             user1 = User(userId1, "user1", "email1", Encoder.encode("password1"))
             user2 = User(userId2, "user2", "email2", Encoder.encode("password2"))
             user3 = User(userId3, "user3", "email3", Encoder.encode("password3"));
 
-
             mongoDatabase = KMongo.createClient("mongodb://${mongoContainer.containerIpAddress}:${mongoContainer.getMappedPort(27017)}").getDatabase("test")
-
-            //TODO this is temporal. This must be replaced with correct creation on db when executing the code.
             mongoDatabase.getCollection<User>("users").insertMany(mutableListOf(user1, user2))
         }
 

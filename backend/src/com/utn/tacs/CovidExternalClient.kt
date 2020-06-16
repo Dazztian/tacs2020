@@ -12,7 +12,7 @@ const val apiEntryPoint = "https://wuhan-coronavirus-api.laeyoung.endpoint.ainiz
 const val onlyCountries = "onlyCountries=true"
 
 
-public object CovidExternalClient {
+object CovidExternalClient {
     /**
      * Get all countries covid data from external api
      *

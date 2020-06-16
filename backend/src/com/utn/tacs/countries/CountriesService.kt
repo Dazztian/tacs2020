@@ -61,9 +61,10 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      *
      * @throws NotFoundException
      */
-    suspend fun getCountryLatestByName(name: String): CountryResponse {
+    fun getCountryLatestByName(name: String): CountryResponse {
         try {
-            return CountryResponse(countriesRepository.getCountryByName(name.toLowerCase().capitalize()))
+            var country = countriesRepository.getCountryByName(name.toLowerCase().capitalize())
+            return CountryResponse(country)
         } catch (e: Exception) {
             throw NotFoundException("There was no country with name $name")
         }

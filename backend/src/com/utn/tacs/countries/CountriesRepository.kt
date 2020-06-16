@@ -3,8 +3,11 @@ package com.utn.tacs.countries
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.typesafe.config.ConfigFactory
-import com.utn.tacs.*
+import com.utn.tacs.Country
+import com.utn.tacs.CountryCode
+import com.utn.tacs.CovidExternalClient
 import io.ktor.features.NotFoundException
+import kotlinx.coroutines.runBlocking
 import org.litote.kmongo.*
 import java.util.concurrent.TimeUnit
 
@@ -14,6 +17,14 @@ class CountriesRepository(database: MongoDatabase, private val externalClient: C
     private var cacheLastLoad: Long = 0
     private val cacheExpirationTime: Long = ConfigFactory.load().getLong("cache.countries")
     private val collection: MongoCollection<Country> = database.getCollection<Country>(DB_MONGO_COUNTRIES_COLLECTION)
+
+
+    init {
+        //Initialize the cache
+        runBlocking {
+            collection.insertMany(externalClient.getCountriesLatestFromApi())
+        }
+    }
 
     /**
      * Get all countries covid data from cache, or if cache is expired or empty get countries from external api
@@ -27,6 +38,7 @@ class CountriesRepository(database: MongoDatabase, private val externalClient: C
         }
         return collection.find().toList()
     }
+
 
     /**
      * Get country from cache if its present, or from external client if that country is not in cache

@@ -24,8 +24,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 class CountriesRepositoryTest {
 
-    private val mockExternalClient = mockk<CovidExternalClient>()
-
     @Test
     fun testGetCountriesFromDb() {
         //We are not testing that the cache works, so it will mocked and return empty.
@@ -38,6 +36,7 @@ class CountriesRepositoryTest {
 
     @Test
     fun testGetCountryByIso() {
+        coEvery { mockExternalClient.getCountriesLatestFromApi() } returns listOf(country3)
         mongoDatabase.getCollection<Country>("countries").insertMany(listOf(country1))
         val repository = CountriesRepository(mongoDatabase, mockExternalClient)
         assertEquals(country1, runBlocking { repository.getCountry("ISO21") })
@@ -50,6 +49,7 @@ class CountriesRepositoryTest {
 
     @Test
     fun testGetCountryByName() {
+        coEvery { mockExternalClient.getCountriesLatestFromApi() } returns listOf(country3)
         mongoDatabase.getCollection<Country>("countries").insertMany(listOf(country1))
         val repository = CountriesRepository(mongoDatabase, mockExternalClient)
         assertEquals(country1, runBlocking { repository.getCountryByName("region1") })
@@ -62,6 +62,7 @@ class CountriesRepositoryTest {
 
     @Test
     fun testGetCountriesByName() {
+        coEvery { mockExternalClient.getCountriesLatestFromApi() } returns listOf(country3)
         mongoDatabase.getCollection<Country>("countries").insertMany(listOf(country1, country2))
         val repository = CountriesRepository(mongoDatabase, mockExternalClient)
         assertEquals(listOf(country1, country2), runBlocking { repository.getCountriesByName(listOf("region1", "region2")) })
@@ -75,10 +76,10 @@ class CountriesRepositoryTest {
         private lateinit var country3: Country
         private lateinit var country2: Country
         private lateinit var country1: Country
+        private val mockExternalClient = mockk<CovidExternalClient>()
 
         @Container
         var mongoContainer = GenericContainer<Nothing>("mongo:3.6.18").apply { withExposedPorts(27017) }
-
 
         private lateinit var mongoDatabase: MongoDatabase
 
@@ -88,18 +89,14 @@ class CountriesRepositoryTest {
 
             mongoContainer.start()
 
-            country1 = Country(newId(), "region1", "2020-05-05", Location(25.0, 25.0), CountryCode("ISO21", "ISO31"), 1000, 960, 40)
+            country1 = Country(newId(), "region1", "2020-05-05", Location(21.0, 23.0), CountryCode("ISO21", "ISO31"), 1000, 960, 40)
             country2 = Country(newId(), "region2", "2020-05-06", Location(35.0, 2445.0), CountryCode("ISO22", "ISO43"), 424000, 9610, 340)
-            country3 = Country(newId(), "region3", "2020-05-07", Location(35.0, 2445.0), CountryCode("ISO25", "ISO323"), 424000, 9610, 340)
+            country3 = Country(newId(), "region3", "2020-05-07", Location(32.0, 2245.0), CountryCode("ISO25", "ISO323"), 424000, 9610, 340)
 
             mongoDatabase = KMongo.createClient("mongodb://${mongoContainer.containerIpAddress}:${mongoContainer.getMappedPort(27017)}").getDatabase("test")
 
         }
 
-        @AfterClass
-        @JvmStatic
-        fun after() {
 
-        }
     }
 }

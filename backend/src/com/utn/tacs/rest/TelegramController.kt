@@ -123,7 +123,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                     //Gets timeseries of a list between dates
                     get("/timeseries") {
                         val listId = call.parameters["listId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-                        val iso2Countries = countriesService.getIsoByName(com.utn.tacs.userListsRepository.getUserList(listId)!!.countries.toList())
+                        val iso2Countries = countriesService.getIsoByName(userListsRepository.getUserList(listId)!!.countries.toList())
                         val fromDate: String? = call.request.queryParameters["fromDate"]
                         val toDate: String? = call.request.queryParameters["toDate"]
 

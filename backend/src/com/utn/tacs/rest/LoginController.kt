@@ -7,8 +7,6 @@ import com.utn.tacs.LoginResponse
 import com.utn.tacs.SignUpRequest
 import com.utn.tacs.auth.AuthorizationService
 import com.utn.tacs.auth.JwtConfig
-import com.utn.tacs.exception.UnauthorizedException
-import com.utn.tacs.exception.UserAlreadyExistsException
 import com.utn.tacs.user.UsersService
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -19,7 +17,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.features.NotFoundException
-import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.post
@@ -30,22 +27,22 @@ fun Application.login(authorizationService: AuthorizationService, usersService: 
     routing {
         route("/api/login") {
             post {
-                    val loginData = call.receive<LoginRequest>()
-                    val user = authorizationService.auth(loginData.email, loginData.password)
-                    call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
+                val loginData = call.receive<LoginRequest>()
+                val user = authorizationService.auth(loginData.email, loginData.password)
+                call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
             }
         }
         route("/api/signup") {
             post {
-                    val signUpData = call.receive<SignUpRequest>()
-                    val user = authorizationService.signUp(SignUpRequest(
-                            signUpData.name.trim().toLowerCase(),
-                            signUpData.email.trim().toLowerCase(),
-                            signUpData.password.trim(),
-                            signUpData.country.trim().toUpperCase(),
-                            false
-                    ))
-                    call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
+                val signUpData = call.receive<SignUpRequest>()
+                val user = authorizationService.signUp(SignUpRequest(
+                        signUpData.name.trim().toLowerCase(),
+                        signUpData.email.trim().toLowerCase(),
+                        signUpData.password.trim(),
+                        signUpData.country.trim().toUpperCase(),
+                        false
+                ))
+                call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
             }
         }
         authenticate("google-oauth") {

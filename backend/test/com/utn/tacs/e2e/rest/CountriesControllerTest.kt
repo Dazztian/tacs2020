@@ -2,23 +2,45 @@ package com.utn.tacs.e2e.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.utn.tacs.CountriesNamesResponse
-import com.utn.tacs.CountryResponse
-import com.utn.tacs.module
+import com.mongodb.client.MongoDatabase
+import com.utn.tacs.*
+import com.utn.tacs.countries.CountriesRepository
+import com.utn.tacs.countries.CountriesService
+import com.utn.tacs.exception.exceptionHandler
+import com.utn.tacs.rest.countriesRoutes
+import com.utn.tacs.user.UsersRepository
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.litote.kmongo.KMongo
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@Testcontainers
 class CountriesControllerTest {
+
+    private fun testApp(callback: TestApplicationEngine.() -> Unit) {
+        withTestApplication({
+            authentication(usersRepository)
+            contentNegotiator()
+            countriesRoutes(countriesService)
+            exceptionHandler()
+        }, callback)
+    }
+
     @Test
-    fun testGetCountries_ok() = withTestApplication(Application::module) {
+    fun testGetCountries_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
@@ -36,7 +58,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountriesByNearestLocation_ok() = withTestApplication(Application::module) {
+    fun testGetCountriesByNearestLocation_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=-34&lon=-64")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
@@ -57,7 +79,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountriesByNearestLocation_sendStringsAsLatAndLon_BadRequest() = withTestApplication(Application::module) {
+    fun testGetCountriesByNearestLocation_sendStringsAsLatAndLon_BadRequest() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries?lat=-34&lon=pepe")) {
             val status = response.status() ?: throw Exception("not response status code found")
             assertEquals(HttpStatusCode.BadRequest, status)
@@ -70,7 +92,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryByIsoCode2_ok() = withTestApplication(Application::module) {
+    fun testGetCountryByIsoCode2_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries/US")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
@@ -81,7 +103,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryByIsoCode2_notFound() = withTestApplication(Application::module) {
+    fun testGetCountryByIsoCode2_notFound() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries/PEPE")) {
             val status = response.status() ?: throw Exception("not response status code found")
             assertEquals(HttpStatusCode.NotFound, status)
@@ -89,7 +111,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryByName_ok() = withTestApplication(Application::module) {
+    fun testGetCountryByName_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries?name=indonesia")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val country = jacksonObjectMapper().readValue<CountryResponse>(response.content!!)
@@ -100,7 +122,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryByName_notFound() = withTestApplication(Application::module) {
+    fun testGetCountryByName_notFound() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries?name=aaa")) {
             val status = response.status() ?: throw Exception("not response status code found")
             assertEquals(HttpStatusCode.NotFound, status)
@@ -108,7 +130,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountriesNames_ok() = withTestApplication(Application::module) {
+    fun testGetCountriesNames_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries/names")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val countriesNames = jacksonObjectMapper().readValue<List<CountriesNamesResponse>>(response.content!!)
@@ -118,7 +140,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_ok() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=KE&")) {
             val status = response.status() ?: throw Exception("not response status code found")
             val countries = jacksonObjectMapper().readValue<List<CountryResponse>>(response.content!!)
@@ -148,7 +170,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_wrongIso2_NotFound() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_wrongIso2_NotFound() = testApp {
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=PEPE")) {
             val status = response.status() ?: throw Exception("not response status code found")
             assertEquals(HttpStatusCode.NotFound, status)
@@ -156,7 +178,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_between2Days_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_between2Days_ok() = testApp {
         val fromDay = 8
         val toDay = 10
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
@@ -193,7 +215,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_toDay_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_toDay_ok() = testApp {
         val toDay = 10
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&toDay=" + toDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
@@ -226,7 +248,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDay_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDay_ok() = testApp {
         val fromDay = 10
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay)) {
             val status = response.status() ?: throw Exception("not response status code found")
@@ -258,7 +280,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDayToDayWrongRanges_BadRequest() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDayToDayWrongRanges_BadRequest() = testApp {
         val fromDay = 10
         val toDay = 3
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
@@ -268,7 +290,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDayWrongTypeToDay_BadRequest() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDayWrongTypeToDay_BadRequest() = testApp {
         val fromDay = "pepe"
         val toDay = 3
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
@@ -278,7 +300,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDayToDayWrongType_BadRequest() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDayToDayWrongType_BadRequest() = testApp {
         val fromDay = 3
         val toDay = "pepe"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDay=" + fromDay + "&toDay=" + toDay)) {
@@ -288,7 +310,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_betweenDates_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_betweenDates_ok() = testApp {
         val fromDate = "5/25/20"
         val toDate = "5/28/20"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDate=" + fromDate + "&toDate=" + toDate)) {
@@ -325,7 +347,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDate_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDate_ok() = testApp {
         val fromDate = "4/17/20"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDate=" + fromDate)) {
             val status = response.status() ?: throw Exception("not response status code found")
@@ -357,7 +379,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_toDate_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_toDate_ok() = testApp {
         val toDate = "5/25/20"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&toDate=${toDate}")) {
             val status = response.status() ?: throw Exception("not response status code found")
@@ -389,7 +411,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_fromDateToDateWrongType_BadRequest() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_fromDateToDateWrongType_BadRequest() = testApp {
         val fromDate = "1/25/20"
         val toDate = "pepe"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&fromDate=" + fromDate + "&toDate=" + toDate)) {
@@ -399,7 +421,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_datesRangeWithoutData_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_datesRangeWithoutData_ok() = testApp {
         val fromDate = "1/1/20"
         val toDate = "1/25/20"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&toDate=${toDate}&fromDate=${fromDate}")) {
@@ -415,7 +437,7 @@ class CountriesControllerTest {
     }
 
     @Test
-    fun testGetCountryTimeseries_datesRangeWithPartialData_ok() = withTestApplication(Application::module) {
+    fun testGetCountryTimeseries_datesRangeWithPartialData_ok() = testApp {
         val fromDate = "1/1/20"
         val toDate = "3/5/20"
         with(handleRequest(HttpMethod.Get, "/api/countries/timeseries?countries=AR&toDate=${toDate}&fromDate=${fromDate}")) {
@@ -448,6 +470,30 @@ class CountriesControllerTest {
             assertEquals("3/4/20", country.timeseries!!.get(1).date)
             assertEquals(toDate, country.timeseries!!.get(2).date)
 
+        }
+    }
+
+    companion object {
+        private lateinit var countriesService: CountriesService
+        private lateinit var usersRepository: UsersRepository
+
+
+        private val timestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
+        private val userEmail = "testuser" + timestamp + "@gmail.com"
+
+        @Container
+        var mongoContainer = GenericContainer<Nothing>("mongo:3.6.18").apply { withExposedPorts(27017) }
+
+        private lateinit var mongoDatabase: MongoDatabase
+
+        @BeforeClass
+        @JvmStatic
+        fun before() {
+            mongoContainer.start()
+            mongoDatabase = KMongo.createClient("mongodb://${mongoContainer.containerIpAddress}:${mongoContainer.getMappedPort(27017)}").getDatabase("test")
+
+            usersRepository = UsersRepository(mongoDatabase)
+            countriesService = CountriesService(CountriesRepository(mongoDatabase, CovidExternalClient))
         }
     }
 }

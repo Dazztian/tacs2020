@@ -1,5 +1,4 @@
-import com.utn.tacs.module
-import io.ktor.application.Application
+import com.utn.tacs.rest.healthCheckRoutes
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
@@ -11,7 +10,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 class ApplicationTest {
 
     @Test
-    fun testHealthCheck() = withTestApplication(Application::module) {
+    fun testHealthCheck() = withTestApplication({
+        healthCheckRoutes()
+    }) {
         with(handleRequest(HttpMethod.Get, "/configuration")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Application running", response.content)
