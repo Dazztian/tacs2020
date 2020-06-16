@@ -6,6 +6,7 @@ import { useTheme } from "@material-ui/styles";
 import mock from "./mock";
 import Widget from "../../../components/Widget";
 import { Typography } from "../../../components/Wrappers";
+import Table from "../../../components/Table/Table";
 import Dot from "../../../components/Sidebar/components/Dot";
 import BigStat from "../../../components/BigStat/BigStat";
 
