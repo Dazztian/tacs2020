@@ -26,33 +26,33 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                          countriesService: CountriesService) {
     routing {
         route("/api/telegram") {
+            //Gets the telegramSession of an telegramUser
             get {
-                val userId = call.parameters["telegramId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-                val telegramUser = TelegramUser(userId, null, null)
+                val telegramId = call.parameters["telegramId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-                call.respond(telegramRepository.getTelegramSession(telegramUser) ?: HttpStatusCode.NotFound)
+                call.respond(telegramRepository.getTelegramSession(telegramId) ?: HttpStatusCode.NotFound)
             }
 
             post("/login") {
                 val telegramUser: TelegramUser = jacksonObjectMapper().readValue(call.receiveText())
-                if (telegramUser.username == null || telegramUser.password == null) {
+                if (telegramUser.username.isNullOrBlank() || telegramUser.password.isNullOrBlank()) {
                     call.respond(HttpStatusCode(400, "username and password can't be null"))
                 } else {
-                    val user = usersRepository.getUserByEmailAndPass(telegramUser.username, telegramUser.password)
-
-                    when {
-                        telegramRepository.getTelegramSession(telegramUser) != null -> call.respond(HttpStatusCode(402, "Telegram User already logged on"))
-                        else -> call.respond(telegramRepository.createNewTelegramSession(user, telegramUser)
-                                ?: HttpStatusCode.Conflict)
+                    when(telegramRepository.getTelegramSession(telegramUser.telegramId)) {
+                        null -> {
+                            val user = usersRepository.getUserByEmailAndPass(telegramUser.username, telegramUser.password)
+                            call.respond(telegramRepository.createNewTelegramSession(user, telegramUser) ?: HttpStatusCode.Conflict)
+                        }
+                        else -> call.respond(HttpStatusCode(402, "Telegram User already logged on"))
                     }
                 }
             }
             post("/logout") {
                 val telegramUser: TelegramUser = jacksonObjectMapper().readValue(call.receiveText())
 
-                when (telegramRepository.getTelegramSession(telegramUser)) {
+                when (telegramRepository.getTelegramSession(telegramUser.telegramId)) {
                     null -> call.respond(HttpStatusCode(404, "Session not found"))
-                    else -> call.respond(telegramRepository.deleteTelegramSession(telegramUser))
+                    else -> call.respond(telegramRepository.deleteTelegramSession(telegramUser.telegramId))
                 }
             }
 
@@ -120,7 +120,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                         }
                     }
 
-
+                    //Gets timeseries of a list between dates
                     get("/timeseries") {
                         val listId = call.parameters["listId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
                         val iso2Countries = countriesService.getIsoByName(com.utn.tacs.userListsRepository.getUserList(listId)!!.countries.toList())

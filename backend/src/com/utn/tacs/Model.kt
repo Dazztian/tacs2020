@@ -3,9 +3,7 @@ package com.utn.tacs
 import io.ktor.auth.Principal
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
-import org.bson.types.ObjectId
 import org.litote.kmongo.Id
-import org.litote.kmongo.id.toId
 import org.litote.kmongo.newId
 import java.time.LocalDate
 
@@ -100,7 +98,6 @@ data class UserCountriesList(
 ) {
     constructor(userId: Id<User>, name: String, countries: MutableSet<String>, creationDate: LocalDate) : this(newId(), userId, name, countries, creationDate)
     constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries, LocalDate.now())
-    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf(), LocalDate.now())
 
 }
 
