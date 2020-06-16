@@ -1,13 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import { Grid} from "@material-ui/core";
-import { useTheme } from "@material-ui/styles";
 
 // components
-import mock from "./mock";
 import Widget from "../../../components/Widget";
 //import Table from "../../../components/Table/Table";
-import Table from "../../../components/Table/UsersTable";
-import BigStat from "../../../components/BigStat/BigStat";
 import MUIDataTable from "mui-datatables";
 
 // styles
@@ -68,10 +64,10 @@ const obtenerInfoUsuarioParticular = async (unIdUsuario)=>{
       
       setunArrayUsuarioParticular(resultArray)
       
-      console.log("TE DEVUELVO LA DATA DEL USER,"
-                 +"Nombre: "+resultArray[0].name
-                 +" Cant de listas: " +resultArray[0].listsQuantity
-                 +" Cant de total de paises: " +resultArray[0].countriesTotal ) 
+      window.alert("Ha seleccionado el User: "
+                 +"\n Nombre: "+resultArray[0].name
+                 +"\n Cant de listas: " +resultArray[0].listsQuantity
+                 +"\n Cant de total de paises: " +resultArray[0].countriesTotal ) 
   }
   catch(err) {
       console.log(err)
@@ -89,12 +85,8 @@ useEffect(() => {
     <>
       <Grid container spacing={4}>
         <Grid item xs={12}>        
+
         </Grid>
-        {mock.bigStat.map(stat => (
-          <Grid item md={4} sm={6} xs={12} key={stat.product}>
-            <BigStat {...stat} />
-          </Grid>
-        ))}
         <Grid item xs={12}>
           <Widget title="Usuarios"   upperTitle   noBodyPadding    bodyClass={classes.tableWidget} >
             <MUIDataTable
