@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.utn.tacs.LoginResponse
 import com.utn.tacs.module
-import com.utn.tacs.usersRepository
 import com.utn.tacs.usersService
 import io.ktor.application.Application
 import io.ktor.http.ContentType
@@ -29,7 +28,7 @@ class LoginControllerKtTest {
             setBody("{\"email\":\"" + userEmail + "\",\"password\":\"1234\"}")
         }) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(HttpStatusCode.Unauthorized, status)
+            assertEquals(HttpStatusCode.NotFound, status)
         }
 
         with(handleRequest(HttpMethod.Post, "/api/signup") {

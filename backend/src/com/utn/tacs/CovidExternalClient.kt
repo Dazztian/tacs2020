@@ -43,7 +43,7 @@ public object CovidExternalClient {
      */
     suspend fun getCountryTimeSeriesFromApi(queryParams: String): List<TimeSeries> {
         return HttpClient().use { client ->
-            var result = ArrayList<TimeSeries>()
+            val result = ArrayList<TimeSeries>()
             val jsonData: String = client.get(apiEntryPoint + "timeseries?" + onlyCountries + "&" + queryParams)
             val timeSeries = JSONObject(jsonData.substring(1, jsonData.length - 1)).get("timeseries") as JSONObject
             val iterator = timeSeries.keys()

@@ -4,6 +4,7 @@ import com.utn.tacs.*
 import com.utn.tacs.exception.UserAlreadyExistsException
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.utils.Encoder
+import com.utn.tacs.utils.GoogleOauthDataParser
 import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
@@ -92,8 +93,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * @throws NotFoundException
      */
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries))
-                ?: throw NotFoundException()
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
         return UserCountriesListResponse(
                 id,
                 listName,
@@ -156,5 +156,10 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUserByEmail(userEmail: String) {
         usersRepository.delete(usersRepository.getUserByEmail(userEmail) ?: throw NotFoundException())
+    }
+
+    fun getOrCreate(data: Map<String, Any?>): User {
+        return usersRepository.getUserByEmail(data["email"] as String)
+                ?: usersRepository.createUser(GoogleOauthDataParser.parse(data))!!
     }
 }

@@ -15,13 +15,13 @@ class ParserTests {
 
     @Test
     fun createTableRowStringTest(){
-        val result = createTableRowString(mapOf("Nombre" to 7,
+        val result = createTableRowString(listOf("Nombre" to 7,
                                                 "Paises" to 7,
                                                 "Creacion" to 10))
 
         assertEquals("| Nombre | Paises | Creacion  |\n", result)
 
-        val result2 = createTableRowString(mapOf("Nombre Nombre" to 5,
+        val result2 = createTableRowString(listOf("Nombre Nombre" to 5,
                                                  "Creacion Creacion" to 10))
 
 

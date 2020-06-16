@@ -3,29 +3,27 @@ package com.utn.tacs
 import io.ktor.auth.Principal
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
-import org.bson.types.ObjectId
 import org.litote.kmongo.Id
-import org.litote.kmongo.id.toId
 import org.litote.kmongo.newId
 import java.time.LocalDate
 
 data class User(
         val name: String,
         val email: String,
-        val password: String,
+        val password: String?,
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
         val creationDate: String? = null,
         val country: String?,
         val isAdmin: Boolean = false,
-        var lastConection: String? = null
+        var lastConnection: String? = null
 ) : Principal {
     constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
     constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
-    constructor(_id: Id<User>, name: String) : this(name, "", "", _id, null, null)
+    constructor(_id: Id<User>, name: String) : this(name, "", null, _id, null, null)
     constructor(_id: Id<User>, name: String, email: String, password: String) : this(name, email, password, _id, null, null)
-    constructor(_id: Id<User>, name: String, email: String, password: String, isAdmin:Boolean) : this(name, email, password, _id, null, null, isAdmin)
+    constructor(_id: Id<User>, name: String, email: String, password: String?, isAdmin:Boolean) : this(name, email, password, _id, null, null, isAdmin)
 
 }
 
@@ -100,7 +98,6 @@ data class UserCountriesList(
 ) {
     constructor(userId: Id<User>, name: String, countries: MutableSet<String>, creationDate: LocalDate) : this(newId(), userId, name, countries, creationDate)
     constructor(userId: Id<User>, name: String, countries: MutableSet<String>) : this(newId(), userId, name, countries, LocalDate.now())
-    constructor(userId: Id<User>, name: String) : this(newId(), userId, name, mutableSetOf(), LocalDate.now())
 
 }
 

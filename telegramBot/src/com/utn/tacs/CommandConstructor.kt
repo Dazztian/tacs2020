@@ -6,14 +6,11 @@ import com.github.kotlintelegrambot.HandleUpdate
 import com.github.kotlintelegrambot.dispatcher.handlers.CallbackQueryHandler
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
 import com.github.kotlintelegrambot.dispatcher.handlers.MessageHandler
+import com.github.kotlintelegrambot.entities.ChatAction
 import com.github.kotlintelegrambot.entities.Update
 import com.github.kotlintelegrambot.extensions.filters.Filter
 
-/**
-* This methods add the backend app status and login checker to a telegram command and query
-*/
-
-fun sendMessages(bot: Bot, listMessage: List<TelegramMessageWrapper>){
+fun sendMessages(bot: Bot, listMessage: responseMessages){
     listMessage.forEach { m -> bot.sendMessage( m.chatId,
                                                 m.text,
                                                 m.parseMode,
@@ -29,7 +26,10 @@ interface LoginType{
     object NotRequired : LoginType
 }
 
-private fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
+fun sendTypingAction(bot: Bot, chatId: Long) = bot.sendChatAction(chatId, ChatAction.TYPING)
+
+fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
+    sendTypingAction(bot, chatId)
     when{
         !RequestManager.healthCheck() -> bot.sendMessage(chatId = chatId, text = unresponsiveServerText)
         type == LoginType.NotRequired -> return true
@@ -58,7 +58,7 @@ private fun commandHandlerBuilder(method :updateHandler, type :LoginType) :Handl
 }
 
 fun createCallbackQueryHandler(data: String? = null, type: LoginType, body: updateHandler) : CallbackQueryHandler =
-        CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body, type))
+    CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body, type))
 private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandler, type: LoginType) :HandleUpdate {
     return { bot, update ->
         val chatId = update.callbackQuery!!.message!!.chat.id
@@ -67,7 +67,10 @@ private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandler, typ
 }
 
 fun createMessageHandler(filter: Filter, handler: updateHandler) :MessageHandler =
-        MessageHandler({bot, update ->  sendMessages(bot, handler(bot, update))}, filter)
+        MessageHandler({ bot, update ->
+            sendTypingAction(bot, update.message!!.chat.id)
+            sendMessages(bot, handler(bot, update))
+        }, filter)
 
 
 //Con argumentos

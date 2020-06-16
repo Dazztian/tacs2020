@@ -70,11 +70,11 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("[ {\n" +
+            assertEquals(("[ {\n" +
                     "  \"id\" : \"${ucl1.id}\",\n" +
                     "  \"name\" : \"${ucl1.name}\",\n" +
                     "  \"countries\" : [ ${ucl1.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "} ]", response.content)
+                    "} ]").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
         }
 
         every { usersService.getUserLists("nonExistentId") } returns listOf()
@@ -92,7 +92,7 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("[ {\n" +
+            assertEquals(("[ {\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
                     "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
@@ -105,7 +105,7 @@ class UserCountriesListControllerKtTest {
                     "  \"id\" : \"${ucl5.id}\",\n" +
                     "  \"name\" : \"${ucl5.name}\",\n" +
                     "  \"countries\" : [ ${ucl5.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "} ]", response.content)
+                    "} ]").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
         }
     }
 
@@ -120,11 +120,11 @@ class UserCountriesListControllerKtTest {
             setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it}\"" }} ]}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("{\n" +
+            assertEquals(("{\n" +
                     "  \"id\" : \"id2\",\n" +
                     "  \"name\" : \"TEST_2\",\n" +
                     "  \"countries\" : [ \"COUNTRY_1\", \"country_2\", \"CoUnTrY_3\" ]\n" +
-                    "}", response.content)
+                    "}").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
         }
 
         every { usersService.createUserList(userId, ucl2.name, ucl2.countries) } throws NotFoundException()
@@ -134,7 +134,7 @@ class UserCountriesListControllerKtTest {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
             setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it}\"" }} ]}")
         }) {
-            assertEquals(HttpStatusCode.BadRequest, response.status())
+            assertEquals(HttpStatusCode.NotFound, response.status())
         }
 
         with(handleRequest(HttpMethod.Post, "/api/user/" + userId + "/lists") {
@@ -156,11 +156,11 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("{\n" +
+            assertEquals(("{\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
                     "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "}", response.content)
+                    "}").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
         }
         every { usersService.getUserList(userId, "TEST_NO_EXISTS") } throws NotFoundException()
 
@@ -184,11 +184,11 @@ class UserCountriesListControllerKtTest {
         }
 
         every { usersService.deleteUserList(userId, ucl3.name) } throws NotFoundException()
-        with(handleRequest(HttpMethod.Delete, "/api/user/userId3/lists/TEST_3")
+        with(handleRequest(HttpMethod.Delete, "/api/user/userId/lists/TEST_3")
         {
             addJwtHeader(authUser)
         }) {
-            assertEquals(HttpStatusCode.NotModified, response.status())
+            assertEquals(HttpStatusCode.NotFound, response.status())
         }
 
     }
@@ -206,11 +206,13 @@ class UserCountriesListControllerKtTest {
             setBody("{\"name\":\"new_name\",\"countries\":[ \"new_country\" ]}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("{\n" +
+            val responseExpected = "{\n" +
                     "  \"id\" : \"id4\",\n" +
                     "  \"name\" : \"TEST_4\",\n" +
                     "  \"countries\" : [ \"country_2\" ]\n" +
-                    "}", response.content)
+                    "}"
+            assertEquals(responseExpected.replace("\n", "").replace("\r", ""),
+                            response.content!!.replace("\n", "").replace("\r", ""))
         }
 
         every { usersService.updateUserList(userId, userListId, any()) } throws NotFoundException()

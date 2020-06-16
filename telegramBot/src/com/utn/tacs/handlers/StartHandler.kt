@@ -49,7 +49,7 @@ fun startCommands(updater :Updater){
     ).forEach{updater.dispatcher.addHandler(it)}
 }
 
-fun startCommand(chatId :Long, firstName :String?) :List<TelegramMessageWrapper>{
+fun startCommand(chatId :Long, firstName :String?) :responseMessages{
     return if(RequestManager.isLoggedIn(chatId.toString()))
         listOf(TelegramMessageWrapper(
                 chatId = chatId,
@@ -60,8 +60,8 @@ fun startCommand(chatId :Long, firstName :String?) :List<TelegramMessageWrapper>
                 chatId = chatId,
                 text = startText))
 }
-fun helpCommand(chatId: Long) :List<TelegramMessageWrapper> = listOf(TelegramMessageWrapper(chatId, helpText))
-fun loginCommand(chatId: Long, firstName :String?, args: List<String>) :List<TelegramMessageWrapper>{
+fun helpCommand(chatId: Long) :responseMessages = listOf(TelegramMessageWrapper(chatId, helpText))
+fun loginCommand(chatId: Long, firstName :String?, args: List<String>) :responseMessages{
     if(args.size != 2){
         return listOf(TelegramMessageWrapper(chatId, LoginHelpText))
     }
@@ -71,7 +71,7 @@ fun loginCommand(chatId: Long, firstName :String?, args: List<String>) :List<Tel
     else
         listOf(TelegramMessageWrapper(chatId, badLogoutText))
 }
-fun logoutCommand(chatId: Long) :List<TelegramMessageWrapper>{
+fun logoutCommand(chatId: Long) :responseMessages{
     return if(RequestManager.logout(chatId.toString()))
         listOf(TelegramMessageWrapper(chatId, startText))
     else

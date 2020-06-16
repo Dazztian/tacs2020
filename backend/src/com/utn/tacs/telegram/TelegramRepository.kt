@@ -41,9 +41,9 @@ class TelegramRepository(private val database: MongoDatabase) {
     }
 
     //Deletes the telegram session (logout)
-    fun deleteTelegramSession(telegramUser: TelegramUser){
+    fun deleteTelegramSession(telegramUserId: String){
         try {
-            database.getCollection<TelegramSession>(DB_MONGO_TELEGRAM_SESSION_COLLECTION).deleteOne(TelegramSession::telegramId eq telegramUser.telegramId)
+            database.getCollection<TelegramSession>(DB_MONGO_TELEGRAM_SESSION_COLLECTION).deleteOne(TelegramSession::telegramId eq telegramUserId)
         } catch (e: MongoException){
             throw e
         }

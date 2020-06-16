@@ -4,6 +4,7 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoDatabase
 import com.typesafe.config.ConfigFactory
 import com.utn.tacs.User
+import com.utn.tacs.exception.UnauthorizedException
 import com.utn.tacs.utils.Encoder
 import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
@@ -20,7 +21,8 @@ class UsersRepository(private val database: MongoDatabase) {
     private val adminUserPass = ConfigFactory.load().getString("adminUser.pass")
 
     init {
-        getUserByEmail(adminUserEmail) ?: createUser(User(adminUserName, adminUserEmail, adminUserPass, "Argentina", true))
+        getUserByEmail(adminUserEmail)
+                ?: createUser(User(adminUserName, adminUserEmail, adminUserPass, "Argentina", true))
     }
 
     /**
@@ -72,8 +74,9 @@ class UsersRepository(private val database: MongoDatabase) {
     fun getUserByEmailAndPass(email: String, password: String): User {
         val user = database.getCollection<User>(USERS_COLLECTION_NAME).findOne(User::email eq email)
         //This changes, because the hashing function can produce different encodings and checking using only equal could not be enough.
-        if (user != null && Encoder.matches(password, user.password)) {
-            return user
+        if (user != null) {
+            if (Encoder.matches(password, user.password)) return user
+            else throw UnauthorizedException("Password did not match")
         } else {
             throw NotFoundException("User does not exists or password is invalid")
         }
@@ -123,8 +126,8 @@ class UsersRepository(private val database: MongoDatabase) {
      * @return User
      */
     fun setUserLastLogin(user: User): User {
-        user.lastConection = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
-        database.getCollection<User>(USERS_COLLECTION_NAME).findOneAndUpdate(User::_id eq user._id, set(User::lastConection setTo user.lastConection))
+        user.lastConnection = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
+        database.getCollection<User>(USERS_COLLECTION_NAME).findOneAndUpdate(User::_id eq user._id, set(User::lastConnection setTo user.lastConnection))
         return user
     }
 }

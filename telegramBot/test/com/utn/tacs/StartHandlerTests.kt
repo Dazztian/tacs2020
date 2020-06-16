@@ -1,5 +1,6 @@
 package com.utn.tacs
 
+import com.github.kotlintelegrambot.Bot
 import com.utn.tacs.handlers.*
 import io.mockk.every
 import io.mockk.mockkObject
@@ -44,6 +45,17 @@ class StartHandlerTests {
     }
 
     @Test
+    fun validateLoginTypeTest(){
+        assertEquals(true, validateLoginType(createBot(""), chatId, LoginType.NotRequired))
+        assertEquals(true, validateLoginType(createBot(""), chatId, LoginType.LoggedIn))
+        assertEquals(false, validateLoginType(createBot(""), chatId, LoginType.NotLoggedIn))
+
+
+        every { RequestManager.healthCheck() } returns false
+        assertEquals(false, validateLoginType(createBot(""), chatId, LoginType.NotRequired))
+    }
+
+    @Test
     fun helpCommandTest(){
         assertEquals(listOf(TelegramMessageWrapper(chatId, helpText)), helpCommand(chatId))
     }
@@ -57,7 +69,7 @@ class StartHandlerTests {
 
         every { RequestManager.login("username", "pass", chatId.toString()) } returns false
 
-        assertEquals(listOf(TelegramMessageWrapper(chatId, badLogoutText)), loginCommand(chatId, firstName, listOf("user", "pass")))
+        assertEquals(listOf(TelegramMessageWrapper(chatId, badLogoutText)), loginCommand(chatId, firstName, listOf("username", "pass")))
     }
 
     @Test
