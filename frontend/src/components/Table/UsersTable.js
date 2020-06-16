@@ -24,28 +24,25 @@ export default function TableComponent({ data }) {
     <Table className="mb-0">
       <TableHead>
         <TableRow>
-          {keys.map(key => (
-            <TableCell key={key}>{key}</TableCell>
+          {data.map(data => (
+            <TableCell key={data.id}>{data.id}</TableCell>
           ))}
         </TableRow>
       </TableHead>
       <TableBody>
-        {data.map(({ id, name, email, product, price, date, status }) => (
+        {data.map(({ id, name, email}) => (
           <TableRow key={id}>
             <TableCell className="pl-3 fw-normal">{name}</TableCell>
             <TableCell>{email}</TableCell>
-            <TableCell>{product}</TableCell>
-            <TableCell>{price}</TableCell>
-            <TableCell>{date}</TableCell>
             <TableCell>
-              <Button
-                color={states[status.toLowerCase()]}
+                <Button
+                //color={states[status.toLowerCase()]}
                 size="small"
                 className="px-2"
                 variant="contained"
-              >
-                {status}
-              </Button>
+                >
+                {id}
+                </Button>
             </TableCell>
           </TableRow>
         ))}
