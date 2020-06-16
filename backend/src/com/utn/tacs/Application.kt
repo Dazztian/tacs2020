@@ -44,12 +44,6 @@ fun main(args: Array<String>) {
     val mongoUrl = args[1]
     val mongoPort = args[2]
 
-    print("\n\n\n\n" + mongoDb)
-
-    print("\n\n\n\n" + mongoUrl)
-
-    print("\n\n\n\n" + mongoPort + "\n\n")
-
     MongoClientGenerator.setProperties(mongoDb, mongoUrl, mongoPort.toInt())
 
     embeddedServer(Netty, 8080, module = Application::module).start(wait = true)
