@@ -10,7 +10,8 @@ import Table from "../../../components/Table/Table";
 import Dot from "../../../components/Sidebar/components/Dot";
 import BigStat from "../../../components/BigStat/BigStat";
 
-const mainChartData = getMainChartData();
+// styles
+import useStyles from "./styles";
 
 export default function Dashboard(props) {
   var classes = useStyles();
@@ -43,7 +44,5 @@ export default function Dashboard(props) {
     </>
   );
 }
-
-return resultArray;
   
 
