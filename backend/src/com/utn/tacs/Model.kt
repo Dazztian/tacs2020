@@ -130,16 +130,6 @@ data class SignUpRequest(
         var isAdmin: Boolean? = false
 )
 
-data class UserAccount(
-        @ContextualSerialization
-        val _id: Id<UserAccount> = newId(),
-        @ContextualSerialization
-        val userId: Id<User>,
-        val token: String
-) {
-    constructor(userId: Id<User>, token: String) : this(newId(), userId, token)
-}
-
 data class UserData(
         val user: User,
         val listsQuantity: Int,
@@ -195,13 +185,14 @@ data class UserCountriesListResponse(
         val countries: MutableSet<String>
 )
 
-data class UserNamesResponse(
-        val name: String,
-        val iso2: String
-)
-
 @Serializable
 data class CountriesNamesResponse(
         val name: String,
         val iso2: String
+)
+
+data class UserBasicData(
+        val id: String,
+        val email: String,
+        val name: String
 )

@@ -44,6 +44,15 @@ class UsersRepository(private val database: MongoDatabase) {
     }
 
     /**
+     * Get all users
+     *
+     * @return List<User>
+     */
+    fun getUsers(): List<User> {
+        return database.getCollection<User>(USERS_COLLECTION_NAME).find().toList()
+    }
+
+    /**
      * Get user by id
      *
      * @param id String

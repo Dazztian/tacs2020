@@ -22,6 +22,18 @@ import java.time.LocalDate
 fun Application.adminReports(adminReportsService: AdminReportsService) {
     routing {
         authenticate {
+            route("/api/admin/report") {
+                get {
+                    try {
+                        call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
+                        call.respond(adminReportsService.getAllUsers())
+                    } catch (e: NotFoundException) {
+                        call.respond(HttpStatusCode.NotFound)
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+            }
             route("/api/admin/report/{userId}") {
                 get {
                     try {
