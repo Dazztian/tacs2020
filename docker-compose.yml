@@ -15,13 +15,8 @@ services:
     ports:
       - "8081:8081"
     volumes:
-<<<<<<< HEAD
       - ./frontend:/webapp
       
-=======
-      - ./frontend:/usr/src/app
-
->>>>>>> c792a67fee6068c1ba1b6023d6f96fe9543ba4dd
   telegram-bot:
     build: ./telegramBot
     ports:
