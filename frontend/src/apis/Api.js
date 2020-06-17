@@ -20,13 +20,8 @@ class Api {
         'Authorization': 'Bearer ' + this.authToken
       } : this.headers;
     }
-
-    countrNameConvertor(countriesNamesArray){
-
-    }
-
   
-    async getCountryList(){
+    async getCountryList(isoList){
       try{
         const data = mock.countriesNameISo 
   
@@ -43,6 +38,70 @@ class Api {
         method:'GET',
         headers: this.createHeaders(),
       });*/
+    }
+
+    async createCountryList(nombreLista,listarray){
+      try{
+  
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 500);
+        })
+      }catch(error){
+        console.log(error)
+      }
+      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
+        method:"post",
+        headers: this.createHeaders(),
+        body:JSON.stringify({
+            "name": nombreLista,
+            "countries":listarray
+        })
+      })*/
+    }
+
+    async deleteCountryList(nombreLista,listarray){
+      try{
+  
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 500);
+        })
+      }catch(error){
+        console.log(error)
+      }
+      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
+        method:"post",
+        headers: this.createHeaders(),
+        body:JSON.stringify({
+            "name": nombreLista,
+            "countries":listarray
+        })
+      })*/
+    }
+
+    async editCountryList(name,listId,countries){
+      try{
+  
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 500);
+        })
+      }catch(error){
+        console.log(error)
+      }
+
+      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
+        method:"PUT",
+        headers: this.createHeaders(),
+        body:JSON.stringify({
+            "name": nuevoNombre,
+            "countries":nuevosPaises
+        })
+      })*/
     }
 
   async getCountriesDataByDate(isoList,dateinicial,datefinal) {
@@ -154,14 +213,31 @@ class Api {
         }, 500);
       })
 
-      /*let position = await getLocation()
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}}`, {
+      /*
+      return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists`, {
         method: 'GET',
         headers: this.createHeaders()
       });*/
+
+    }catch(e){
+      console.log(e)
+    }
+  }
+  
+  async deleteUserList(listId) {
+    try{
+
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      })
+
+      /*return await fetch(`${this.BASE_URL}/api/${this.userSessionId}/lists/${listId}`,{
+            method:"DELETE",
+            headers: this.createHeaders()
+            })
+      ;*/
 
     }catch(e){
       console.log(e)

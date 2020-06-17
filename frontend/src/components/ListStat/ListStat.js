@@ -109,14 +109,18 @@ return(
             </Grid>
         ) : (
           <div className={classes.mainChartHeader}>
+          <Grid
+            container
+            justify="space-between"
+            spacing={1}             
+            > 
             <Grid   
               item lg={8} md={9} sm={10} xs={9}        
               container
               spacing={1}
               alignItems="center"
-              
             >
-            <Grid item xs={3} md={3} >
+            <Grid item xs={2} md={2} >
               <TextField
                 id="filled-number"
                 label="Start day"
@@ -137,7 +141,7 @@ return(
                 variant="outlined"
               />
             </Grid>
-            <Grid item xs={3} md={3} >
+            <Grid item xs={2} md={2} >
               <TextField
                 id="filled-number"
                 label="End day"
@@ -175,12 +179,6 @@ return(
             </Button>
           </Grid> 
         </Grid>
-        <Grid
-            item lg={2} md={3} sm={2} xs={3}
-            container
-            spacing={1}             
-            alignItems="center"
-            > 
           <Grid > 
           <Select
               value={mainChartState}
@@ -204,8 +202,7 @@ return(
         </Grid>          
       </div>
         )        
-        }
-  >
+        }>
             <ApexCharts
             options={themeOptions(numDaysArray,theme)}
             series={series}

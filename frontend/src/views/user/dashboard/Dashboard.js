@@ -23,8 +23,6 @@ export default function Dashboard(props) {
   var [nearCountriesOrder, setNearCountriesOrder] = useState();
   var [isoList, setIsoList] = useState();
 
-  var { isAuthenticated, isAdmin } = useUserState();
-
   
   async function fetchNearData() {
     try {
@@ -65,7 +63,7 @@ export default function Dashboard(props) {
 
   return (
     <>
-    {console.log(localStorage.getItem('countriesList'))}
+
     {isLoading 
     ? <Grid
         container

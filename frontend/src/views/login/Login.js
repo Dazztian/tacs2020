@@ -60,8 +60,6 @@ function Login(props) {
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('tracker_name', user.name)
-
-          localStorage.setItem('countriesList',countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } 
@@ -85,7 +83,6 @@ function Login(props) {
           localStorage.setItem('id_session',user._id)
           localStorage.setItem('id_token', token)
           localStorage.setItem('tracker_name', user.name)
-          console.log(countryList)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
