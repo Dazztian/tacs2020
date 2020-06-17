@@ -235,7 +235,7 @@ const EditarListas = ()=>{
                   <Button  
                   xs={4} 
                   md={4} 
-                  disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 }
+                  disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 || selectedList[2].length>20 }
                   size='medium'
                   variant="contained" color="primary" 
                   onClick={(e)=> handleAddCountries()}
