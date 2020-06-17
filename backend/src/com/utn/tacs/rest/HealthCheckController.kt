@@ -9,7 +9,7 @@ import io.ktor.routing.routing
 
 fun Application.healthCheckRoutes() {
     routing {
-        route("/") {
+        route("/configuration") {
             get {
                 call.respondText("Application running")
             }

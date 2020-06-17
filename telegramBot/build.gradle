@@ -33,7 +33,9 @@ kotlin {
 
         sourceSets {
             main.kotlin.srcDirs = [ 'src' ]
+            main.resources.srcDirs = [ 'resources' ]
             test.kotlin.srcDirs = [ 'test' ]
+            test.resources.srcDirs = [ 'test/resources' ]
         }
     }
 }
@@ -63,6 +65,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
     testCompile "org.testcontainers:testcontainers:$test_containers_version"
     testCompile "org.testcontainers:junit-jupiter:$test_containers_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
 }
 
 shadowJar {

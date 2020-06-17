@@ -1,20 +1,21 @@
 package com.utn.tacs
 
-import com.github.kotlintelegrambot.entities.InlineKeyboardButton
-import com.github.kotlintelegrambot.entities.Message
-import kotlinx.serialization.ContextualSerialization
-import org.litote.kmongo.Id
+import com.github.kotlintelegrambot.Bot
+import com.github.kotlintelegrambot.entities.*
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+
+typealias responseMessages = List<TelegramMessageWrapper>
+typealias updateHandler = (Bot, Update) -> responseMessages
+typealias updateHandlerArgs = (Bot, Update, List<String>) -> responseMessages
 
 interface MessageType{
     object ADD_COUNTRY : MessageType
-    object REMOVE_COUNTRY : MessageType
+    object NEW_LIST : MessageType
     object LAST_X_DAYS : MessageType
 }
-class MessageWrapper(
+class PreviousMessageWrapper(
         val messageType: MessageType,
-        val countryListId: String?)
+        val countryListId: String)
 
 interface RequestModelInterface{
     //Retorna el model a una fila de tabla para mensaje telegram
@@ -22,7 +23,7 @@ interface RequestModelInterface{
     //Retorna el header de la tabla
     fun tableHeader() :String
     //Returns the a table with the list
-    fun toTable() :List<String> = organizarEnCaracteres(listOf(tableHeader()) + toTableRowString(), 4084)
+    fun toTable() :List<String> = organizeInCharacters(listOf(tableHeader()) + toTableRowString(), 4084)
                                         .map { row -> "<pre>\n$row</pre>" }
 }
 sealed class RequestModel :RequestModelInterface
@@ -38,8 +39,8 @@ data class CountriesList (
 
     override fun toTableRowString(): String {
         return createTableRowString(
-                            mapOf(  (name ?: "") to 19,
-                                    (countries?.size?.toString() ?: "0") to 10))
+            listOf(  (name ?: "") to 19,
+                (countries?.size?.toString() ?: "0") to 10))
     }
 
     override fun tableHeader(): String {
@@ -62,22 +63,77 @@ data class Country(
 ) :RequestModel() {
     override fun toTableRowString(): String {
         return createTableRowString(
-                mapOf(  (countryregion ?: "") to 15,
+            listOf((countryregion ?: "") to 13,
                         (confirmed?.toString() ?: "0") to 10,
                         (deaths?.toString() ?: "0") to 9,
                         (recovered?.toString() ?: "0") to 10))
     }
 
     override fun tableHeader(): String {
-        return  "|      Name      | Confirmed |  Deaths  | Recovered |\n" +
-                "|:--------------:|:---------:|:--------:|:---------:|\n"
+        return  "|     Name     | Confirmed |  Deaths  | Recovered |\n" +
+                "|:------------:|:---------:|:--------:|:---------:|\n"
     }
 }
 
 data class TimeSerie(
-        val number: Int,
+        var number: Int?,
+        val confirmed: Int?,
+        val deaths: Int?,
+        val recovered: Int?,
+        val date: String?
+) :RequestModel(){
+    override fun toTableRowString(): String {
+        return createTableRowString(
+            listOf(Pair(date ?: "", 11),
+                Pair(confirmed?.toString() ?: "0", 10),
+                Pair(deaths?.toString() ?: "0", 9),
+                Pair(recovered?.toString() ?: "0", 10)))
+    }
+
+    override fun tableHeader(): String = timeseriesTableHeader
+
+    companion object{
+        fun tableHeader(): String = timeseriesTableHeader
+    }
+}
+
+const val timeseriesTableHeader =   "|    Date    | Confirmed |  Deaths  | Recovered |\n"+
+                                    "|:----------:|:---------:|:--------:|:---------:|\n"
+
+data class UserCountriesListResponse(
+        val id: String,
+        val name: String,
+        val countries: MutableSet<String>
+)
+
+data class TelegramMessageWrapper(
+        val chatId: Long,
+        val text: String,
+        val parseMode: ParseMode? = null,
+        val disableWebPagePreview: Boolean? = null,
+        val disableNotification: Boolean? = null,
+        val replyToMessageId: Long? = null,
+        val replyMarkup: ReplyMarkup? = null)
+
+data class CountryNamesResponse(
+    val name: String?,
+    val iso2: String?
+)
+
+data class CountryResponseTimeseries (
+        val countryregion: String?,
+        val lastupdate: String?,
+        val location: Location?,
+        val countrycode: CountryCode?,
+        val confirmed: Int?,
+        val deaths: Int?,
+        val recovered: Int?,
+        var timeseries: List<TimeSerie>? = listOf(),
+        var timeSeriesTotal: TimeSeriesTotal? = null
+)
+
+data class TimeSeriesTotal(
         val confirmed: Int,
         val deaths: Int,
-        val recovered: Int,
-        val date: String
+        val recovered: Int
 )

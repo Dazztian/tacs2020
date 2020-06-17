@@ -12,8 +12,8 @@ import kotlin.math.min
  * @param nameXvalue Map<String, Int>
  * @return String
  */
-fun createTableRowString(nameXvalue:Map<String, Int>): String{
-    val nLines = nameXvalue.map { ceil(it.key.length.toDouble() / it.value) }.max()!!.toInt()
+fun createTableRowString(nameXvalue:List<Pair<String, Int>>): String{
+    val nLines = nameXvalue.map { (key,value) -> ceil(key.length.toDouble() / value) }.max()!!.toInt()
     val lines = MutableList(nLines){ "" }
 
     for(i in 0 until nLines){
@@ -30,19 +30,37 @@ fun createTableRowString(nameXvalue:Map<String, Int>): String{
     return lines.joinToString(separator = "|\n", postfix = "|\n")
 }
 
+//Se divide en strings de 4084 (4096 - 12) caracteres por el max de char por mensaje en telegram
+private fun buildRows(list: List<String>) :List<String> = organizeInCharacters(list, 4084).map { row -> "<pre>\n$row</pre>" }
+
 /**
  * Retorna una tabla con los elementos de la lista
- * Se divide en strings de 4084 (4096 - 12) caracteres por el max de char por mensaje en telegram
  *
  * @param list List<RequestModel>
  * @return List<String>
  */
 fun buildTableArray(list :List<RequestModel>?) :List<String> {
-    return if (list == null || list.isEmpty()){
+    return if (list == null || list.isEmpty())
         emptyList()
-    }else{
-        organizarEnCaracteres(listOf(list[0].tableHeader()) + list.map { p -> p.toTableRowString() }, 4084)
-            .map { row -> "<pre>\n$row</pre>" }
+    else
+        buildRows(listOf(list[0].tableHeader()) + list.map { p -> p.toTableRowString() })
+}
+
+fun buildTableTimeseries(list :List<CountryResponseTimeseries>) :List<String>{
+    return if (list.isEmpty())
+        emptyList()
+    else{
+        val rows = MutableList(1){TimeSerie.tableHeader()}
+        list.forEach { country ->
+            if (country.timeseries != null){
+                rows.add("${country.countryregion!!}:\n")
+                country.timeseries?.forEach { timeserie ->
+                    rows.add(timeserie.toTableRowString())
+                }
+            }
+        }
+
+        buildRows(rows)
     }
 }
 
@@ -53,7 +71,7 @@ fun buildTableArray(list :List<RequestModel>?) :List<String> {
  * @param maxCharPorString Int
  * @return List<String>
  */
-fun organizarEnCaracteres(list :List<String>, maxCharPorString :Int) :List<String>{
+fun organizeInCharacters(list :List<String>, maxCharPorString :Int) :List<String>{
     val ret = mutableListOf<String>()
     var acc = ""
     for(s in list){

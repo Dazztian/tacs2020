@@ -118,9 +118,7 @@ class UserListsRepository(private val database: MongoDatabase, private val users
      * @return String?
      */
     fun doUpdate(listId: String, newName: String, countriesToAdd: MutableSet<String>): String? {
-        val a = getUserList(listId)
         return getUserList(listId)?.let {
-            countriesToAdd.addAll(it.countries)
             database.getCollection<UserCountriesList>().findOneAndUpdate(UserCountriesList::_id eq it._id, set(UserCountriesList::name setTo newName, UserCountriesList::countries setTo countriesToAdd))?._id.toString()
         }
     }

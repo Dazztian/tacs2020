@@ -5,91 +5,95 @@ import com.github.kotlintelegrambot.CommandHandleUpdate
 import com.github.kotlintelegrambot.HandleUpdate
 import com.github.kotlintelegrambot.dispatcher.handlers.CallbackQueryHandler
 import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandler
+import com.github.kotlintelegrambot.dispatcher.handlers.MessageHandler
+import com.github.kotlintelegrambot.entities.ChatAction
 import com.github.kotlintelegrambot.entities.Update
+import com.github.kotlintelegrambot.extensions.filters.Filter
 
+fun sendMessages(bot: Bot, listMessage: responseMessages){
+    listMessage.forEach { m -> bot.sendMessage( m.chatId,
+                                                m.text,
+                                                m.parseMode,
+                                                m.disableWebPagePreview,
+                                                m.disableNotification,
+                                                m.replyToMessageId,
+                                                m.replyMarkup) }
+}
 
-const val textoServerCaido = "An error occurred while connecting to the server \uD83D\uDE1F"
-const val textoUsuarioNoLogueado = "The current user is not logged in\n" +
-                                    "To login write: \n" +
-                                    "/login {usuario} {contraseña}"
-const val textoUsuarioYaLogueado = "The current user is already logged in. \n" +
-                                    "To change users write: \n" +
-                                    "/logout"
-const val textoArgumentsExpected =  "Error while tryinh to use a command without arguments\n" +
-                                    "For help use /help"
+interface LoginType{
+    object NotLoggedIn : LoginType
+    object LoggedIn : LoginType
+    object NotRequired : LoginType
+}
 
-/**
-* This methods add the backend app status and login checker to a telegram command and query
-*/
+fun sendTypingAction(bot: Bot, chatId: Long) = bot.sendChatAction(chatId, ChatAction.TYPING)
+
+fun validateLoginType(bot: Bot, chatId :Long, type: LoginType) :Boolean{
+    sendTypingAction(bot, chatId)
+    when{
+        !RequestManager.healthCheck() -> bot.sendMessage(chatId = chatId, text = unresponsiveServerText)
+        type == LoginType.NotRequired -> return true
+        else -> {
+            val loggedIn = RequestManager.isLoggedIn(chatId.toString())
+
+            when{
+                loggedIn && type == LoginType.NotLoggedIn -> bot.sendMessage(chatId = chatId, text = UserLoggedInText)
+                !loggedIn && type == LoginType.LoggedIn -> bot.sendMessage(chatId = chatId, text = UserNotLoggedInText)
+                else -> return true
+            }
+        }
+    }
+
+    return false
+}
 
 //Sin argumentos
-fun commandHandlerNoLoginRequired(method :CommandHandleUpdate) :CommandHandleUpdate {
-    return { bot, update, args->
-        when{
-            !healthCheck() -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoServerCaido)
-            isLoggedIn(update.message!!.from!!.id.toString()) -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoUsuarioYaLogueado)
-            else -> method(bot, update, args)
-        }
-    }
-}
-
-fun createCommandHandler(command: String, handler: HandleUpdate) :CommandHandler =
-        CommandHandler(command, commandHandlerCheckStatusAndSession(handler))
-fun commandHandlerCheckStatusAndSession(method :HandleUpdate) :HandleUpdate {
-    return { bot, update->
-        when{
-            !healthCheck() -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoServerCaido)
-            !isLoggedIn(update.message!!.from!!.id.toString()) -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoUsuarioNoLogueado)
-            else -> method(bot, update)
-        }
-    }
-}
-
-fun createCallbackQueryHandler(data: String? = null, body: HandleUpdate) : CallbackQueryHandler =
-        CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body))
-fun callbackQueryHandlerCheckStatusAndSession(method :HandleUpdate) :HandleUpdate {
+fun createCommandHandler(command: String, type: LoginType, handler: updateHandler) :CommandHandler =
+        CommandHandler(command, commandHandlerBuilder(handler, type))
+private fun commandHandlerBuilder(method :updateHandler, type :LoginType) :HandleUpdate {
     return { bot, update ->
-        when{
-            !healthCheck() -> update.callbackQuery?.let {
-                bot.sendMessage(chatId = it.message!!.chat.id, text = textoServerCaido)
-            }
-            !isLoggedIn(update.callbackQuery?.message!!.chat.id.toString()) -> update.callbackQuery?.let {
-                bot.sendMessage(chatId = it.message!!.chat.id, text = textoUsuarioNoLogueado)
-            }
-            else -> method(bot, update)
-        }
+        val chatId = update.message!!.chat.id
+        if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update))
     }
 }
+
+fun createCallbackQueryHandler(data: String? = null, type: LoginType, body: updateHandler) : CallbackQueryHandler =
+    CallbackQueryHandler(data, handler = callbackQueryHandlerCheckStatusAndSession(body, type))
+private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandler, type: LoginType) :HandleUpdate {
+    return { bot, update ->
+        val chatId = update.callbackQuery!!.message!!.chat.id
+        if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update))
+    }
+}
+
+fun createMessageHandler(filter: Filter, handler: updateHandler) :MessageHandler =
+        MessageHandler({ bot, update ->
+            sendTypingAction(bot, update.message!!.chat.id)
+            sendMessages(bot, handler(bot, update))
+        }, filter)
+
 
 //Con argumentos
-fun createCommandHandler(command: String, handler: CommandHandleUpdate) :CommandHandler =
-        CommandHandler(command, commandHandlerCheckStatusAndSession(handler))
-fun commandHandlerCheckStatusAndSession(method :CommandHandleUpdate) :CommandHandleUpdate {
+fun createCommandHandler(command: String, type: LoginType, handler: updateHandlerArgs) :CommandHandler =
+        CommandHandler(command, commandHandlerBuilder(handler, type))
+private fun commandHandlerBuilder(method :updateHandlerArgs, type :LoginType) :CommandHandleUpdate {
     return { bot, update, args->
+        val chatId = update.message!!.chat.id
         when{
-            !healthCheck() -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoServerCaido)
-            !isLoggedIn(update.message!!.from!!.id.toString()) -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoUsuarioNoLogueado)
-            args.isEmpty() -> bot.sendMessage(chatId = update.message!!.chat.id, text = textoArgumentsExpected)
-            else -> method(bot, update, args)
+            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = ArgumentsExpectedText)
+            else -> if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update, args))
         }
     }
 }
 
-fun createCallbackQueryHandler(data: String? = null, body: CommandHandleUpdate) : CallbackQueryHandler =
-        CallbackQueryHandler(data, handler = QueryHandleUpdateProxy(callbackQueryHandlerCheckStatusAndSession(body)))
-fun callbackQueryHandlerCheckStatusAndSession(method :CommandHandleUpdate) :CommandHandleUpdate {
+fun createCallbackQueryHandler(data: String? = null, type: LoginType, body: updateHandlerArgs) : CallbackQueryHandler =
+        CallbackQueryHandler(data, handler = QueryHandleUpdateProxy(callbackQueryHandlerCheckStatusAndSession(body, type)))
+private fun callbackQueryHandlerCheckStatusAndSession(method :updateHandlerArgs, type: LoginType) :CommandHandleUpdate {
     return { bot, update, args ->
+        val chatId = update.callbackQuery!!.message!!.chat.id
         when{
-            !healthCheck() -> update.callbackQuery?.let {
-                bot.sendMessage(chatId = it.message!!.chat.id, text = textoServerCaido)
-            }
-            !isLoggedIn(update.callbackQuery?.message!!.chat.id.toString()) -> update.callbackQuery?.let {
-                bot.sendMessage(chatId = it.message!!.chat.id, text = textoUsuarioNoLogueado)
-            }
-            args.isEmpty() -> update.callbackQuery?.let {
-                bot.sendMessage(chatId = it.message!!.chat.id, text = textoArgumentsExpected)
-            }
-            else -> method(bot, update, args)
+            args.isEmpty() -> bot.sendMessage(chatId = chatId, text = ArgumentsExpectedText)
+            else -> if(validateLoginType(bot, chatId, type)) sendMessages(bot, method(bot, update, args))
         }
     }
 }
