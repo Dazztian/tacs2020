@@ -21,7 +21,7 @@ export default function Dashboard(props) {
 
   const id_user= "5ed6afdefec8e000a9d826ae"
   const BASE_URL = 'http://localhost:8080';
-  const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZThkMGQ3MzQ4YzY2M2U1MWNkNGRiZCIsImV4cCI6MTU5MjM1MjExOX0.pymM1eLjo4xmZK6UtbLhkQNJf6eqjPqI6c65nbb0cD8"
+  const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZDZhZmRlZmVjOGUwMDBhOWQ4MjZhZSIsImV4cCI6MTU5MjU1NTU2M30.bkHQqWkZkX389_wXvM1M5z5WHGZwG0jVOzev4w-yKKI"
 
   const obtenerInfoDeUsuarios = async ()=>{
     try{

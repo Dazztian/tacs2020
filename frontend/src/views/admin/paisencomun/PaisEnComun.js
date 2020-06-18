@@ -33,8 +33,6 @@ export default function PaisEnComun(props) {
   const [ListasUsuarioParticular,setListasUsuarioParticular] = useState({})
   const [ListasUsuarioParticular2,setListasUsuarioParticular2] = useState({})
 
-
-  const [unArrayPaisesXLista,setunArrayPaisesXLista] = useState([])
   const [count,setCount] = useState(0)
   const [PaisesEnComun,setPaisesEnComun]=useState([])
 
@@ -132,7 +130,8 @@ const obtenerPaisesEnComun = async (idLista1, idLista2)=>{
         let resultArray = await Promise.all(promArray)
         
         setPaisesEnComun(resultArray)
-        console.log(resultArray)
+        
+        informarResultado(resultArray)
   
     }
     catch(err) {
@@ -143,7 +142,6 @@ const obtenerPaisesEnComun = async (idLista1, idLista2)=>{
 
 useEffect(() => {
     obtenerInfoDeUsuarios()
-  //obtenerInfoUsuarioParticular()
 }, [count]);    
 
 
@@ -200,9 +198,10 @@ useEffect(() => {
         </Grid>
         <Grid  xs={0}>  
         <Button  variant="contained" color="secondary" 
-        onClick={()=> !ListasUsuarioParticular || !ListasUsuarioParticular2 ?
-          obtenerPaisesEnComun(idLista1,idLista2):
-          window.alert("Debe elegir las a comparar listas primero")}
+        //No se me reinicia el contenido de ListasUsuarioParticular 1 y 2. Checkearlo
+        onClick={()=> elObjetoEstaVacio(ListasUsuarioParticular) || elObjetoEstaVacio(ListasUsuarioParticular2) ?
+          window.alert("Debe elegir las a comparar listas primero"):
+          obtenerPaisesEnComun(idLista1,idLista2)}
         >
           Comparar listas
         </Button>
@@ -228,7 +227,6 @@ useEffect(() => {
                listarray.push(allRows.map( item => unArrayConTodosLosUsuarios[item.dataIndex].id) ); 
                //ESTO TIENE QUE ESTAR XQ ME SACA REPETIDOS!!
                listarray=Array.from(new Set(listarray[listarray.length - 1]))
-               console.log("este es el formato del nuevo listarray"+ listarray )
             })
           }
           }}
@@ -241,7 +239,6 @@ useEffect(() => {
 
 
 function cargarListas() {
-  //Asi agarro el último elemento del array de ids: listarray[listarray.length - 1]
   const arraysDeIds= listarray
   //Agarro los últimos 2 elementos del último elemento de list array
   const idUsuario1= arraysDeIds[arraysDeIds.length-1]
@@ -249,5 +246,16 @@ function cargarListas() {
   obtenerListasDePaisesDelUsuario(idUsuario1)
   obtenerListasDePaisesDelUsuario2(idUsuario2)
 }
+
+function elObjetoEstaVacio(ubObjeto){
+ return  Object.keys(ubObjeto).length === 0
+}
+
+function informarResultado(unArray) {
+  unArray.length < 1 ?
+    window.alert("No hay paises en comun entre ambas listas") :
+    window.alert("Los países en común son: " + unArray);
+}
+
 
 }
