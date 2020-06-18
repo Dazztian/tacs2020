@@ -20,7 +20,7 @@ class ModelsTest {
 
     @Test
     fun countriesTest(){
-        val country = Country("listId", "region", "lastUpdate", Location(0.0, 0.0),
+        val country = Country("listId", "region", "lastUpdate", null,
             CountryCode("iso2", "iso3"), 0,0,0, emptyList())
         country._id
         country.confirmed
@@ -68,7 +68,7 @@ class ModelsTest {
 
     @Test
     fun countryResponseTimeseriesTest(){
-        val countryResponseTimeseries = CountryResponseTimeseries("name", "lastUpdate", Location(0.0,0.0),
+        val countryResponseTimeseries = CountryResponseTimeseries("name", "lastUpdate", null,
             CountryCode("iso2", "iso3"), 0,0,0,null, null)
         countryResponseTimeseries.confirmed
         countryResponseTimeseries.countrycode
