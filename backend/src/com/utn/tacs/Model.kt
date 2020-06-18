@@ -201,3 +201,8 @@ data class UserBasicData(
         val email: String,
         val name: String
 )
+
+data class CountryListsDataResponse(
+        val totalUsers: Int,
+        val users: Set<String>
+)

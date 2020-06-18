@@ -58,12 +58,15 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
     /**
      * Get all lists of countries that contains the Country name
      *
-     * @param country String
-     * @return Set<Id<User>>
+     * @param  country String
+     * @return CountryListsDataResponse
      */
-    fun getUsersByCountry(country: String): Set<String> {
+    fun getUsersByCountry(country: String): CountryListsDataResponse {
         val userLists = userListsRepository.getAllThatContains(country)
-        return userLists.map { l -> l.userId.toString() }.toSet()
+        return CountryListsDataResponse(
+            userLists.size,
+            userLists.map { l -> l.userId.toString() }.toSet()
+        )
     }
 
     /**
