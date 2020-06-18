@@ -16,6 +16,7 @@ import SidebarAdmin from "../components/Sidebar/SidebarAdmin";
 
 // pages
 import Dashboard from "../views/admin/dashboard/Dashboard";
+import PaisEnComun from "../views/admin/paisencomun/PaisEnComun";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -39,9 +40,9 @@ function LayoutAdmin(props) {
             <div className={classes.fakeToolbar} />
             {/*<Redirect from="/admin" to="/admin/home" />*/}
             <Switch>
-              <Route path="/admin/home" component={Dashboard} />
-              <Route path="/admin/usersearch"/>
-              <Route path="/admin/countries"/>
+              <Route path="/admin/home" />
+              <Route path="/admin/usersearch"component={Dashboard}/>
+              <Route path="/admin/countries" component={PaisEnComun}/>
             </Switch>
           </div>
         </>

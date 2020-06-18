@@ -102,11 +102,7 @@ useEffect(() => {
               rowsPerPage: 10,
               rowsSelected: state.rowsSelected,
             onRowsSelect:  (rowsSelected, allRows) => {
-              //item.dataIndex---> devuelve el índice de la tabla
-              //unArrayTodosLosUsuarios[item.dataIndex].id --> Devuelve el id posta
-            //allRows.map( item => console.log( unArrayTodosLosUsuarios[item.dataIndex].id ) ) 
             allRows.map( item => obtenerInfoUsuarioParticular( unArrayTodosLosUsuarios[item.dataIndex].id ) )
-            
             }
           }}
           />
