@@ -265,6 +265,32 @@ class Api {
       }*/
   }
 
+  loginUserWithGoogle(tokenId,mail,name,country) { //al api.js
+    const res = mock.loginUser
+    
+    try{
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(res);
+        }, 2000);
+      })
+    }catch(error){
+      console.log(error)
+    }
+    /*return await fetch(`${BASE_URL}/auth/google`, {
+          method:'POST',
+          headers: this.createHeaders(),
+          body: JSON.stringify(
+            {
+              token: tokenId,
+              email: mail,
+              name: name
+            }
+          ),
+        });
+      }*/
+  }
+
   createUser(nameValue,loginValue,passwordValue,countryIso) { //esto va al api.js
     try{
       const res = mock.signUp

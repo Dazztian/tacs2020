@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import classnames from "classnames";
+import { GoogleLogin } from 'react-google-login';
 
 // styles
 import useStyles from "./styles";
@@ -43,9 +44,20 @@ function Login(props) {
   var [passwordValue, setPasswordValue] = useState("");
   var [countryValue, setCountryValue] = useState("");
 
-
-  const handleLoginWithGoogle = async () => {
-    
+  const responseGoogle = (response) => {
+    console.log(response);
+  }
+  
+  const handleLoginWithGoogle = async (response) => {
+    const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
+    const res = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    if(true/*res.ok*/) {
+        localStorage.setItem('id_token', response.tokenId)
+        localStorage.setItem('id_session',response.mail)
+        localStorage.setItem('tracker_name',response.name)
+        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+        props.history.push('/user/home')
+    } 
   }
 
   const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,countryISo,history,setIsLoading,setSignupError) => {
@@ -146,10 +158,18 @@ function Login(props) {
               <Typography variant="h1" className={classes.greeting}>
                 Covid-19 Tracker
               </Typography>
-              <Button size="large" className={classes.googleButton} onClick={() => handleLoginWithGoogle()}>
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
+              <GoogleLogin
+                clientId="850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com"
+                render={renderProps => (
+                  <Button size="large" className={classes.googleButton} onClick={renderProps.onClick}>
+                    <img src={google} alt="google" className={classes.googleIcon} />
+                       &nbsp;Sign in with Google
+                  </Button>
+                )}
+                onSuccess={handleLoginWithGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
               <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
                 <Typography className={classes.formDividerWord}>or</Typography>
@@ -194,7 +214,8 @@ function Login(props) {
                 {isLoading ? (
                   <CircularProgress size={26} className={classes.loginLoader} />
                 ) : (
-                  <Button
+                  <Grid container justify="center"> 
+                    <Button
                     disabled={
                       loginValue.length === 0 || passwordValue.length === 0
                     }
@@ -212,17 +233,12 @@ function Login(props) {
                     variant="contained"
                     color="primary"
                     size="large"
+                    fullWidth
                   >
                     Login
                   </Button>
+                  </Grid>
                 )}
-                <Button
-                  color="primary"
-                  size="large"
-                  className={classes.forgetButton}
-                >
-                  Forget Password
-                </Button>
               </div>
             </React.Fragment>
           )}
@@ -352,17 +368,18 @@ function Login(props) {
                 <Typography className={classes.formDividerWord}>or</Typography>
                 <div className={classes.formDivider} />
               </div>
-              <Button
-                onClick={() => handleLoginWithGoogle()}
-                size="large"
-                className={classnames(
-                  classes.googleButton,
-                  classes.googleButtonCreating,
+              <GoogleLogin
+                clientId="850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com"
+                render={renderProps => (
+                  <Button size="large" className={classes.googleButton} onClick={renderProps.onClick}>
+                    <img src={google} alt="google" className={classes.googleIcon} />
+                       &nbsp;Sign in with Google
+                  </Button>
                 )}
-              >
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
+                onSuccess={handleLoginWithGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
             </React.Fragment>
           )}
         </div>
