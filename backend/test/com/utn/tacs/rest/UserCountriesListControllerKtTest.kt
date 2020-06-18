@@ -1,10 +1,7 @@
 package com.utn.tacs.rest
 
+import com.utn.tacs.*
 import com.utn.tacs.TokenTestGenerator.addJwtHeader
-import com.utn.tacs.User
-import com.utn.tacs.UserCountriesListResponse
-import com.utn.tacs.authentication
-import com.utn.tacs.contentNegotiator
 import com.utn.tacs.user.UsersRepository
 import com.utn.tacs.user.UsersService
 import io.ktor.features.NotFoundException
@@ -50,11 +47,11 @@ class UserCountriesListControllerKtTest {
 
     @Before
     fun before() {
-        ucl1 = UserCountriesListResponse("id1", "TEST_1", mutableSetOf("TEST_COUNTRY"))
-        ucl2 = UserCountriesListResponse("id2", "TEST_2", mutableSetOf("COUNTRY_1", "country_2", "CoUnTrY_3"))
-        ucl3 = UserCountriesListResponse("id3", "TEST_3", mutableSetOf("COUNTRY_1"))
-        ucl4 = UserCountriesListResponse("id4", "TEST_4", mutableSetOf("country_2"))
-        ucl5 = UserCountriesListResponse("id5", "TEST_5", mutableSetOf("CoUnTrY_3"))
+        ucl1 = UserCountriesListResponse("id1", "TEST_1", mutableSetOf(CountriesNamesResponse("TEST_COUNTRY")))
+        ucl2 = UserCountriesListResponse("id2", "TEST_2", mutableSetOf(CountriesNamesResponse("AR"),CountriesNamesResponse("UY"),CountriesNamesResponse("US")))
+        ucl3 = UserCountriesListResponse("id3", "TEST_3", mutableSetOf(CountriesNamesResponse("AR")))
+        ucl4 = UserCountriesListResponse("id4", "TEST_4", mutableSetOf(CountriesNamesResponse("UY")))
+        ucl5 = UserCountriesListResponse("id5", "TEST_5", mutableSetOf(CountriesNamesResponse("US")))
 
         authUser = User(ObjectId().toId(), "test-user")
 
@@ -70,11 +67,11 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals(("[ {\n" +
+            assertEquals(formatJson("[ {\n" +
                     "  \"id\" : \"${ucl1.id}\",\n" +
                     "  \"name\" : \"${ucl1.name}\",\n" +
-                    "  \"countries\" : [ ${ucl1.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "} ]").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
+                    "  \"countries\" : [ ${ucl1.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "} ]"), formatJson(response.content!!))
         }
 
         every { usersService.getUserLists("nonExistentId") } returns listOf()
@@ -92,47 +89,47 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals(("[ {\n" +
+            assertEquals(formatJson("[ {\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
                     "}," +
                     " {\n" +
                     "  \"id\" : \"${ucl4.id}\",\n" +
                     "  \"name\" : \"${ucl4.name}\",\n" +
-                    "  \"countries\" : [ ${ucl4.countries.joinToString { "\"${it}\"" }} ]\n" +
+                    "  \"countries\" : [ ${ucl4.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
                     "}, {\n" +
                     "  \"id\" : \"${ucl5.id}\",\n" +
                     "  \"name\" : \"${ucl5.name}\",\n" +
-                    "  \"countries\" : [ ${ucl5.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "} ]").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
+                    "  \"countries\" : [ ${ucl5.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "} ]"), formatJson(response.content!!))
         }
     }
 
     @Test
     fun testPostLists() = testApp {
         val userId = "userId2"
-        every { usersService.createUserList(userId, ucl2.name, ucl2.countries) } returns ucl2
+        every { usersService.createUserList(userId, ucl2.name, ucl2.countries.map { it.iso2 }.toMutableSet()) } returns ucl2
 
         with(handleRequest(HttpMethod.Post, "/api/user/" + userId + "/lists") {
             addJwtHeader(authUser)
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
-            setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it}\"" }} ]}")
+            setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it.iso2}\"" }} ]}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals(("{\n" +
+            assertEquals(formatJson("{\n" +
                     "  \"id\" : \"id2\",\n" +
                     "  \"name\" : \"TEST_2\",\n" +
-                    "  \"countries\" : [ \"COUNTRY_1\", \"country_2\", \"CoUnTrY_3\" ]\n" +
-                    "}").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
+                    "  \"countries\" : [ {\"name\":\"Argentina\",\"iso2\":\"AR\"},{\"name\":\"Uruguay\",\"iso2\":\"UY\"},{\"name\":\"US\",\"iso2\":\"US\"} ]\n" +
+                    "}"), formatJson(response.content!!))
         }
 
-        every { usersService.createUserList(userId, ucl2.name, ucl2.countries) } throws NotFoundException()
+        every { usersService.createUserList(userId, ucl2.name, ucl2.countries.map { it.iso2 }.toMutableSet() ) } throws NotFoundException()
 
         with(handleRequest(HttpMethod.Post, "/api/user/" + userId + "/lists") {
             addJwtHeader(authUser)
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString());
-            setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it}\"" }} ]}")
+            setBody("{\"name\":\"${ucl2.name}\",\"countries\":[ ${ucl2.countries.joinToString { "\"${it.iso2}\"" }} ]}")
         }) {
             assertEquals(HttpStatusCode.NotFound, response.status())
         }
@@ -156,11 +153,11 @@ class UserCountriesListControllerKtTest {
             addJwtHeader(authUser)
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals(("{\n" +
+            assertEquals(formatJson("{\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "\"${it}\"" }} ]\n" +
-                    "}").replace("\n","").replace("\r",""), response.content!!.replace("\n","").replace("\r",""))
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "}"), formatJson(response.content!!))
         }
         every { usersService.getUserList(userId, "TEST_NO_EXISTS") } throws NotFoundException()
 
@@ -209,10 +206,9 @@ class UserCountriesListControllerKtTest {
             val responseExpected = "{\n" +
                     "  \"id\" : \"id4\",\n" +
                     "  \"name\" : \"TEST_4\",\n" +
-                    "  \"countries\" : [ \"country_2\" ]\n" +
+                    "  \"countries\" : [ { \"name\" : \"Uruguay\", \"iso2\" : \"UY\" } ]\n" +
                     "}"
-            assertEquals(responseExpected.replace("\n", "").replace("\r", ""),
-                            response.content!!.replace("\n", "").replace("\r", ""))
+            assertEquals(formatJson(responseExpected), formatJson(response.content!!))
         }
 
         every { usersService.updateUserList(userId, userListId, any()) } throws NotFoundException()
@@ -231,5 +227,9 @@ class UserCountriesListControllerKtTest {
         }) {
             assertEquals(HttpStatusCode.BadRequest, response.status())
         }
+    }
+
+    private fun formatJson(json: String): String {
+        return json.replace("\n", "").replace("\r", "").replace(" ", "")
     }
 }

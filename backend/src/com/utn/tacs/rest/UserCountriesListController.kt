@@ -22,7 +22,6 @@ fun Application.userCountriesListRoutes(usersService: UsersService) {
                 get {
                     val userId: String = call.parameters["userId"]!!.toString()
                     call.respond(usersService.getUserLists(userId))
-
                 }
                 post {
                     val userId: String = call.parameters["userId"]!!.toString()

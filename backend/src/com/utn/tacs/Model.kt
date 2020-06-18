@@ -1,5 +1,6 @@
 package com.utn.tacs
 
+import com.utn.tacs.utils.countriesNamesMap
 import io.ktor.auth.Principal
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
@@ -179,14 +180,17 @@ data class LoginResponse(
 data class UserCountriesListResponse(
         val id: String,
         val name: String,
-        val countries: MutableSet<String>
+        val countries: MutableSet<CountriesNamesResponse>
 )
 
 @Serializable
 data class CountriesNamesResponse(
         val name: String,
         val iso2: String
-)
+) {
+        constructor(iso2: String):
+                this(countriesNamesMap.get(iso2) ?: iso2, iso2)
+}
 
 data class UserBasicData(
         val id: String,

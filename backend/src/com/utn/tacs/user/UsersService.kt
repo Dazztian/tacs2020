@@ -5,6 +5,7 @@ import com.utn.tacs.exception.UserAlreadyExistsException
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.utils.Encoder
 import com.utn.tacs.utils.GoogleOauthDataParser
+import com.utn.tacs.utils.countriesNamesMap
 import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
@@ -55,7 +56,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
         userListsRepository.getUserLists(userId).forEach {
             userLists.add(
-                    UserCountriesListResponse(it._id.toString(), it.name, it.countries)
+                    UserCountriesListResponse(it._id.toString(), it.name, it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet())
             )
         }
         return userLists
@@ -78,7 +79,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return UserCountriesListResponse(
                 userList._id.toString(),
                 userList.name,
-                userList.countries
+                userList.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
         )
     }
 
@@ -97,7 +98,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return UserCountriesListResponse(
                 id,
                 listName,
-                countries
+                countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
         )
     }
 
@@ -134,7 +135,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return UserCountriesListResponse(
                 newListId,
                 request.name,
-                request.countries
+                request.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
         )
     }
 

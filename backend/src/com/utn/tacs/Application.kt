@@ -35,7 +35,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
-
 fun main(args: Array<String>) {
 
     //Initialize everything with the correct mongo url
