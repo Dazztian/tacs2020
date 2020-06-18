@@ -47,11 +47,11 @@ class UserCountriesListControllerKtTest {
 
     @Before
     fun before() {
-        ucl1 = UserCountriesListResponse("id1", "TEST_1", mutableSetOf(CountriesNamesResponse("TEST_COUNTRY")))
-        ucl2 = UserCountriesListResponse("id2", "TEST_2", mutableSetOf(CountriesNamesResponse("AR"),CountriesNamesResponse("UY"),CountriesNamesResponse("US")))
-        ucl3 = UserCountriesListResponse("id3", "TEST_3", mutableSetOf(CountriesNamesResponse("AR")))
-        ucl4 = UserCountriesListResponse("id4", "TEST_4", mutableSetOf(CountriesNamesResponse("UY")))
-        ucl5 = UserCountriesListResponse("id5", "TEST_5", mutableSetOf(CountriesNamesResponse("US")))
+        ucl1 = UserCountriesListResponse("id1", "TEST_1", mutableSetOf(CountriesNamesResponse("TEST_COUNTRY")),"")
+        ucl2 = UserCountriesListResponse("id2", "TEST_2", mutableSetOf(CountriesNamesResponse("AR"),CountriesNamesResponse("UY"),CountriesNamesResponse("US")),"")
+        ucl3 = UserCountriesListResponse("id3", "TEST_3", mutableSetOf(CountriesNamesResponse("AR")),"")
+        ucl4 = UserCountriesListResponse("id4", "TEST_4", mutableSetOf(CountriesNamesResponse("UY")),"")
+        ucl5 = UserCountriesListResponse("id5", "TEST_5", mutableSetOf(CountriesNamesResponse("US")),"")
 
         authUser = User(ObjectId().toId(), "test-user")
 
@@ -70,7 +70,8 @@ class UserCountriesListControllerKtTest {
             assertEquals(formatJson("[ {\n" +
                     "  \"id\" : \"${ucl1.id}\",\n" +
                     "  \"name\" : \"${ucl1.name}\",\n" +
-                    "  \"countries\" : [ ${ucl1.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "  \"countries\" : [ ${ucl1.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n," +
+                    "  \"creationDate\": \"\" " +
                     "} ]"), formatJson(response.content!!))
         }
 
@@ -92,16 +93,19 @@ class UserCountriesListControllerKtTest {
             assertEquals(formatJson("[ {\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ] , \n" +
+                    "  \"creationDate\": \"\" " +
                     "}," +
                     " {\n" +
                     "  \"id\" : \"${ucl4.id}\",\n" +
                     "  \"name\" : \"${ucl4.name}\",\n" +
-                    "  \"countries\" : [ ${ucl4.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "  \"countries\" : [ ${ucl4.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ] , \n" +
+                    "  \"creationDate\": \"\" " +
                     "}, {\n" +
                     "  \"id\" : \"${ucl5.id}\",\n" +
                     "  \"name\" : \"${ucl5.name}\",\n" +
-                    "  \"countries\" : [ ${ucl5.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "  \"countries\" : [ ${ucl5.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ] , \n" +
+                    "  \"creationDate\": \"\" " +
                     "} ]"), formatJson(response.content!!))
         }
     }
@@ -120,7 +124,8 @@ class UserCountriesListControllerKtTest {
             assertEquals(formatJson("{\n" +
                     "  \"id\" : \"id2\",\n" +
                     "  \"name\" : \"TEST_2\",\n" +
-                    "  \"countries\" : [ {\"name\":\"Argentina\",\"iso2\":\"AR\"},{\"name\":\"Uruguay\",\"iso2\":\"UY\"},{\"name\":\"US\",\"iso2\":\"US\"} ]\n" +
+                    "  \"countries\" : [ {\"name\":\"Argentina\",\"iso2\":\"AR\"},{\"name\":\"Uruguay\",\"iso2\":\"UY\"},{\"name\":\"US\",\"iso2\":\"US\"} ]\n ," +
+                    " \"creationDate\" : \"\" " +
                     "}"), formatJson(response.content!!))
         }
 
@@ -156,7 +161,8 @@ class UserCountriesListControllerKtTest {
             assertEquals(formatJson("{\n" +
                     "  \"id\" : \"${ucl3.id}\",\n" +
                     "  \"name\" : \"${ucl3.name}\",\n" +
-                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n" +
+                    "  \"countries\" : [ ${ucl3.countries.joinToString { "{\"name\":\"${it.name}\" , \"iso2\":\"${it.iso2}\" }" }} ]\n," +
+                    " \"creationDate\" : \"\" " +
                     "}"), formatJson(response.content!!))
         }
         every { usersService.getUserList(userId, "TEST_NO_EXISTS") } throws NotFoundException()
@@ -206,7 +212,8 @@ class UserCountriesListControllerKtTest {
             val responseExpected = "{\n" +
                     "  \"id\" : \"id4\",\n" +
                     "  \"name\" : \"TEST_4\",\n" +
-                    "  \"countries\" : [ { \"name\" : \"Uruguay\", \"iso2\" : \"UY\" } ]\n" +
+                    "  \"countries\" : [ { \"name\" : \"Uruguay\", \"iso2\" : \"UY\" } ]\n," +
+                    " \"creationDate\" : \"\" " +
                     "}"
             assertEquals(formatJson(responseExpected), formatJson(response.content!!))
         }

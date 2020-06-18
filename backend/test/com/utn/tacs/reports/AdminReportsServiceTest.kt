@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
+import com.utn.tacs.UserCountriesListResponse
 import com.utn.tacs.UserData
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.USERS_COLLECTION_NAME
@@ -27,7 +28,6 @@ import java.time.LocalDate
 
 @Testcontainers
 class AdminReportsServiceTest {
-
 
     @Test
     fun testGetUserData() {
@@ -94,14 +94,14 @@ class AdminReportsServiceTest {
 
         val result = service.getListComparison(userCountryList1._id.toString(), userCountryList4._id.toString())
         Assert.assertNotNull(result)
-        Assert.assertEquals(userCountryList1, result.userCountryList1)
-        Assert.assertEquals(userCountryList4, result.userCountryList2)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList1), result.userCountryList1)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList4), result.userCountryList2)
         Assert.assertEquals(setOf("Country1", "Country2", "Country3"), result.sharedCountries)
 
         val result2 = service.getListComparison(userCountryList1._id.toString(), userCountryList2._id.toString())
         Assert.assertNotNull(result2)
-        Assert.assertEquals(userCountryList1, result2.userCountryList1)
-        Assert.assertEquals(userCountryList2, result2.userCountryList2)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList1), result2.userCountryList1)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList2), result2.userCountryList2)
         Assert.assertTrue(result2.sharedCountries.isEmpty())
 
         assertThrows<NotFoundException> { service.getListComparison(userCountryList1._id.toString(), ObjectId().toString()) }

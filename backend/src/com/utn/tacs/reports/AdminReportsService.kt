@@ -1,13 +1,9 @@
 package com.utn.tacs.reports
 
-import com.utn.tacs.UserBasicData
-import com.utn.tacs.UserCountriesList
-import com.utn.tacs.UserData
-import com.utn.tacs.UserListComparision
+import com.utn.tacs.*
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.UsersRepository
 import io.ktor.features.NotFoundException
-import org.litote.kmongo.Id
 import java.time.LocalDate
 
 class AdminReportsService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
@@ -82,6 +78,10 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
     fun getListComparison(userListId1: String, userListId2: String): UserListComparision {
         val userList1 = userListsRepository.getUserList(userListId1) ?: throw NotFoundException()
         val userList2 = userListsRepository.getUserList(userListId2) ?: throw NotFoundException()
-        return UserListComparision(userList1, userList2, userList1.countries.intersect(userList2.countries))
+        return UserListComparision(
+            UserCountriesListResponse(userList1),
+            UserCountriesListResponse(userList2),
+            userList1.countries.intersect(userList2.countries)
+        )
     }
 }

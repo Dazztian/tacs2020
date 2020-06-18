@@ -37,9 +37,9 @@ fun Application.adminReports(adminReportsService: AdminReportsService) {
             }
             route("/api/admin/report/{userId}") {
                 get {
-                        call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
-                        val userId = call.parameters["userId"]!!.toString()
-                        call.respond(adminReportsService.getUserData(userId))
+                    call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
+                    val userId = call.parameters["userId"]!!.toString()
+                    call.respond(adminReportsService.getUserData(userId))
                 }
             }
             route("/api/admin/report/lists/compare") {

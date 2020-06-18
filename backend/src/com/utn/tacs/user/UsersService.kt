@@ -9,6 +9,7 @@ import com.utn.tacs.utils.countriesNamesMap
 import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
+import java.time.LocalDate
 
 class UsersService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
 
@@ -56,7 +57,12 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
         userListsRepository.getUserLists(userId).forEach {
             userLists.add(
-                    UserCountriesListResponse(it._id.toString(), it.name, it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet())
+                UserCountriesListResponse(
+                    it._id.toString(),
+                    it.name,
+                    it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                    it.creationDate.toString()
+                )
             )
         }
         return userLists
@@ -79,7 +85,8 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return UserCountriesListResponse(
                 userList._id.toString(),
                 userList.name,
-                userList.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
+                userList.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                userList.creationDate.toString()
         )
     }
 
@@ -94,11 +101,13 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * @throws NotFoundException
      */
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
+        val creationDate = LocalDate.now()
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries, creationDate)) ?: throw NotFoundException()
         return UserCountriesListResponse(
                 id,
                 listName,
-                countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
+                countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                creationDate.toString()
         )
     }
 
@@ -135,7 +144,8 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         return UserCountriesListResponse(
                 newListId,
                 request.name,
-                request.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet()
+                request.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                getUserList(userId, listId).creationDate
         )
     }
 

@@ -135,8 +135,8 @@ data class UserData(
 )
 
 data class UserListComparision(
-        val userCountryList1: UserCountriesList,
-        val userCountryList2: UserCountriesList,
+        val userCountryList1: UserCountriesListResponse,
+        val userCountryList2: UserCountriesListResponse,
         val sharedCountries: Set<String>
 )
 
@@ -180,8 +180,12 @@ data class LoginResponse(
 data class UserCountriesListResponse(
         val id: String,
         val name: String,
-        val countries: MutableSet<CountriesNamesResponse>
-)
+        val countries: MutableSet<CountriesNamesResponse>,
+        val creationDate: String
+){
+        constructor(u: UserCountriesList):
+        this(u._id.toString(), u.name, u.countries.map{ CountriesNamesResponse(it) }.toMutableSet(), u.creationDate.toString())
+}
 
 @Serializable
 data class CountriesNamesResponse(
