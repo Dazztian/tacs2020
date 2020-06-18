@@ -48,11 +48,11 @@ function Login(props) {
     
   }
 
-  const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,history,setIsLoading,setSignupError) => {
+  const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,countryISo,history,setIsLoading,setSignupError) => {
     setSignupError(false);
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
-      const res = await api.createUser(nameValue,loginValue,passwordValue)
+      const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
       if(true/*res.ok*/) {
         //const {user, token} = await res.json()
         const {user, token} = res;
@@ -316,6 +316,7 @@ function Login(props) {
                         nameValue,
                         loginValue,
                         passwordValue,
+                        countryValue.iso2,
                         props.history,
                         setIsLoading,
                         setSignupError)

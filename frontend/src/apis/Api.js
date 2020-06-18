@@ -72,13 +72,9 @@ class Api {
       }catch(error){
         console.log(error)
       }
-      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
-        method:"post",
+      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
+        method:"DELETE",
         headers: this.createHeaders(),
-        body:JSON.stringify({
-            "name": nombreLista,
-            "countries":listarray
-        })
       })*/
     }
 
@@ -98,8 +94,8 @@ class Api {
         method:"PUT",
         headers: this.createHeaders(),
         body:JSON.stringify({
-            "name": nuevoNombre,
-            "countries":nuevosPaises
+            "name": name,
+            "countries":countries
         })
       })*/
     }
@@ -258,13 +254,18 @@ class Api {
     }
     /*return await fetch(`${BASE_URL}/api/login`, {
           method:'POST',
-          headers: headers,
-          body: JSON.stringify(item),
+          headers: this.createHeaders(),
+          body: JSON.stringify(
+            {
+              email: loginValue,
+              password: passwordValue
+            }
+          ),
         });
       }*/
   }
 
-  createUser(nameValue,loginValue,passwordValue) { //esto va al api.js
+  createUser(nameValue,loginValue,passwordValue,countryIso) { //esto va al api.js
     try{
       const res = mock.signUp
       
@@ -278,10 +279,15 @@ class Api {
     }
     /*return await fetch(`${BASE_URL}/api/signup`, {
           method:'POST',
-          headers: headers,
-          body: JSON.stringify(item),
-        });
-      }*/
+          headers: this.createHeaders(),
+          body: JSON.stringify({
+                        name: nameValue,
+                        email: loginValue,
+                        password: passwordValue,
+                        country: countryIso,
+                        }),
+                      });
+      */
   }
 }
   export default Api;
