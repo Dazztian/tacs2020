@@ -50,10 +50,12 @@ function Login(props) {
   
   const handleLoginWithGoogle = async (response) => {
     const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
-    const res = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    //const res = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    const user = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
     if(true/*res.ok*/) {
+        //let user = await res.json()
         localStorage.setItem('id_token', response.tokenId)
-        localStorage.setItem('id_session',response.mail)
+        localStorage.setItem('id_session',data.sessionId)
         localStorage.setItem('tracker_name',response.name)
         userDispatch({ type: 'LOGIN_USER_SUCCESS' })
         props.history.push('/user/home')

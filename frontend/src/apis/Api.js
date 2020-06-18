@@ -265,7 +265,7 @@ class Api {
       }*/
   }
 
-  loginUserWithGoogle(tokenId,mail,name,country) { //al api.js
+  loginUserWithGoogle(tokenId) { //al api.js
     const res = mock.loginUser
     
     try{
@@ -282,9 +282,7 @@ class Api {
           headers: this.createHeaders(),
           body: JSON.stringify(
             {
-              token: tokenId,
-              email: mail,
-              name: name
+              token: tokenId
             }
           ),
         });
