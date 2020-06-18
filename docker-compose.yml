@@ -3,7 +3,7 @@ version: '3'
 services:
   backend:
     container_name: tacs_backend
-    image: docker.pkg.github.com/paniaton/tacs2020/tacs-backend:0.0.1
+    image: docker.pkg.github.com/paniaton/tacs2020/tacs-backend:0.0.2
     ports:
       - "8080:8080"
     environment:
