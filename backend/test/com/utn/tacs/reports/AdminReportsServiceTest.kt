@@ -76,16 +76,16 @@ class AdminReportsServiceTest {
         val service = AdminReportsService(usersRepository, userListRepository)
 
         val result = service.getUsersByCountry("Country3")
-        Assert.assertEquals(2, result.size)
-        Assert.assertTrue(result.contains(user1._id.toString()))
-        Assert.assertTrue(result.contains(user2._id.toString()))
+        Assert.assertEquals(2, result.users.size)
+        Assert.assertTrue(result.users.contains(user1._id.toString()))
+        Assert.assertTrue(result.users.contains(user2._id.toString()))
 
         val result2 = service.getUsersByCountry("Country6")
-        Assert.assertEquals(1, result2.size)
-        Assert.assertTrue(result2.contains(user1._id.toString()))
+        Assert.assertEquals(1, result2.users.size)
+        Assert.assertTrue(result2.users.contains(user1._id.toString()))
 
         val result3 = service.getUsersByCountry("NON_EXISTENT")
-        Assert.assertEquals(0, result3.size)
+        Assert.assertEquals(0, result3.users.size)
     }
 
     @Test
