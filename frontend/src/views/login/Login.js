@@ -51,7 +51,7 @@ function Login(props) {
   const handleLoginWithGoogle = async (response) => {
     const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
     //const res = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
-    const user = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    const data = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
     if(true/*res.ok*/) {
         //let user = await res.json()
         localStorage.setItem('id_token', response.tokenId)
