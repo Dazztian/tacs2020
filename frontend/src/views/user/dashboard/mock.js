@@ -130,53 +130,281 @@ export default {
   table: [
     {
       id: 0,
-      name: "Mark Otto",
-      email: "ottoto@wxample.com",
-      product: "ON the Road",
-      price: "$25 224.2",
-      date: "11 May 2017",
-      city: "Otsego",
-      status: "Sent"
+      country: "Argentina",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
     },
     {
       id: 1,
-      name: "Jacob Thornton",
-      email: "thornton@wxample.com",
-      product: "HP Core i7",
-      price: "$1 254.2",
-      date: "4 Jun 2017",
-      city: "Fivepointville",
-      status: "Sent"
+      country: "Brasil",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
     },
     {
       id: 2,
-      name: "Larry the Bird",
-      email: "bird@wxample.com",
-      product: "Air Pro",
-      price: "$1 570.0",
-      date: "27 Aug 2017",
-      city: "Leadville North",
-      status: "Pending"
+      country: "Chile",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
     },
     {
       id: 3,
-      name: "Joseph May",
-      email: "josephmay@wxample.com",
-      product: "Version Control",
-      price: "$5 224.5",
-      date: "19 Feb 2018",
-      city: "Seaforth",
-      status: "Declined"
+      country: "Peru",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
     },
     {
       id: 4,
-      name: "Peter Horadnia",
-      email: "horadnia@wxample.com",
-      product: "Let's Dance",
-      price: "$43 594.7",
-      date: "1 Mar 2018",
-      city: "Hanoverton",
-      status: "Sent"
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 5,
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 6,
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 7,
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 8,
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 9,
+      country: "Mark Otto",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 10,
+      country: "Jamaica",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 11,
+      country: "Jamaica",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 12,
+      country: "Jamaica",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 13,
+      country: "Jamaica",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    },
+    {
+      id: 14,
+      country: "Jamaica",
+      infected: "1000000",
+      recovered: "1000000",
+      deceased: "1000000",
+    }
+  ],
+  near: [
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecec",
+      "countryregion": "Argentina",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -38.4161,
+        "lng": -63.6167
+      },
+      "countrycode": {
+        "iso2": "AR",
+        "iso3": "ARG"
+      },
+      "confirmed": 22794,
+      "deaths": 664,
+      "recovered": 6909,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecf9",
+      "countryregion": "Bolivia",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -16.2902,
+        "lng": -63.5887
+      },
+      "countrycode": {
+        "iso2": "BO",
+        "iso3": "BOL"
+      },
+      "confirmed": 13643,
+      "deaths": 465,
+      "recovered": 2086,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821cecfb",
+      "countryregion": "Brazil",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -14.235,
+        "lng": -51.9253
+      },
+      "countrycode": {
+        "iso2": "BR",
+        "iso3": "BRA"
+      },
+      "confirmed": 691758,
+      "deaths": 36455,
+      "recovered": 283952,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821ced05",
+      "countryregion": "Chile",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -35.6751,
+        "lng": -71.543
+      },
+      "countrycode": {
+        "iso2": "CL",
+        "iso3": "CHL"
+      },
+      "confirmed": 134150,
+      "deaths": 1637,
+      "recovered": 108150,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821ced5a",
+      "countryregion": "Paraguay",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -23.4425,
+        "lng": -58.4438
+      },
+      "countrycode": {
+        "iso2": "PY",
+        "iso3": "PRY"
+      },
+      "confirmed": 1135,
+      "deaths": 11,
+      "recovered": 575,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821ced5b",
+      "countryregion": "Peru",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -9.19,
+        "lng": -75.0152
+      },
+      "countrycode": {
+        "iso2": "PE",
+        "iso3": "PER"
+      },
+      "confirmed": 196515,
+      "deaths": 5465,
+      "recovered": 86219,
+      "timeseries": []
+    },
+    {
+      "_id": "5ede4f65853cd27b821ced80",
+      "countryregion": "Uruguay",
+      "lastupdate": "2020-06-08T14:42:00.008Z",
+      "location": {
+        "lat": -32.5228,
+        "lng": -55.7658
+      },
+      "countrycode": {
+        "iso2": "UY",
+        "iso3": "URY"
+      },
+      "confirmed": 845,
+      "deaths": 23,
+      "recovered": 730,
+      "timeseries": []
     }
   ]
+  
 };

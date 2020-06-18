@@ -16,6 +16,11 @@ import SidebarUser from "../components/Sidebar/SidebarUser";
 
 // pages
 import Dashboard from "../views/user/dashboard/Dashboard";
+import Stats from "../views/user/stats/Stats";
+import BorrarListas from "../views/user/listas/BorrarListas";
+import CrearListas from "../views/user/listas/CrearListas";
+import EditarListas from "../views/user/listas/EditarListas";
+import Graficos from "../views/user/graficos/Graficos";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -37,13 +42,16 @@ function LayoutUser(props) {
             })}
           >
             <div className={classes.fakeToolbar} />
+
             <Redirect from="/user" to="/user/home" />
+
             <Switch>
               <Route path="/user/home" component={Dashboard} />
-              <Route path="/user/createlists" />
-              <Route path="/user/editlists" />
-              <Route path="/user/deletelists" />
-              <Route path="/user/liststats" />
+              <Route path="/user/createlists" component={CrearListas}/>
+              <Route path="/user/editlists" component={EditarListas}/>
+              <Route path="/user/deletelists" component={BorrarListas}/>
+              <Route path="/user/liststats" component={Stats}/>
+              <Route path="/user/graficos" component={Graficos}/>
               <Route path="/user/perfil" />
             </Switch>
           </div>

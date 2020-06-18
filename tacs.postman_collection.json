@@ -1,0 +1,567 @@
+{
+	"info": {
+		"_postman_id": "b1249a49-f0ae-4aec-9021-7661d9c67ecf",
+		"name": "tacs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "countries",
+			"item": [
+				{
+					"name": "countries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/countries",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"countries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "coutries by nearest location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/countries?lat=-34&lon=-64",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"countries"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "-34"
+								},
+								{
+									"key": "lon",
+									"value": "-64"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get country by iso2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/countries/US",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"countries",
+								"US"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "country timeseries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/countries/US/timeseries",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"countries",
+								"US",
+								"timeseries"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "506679e0-a5e1-43a3-9537-14275e05443f",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"lastUserId\", jsonData._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"Manuel\",\n\t\"email\": \"admin2@gmail.com\",\n\t\"password\": \"admin\",\n\t\"country\": \"AR\",\n\t\"isAdmin\" : true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localPath}}/api/user",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "countries lists",
+			"item": [
+				{
+					"name": "get user lists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}/lists",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}",
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}/lists/{{lastUserListId}}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}",
+								"lists",
+								"{{lastUserListId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e4e9b101-d224-459c-b7fd-8dcaa21db5ee",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"lastUserListId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"lista1\",\n\t\"countries\": [\"Brasil\",\"China\",\"Argentina\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}/lists",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}",
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user list",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}/lists/{{lastUserListId}}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}",
+								"lists",
+								"{{lastUserListId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user list",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"la posta\",\n\t\"countries\": [\"Brasil\",\"China\",\"Argentina\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localPath}}/api/user/{{lastUserId}}/lists/{{lastUserListId}}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{lastUserId}}",
+								"lists",
+								"{{lastUserListId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dcc65e7b-c683-4b5c-ad5e-eb5b87cad17b",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"postman.setEnvironmentVariable(\"lastUserId\", jsonData.user._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"Manuel\",\n\t\"email\": \"pepe3@gmail.com\",\n\t\"password\": \"password311\",\n\t\"country\": \"AR\",\n\t\"isAdmin\" : true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localPath}}/api/signup",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LogIn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "efd06b09-f273-4e2f-815f-6da73c03a836",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"postman.setEnvironmentVariable(\"lastUserId\", jsonData.user._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"admin-root@gmail.com\",\n\t\"password\": \"adminutn\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localPath}}/api/login",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log Out",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/logout",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Get User Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/admin/report/{{lastUserId}}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"{{lastUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compare",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/admin/report/lists/compare?list1=&list2",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"lists",
+								"compare"
+							],
+							"query": [
+								{
+									"key": "list1",
+									"value": ""
+								},
+								{
+									"key": "list2",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get lists for country",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/admin/report/{{country}}/list",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"report",
+								"{{country}}",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "HealthCheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localPath}}/",
+					"host": [
+						"{{localPath}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
