@@ -40,19 +40,19 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
      *
      * @param startDate LocalDate
      * @param endDate LocalDate
-     * @return List<UserCountriesList>
+     * @return ListTotalResponse
      */
-    fun getRegisteredUserListsBetween(startDate: LocalDate, endDate: LocalDate): List<UserCountriesList> {
-        return userListsRepository.getUserListsByCreationDate(startDate, endDate)
+    fun getListsQuantityBetween(startDate: LocalDate, endDate: LocalDate): ListTotalResponse {
+        return ListTotalResponse(userListsRepository.getUserListsByCreationDate(startDate, endDate).size)
     }
 
     /**
      * Returns the amount of lists of countries in database
      *
-     * @return Long
+     * @return ListTotalResponse
      */
-    fun getListsQuantity(): Long {
-        return userListsRepository.getCount()
+    fun getListsQuantity(): ListTotalResponse {
+        return ListTotalResponse(userListsRepository.getCount())
     }
 
     /**
@@ -62,10 +62,10 @@ class AdminReportsService(private val usersRepository: UsersRepository, private 
      * @return CountryListsDataResponse
      */
     fun getUsersByCountry(country: String): CountryListsDataResponse {
-        val userLists = userListsRepository.getAllThatContains(country)
+        val userLists = userListsRepository.getAllThatContains(country).map { l -> l.userId.toString() }.toSet()
         return CountryListsDataResponse(
             userLists.size,
-            userLists.map { l -> l.userId.toString() }.toSet()
+            userLists
         )
     }
 

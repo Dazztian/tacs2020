@@ -15,12 +15,12 @@ data class User(
         @ContextualSerialization
         val _id: Id<User> = newId(),
         @ContextualSerialization
-        val creationDate: String? = null,
+        val creationDate: String? = LocalDate.now().toString(),
         val country: String?,
         val isAdmin: Boolean = false,
         var lastConnection: String? = null
 ) : Principal {
-    constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), null, country, isAdmin)
+    constructor(name: String, email: String, password: String, country: String, isAdmin: Boolean) : this(name, email, password, newId(), LocalDate.now().toString(), country, isAdmin)
     constructor(name: String, email: String, password: String, _id: Id<User>) : this(name, email, password, _id, null, null)
     constructor(_id: Id<User>, name: String) : this(name, "", null, _id, null, null)
     constructor(_id: Id<User>, name: String, email: String, password: String) : this(name, email, password, _id, null, null)
@@ -206,3 +206,10 @@ data class CountryListsDataResponse(
         val totalUsers: Int,
         val users: Set<String>
 )
+
+data class ListTotalResponse(
+        val totalLists: Long
+){
+        constructor(totalLists: Int):
+                this(totalLists.toLong())
+}

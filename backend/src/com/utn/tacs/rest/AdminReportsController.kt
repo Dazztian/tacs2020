@@ -60,16 +60,18 @@ fun Application.adminReports(adminReportsService: AdminReportsService) {
             }
             route("/api/admin/report/lists/total") {
                 get {
-                        call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
-                        call.respond(adminReportsService.getListsQuantity())
+                    call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
+                    call.respond(adminReportsService.getListsQuantity())
                 }
             }
             route("/api/admin/report/lists") {
                 get {
-                        call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
-                        val startDate: String = call.request.queryParameters["startDate"]!!.toString()
-                        val endDate: String = call.request.queryParameters["endDate"]!!.toString()
-                        call.respond(adminReportsService.getRegisteredUserListsBetween(LocalDate.parse(startDate), LocalDate.parse(endDate)))
+                    call.user?.isAdmin ?: throw UnauthorizedException("User is not admin")
+                    val startDateParam = call.request.queryParameters["startDate"]!!.toString().split("/")
+                    val endDateParam = call.request.queryParameters["endDate"]!!.toString().split("/")
+                    val startDate = LocalDate.of(startDateParam.get(2).toInt(),startDateParam.get(0).toInt(),startDateParam.get(1).toInt())
+                    val endDate = LocalDate.of(endDateParam.get(2).toInt(),endDateParam.get(0).toInt(),endDateParam.get(1).toInt())
+                    call.respond(adminReportsService.getListsQuantityBetween(startDate, endDate))
                 }
             }
         }

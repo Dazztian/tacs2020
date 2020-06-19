@@ -47,28 +47,26 @@ class AdminReportsServiceTest {
     fun testGetListsByDate() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
-        val result = service.getRegisteredUserListsBetween(LocalDate.parse("2020-05-23"), LocalDate.parse("2020-05-23"))
+        val result = service.getListsQuantityBetween(LocalDate.parse("2020-05-23"), LocalDate.parse("2020-05-23"))
 
         Assert.assertNotNull(result)
-        Assert.assertEquals(1, result.size)
-        Assert.assertTrue(result.contains(userCountryList1))
+        Assert.assertEquals(1, result.totalLists)
 
-        val result2 = service.getRegisteredUserListsBetween(LocalDate.parse("2020-05-05"), LocalDate.parse("2020-05-25"))
+        val result2 = service.getListsQuantityBetween(LocalDate.parse("2020-05-05"), LocalDate.parse("2020-05-25"))
 
         Assert.assertNotNull(result2)
-        Assert.assertEquals(4, result2.size)
-        Assert.assertTrue(result2.containsAll(listOf(userCountryList1, userCountryList2, userCountryList3, userCountryList4)))
+        Assert.assertEquals(4, result2.totalLists)
 
-        val result3 = service.getRegisteredUserListsBetween(LocalDate.parse("2021-05-05"), LocalDate.parse("2021-05-25"))
+        val result3 = service.getListsQuantityBetween(LocalDate.parse("2021-05-05"), LocalDate.parse("2021-05-25"))
 
         Assert.assertNotNull(result3)
-        Assert.assertEquals(0, result3.size)
+        Assert.assertEquals(0, result3.totalLists)
     }
 
     @Test
     fun testGetListQuantity() {
         val service = AdminReportsService(usersRepository, userListRepository)
-        Assert.assertEquals(4, service.getListsQuantity())
+        Assert.assertEquals(4, service.getListsQuantity().totalLists)
     }
 
     @Test
