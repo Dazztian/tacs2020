@@ -9,27 +9,23 @@ import java.io.File
 
 //Map of last important messages separated by each telegram user Id
 val lastImportantMessages = mutableMapOf<Long, PreviousMessageWrapper>()
-lateinit var urlBase :String
+var urlBase :String = "http://localhost:8080/"
 
 fun main() {
-    val f = File("APIKey.txt")
-    if(!f.exists()){
-        println("No API Key specified for the bot")
-        return
-    }
-    val f2 = File("Base_Url.txt")
-    if(!f2.exists()){
-        println("No base url specified for the bot")
-        return
-    }
-    urlBase = f2.readText(Charsets.UTF_8)
-
-    val bot = createBot(f.readText(Charsets.UTF_8))
+    val bot = createBot()
     bot.startPolling()
 }
 
-fun createBot(apiKey :String) :Bot = bot {
-    token = apiKey
+fun createBot() :Bot = bot {
+    token = this::class.java.getResource("/APIKey.txt").readText()
+    if(token.isBlank()){
+        throw Exception("No API Key specified for the bot")
+    }
+
+    urlBase = this::class.java.getResource("/Base_Url.txt").readText()
+    if(urlBase.isBlank()){
+        throw Exception("No base url specified for the bot")
+    }
 
     startCommands(updater)
     countryListCommands(updater)

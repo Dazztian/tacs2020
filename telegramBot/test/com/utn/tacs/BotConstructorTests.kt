@@ -11,7 +11,7 @@ class BotConstructorTests {
 
     @Test
     fun createBotTest(){
-        val bot = createBot("any")
+        val bot = createBot()
 
         sendMessages(bot, listOf(TelegramMessageWrapper(1, "Test", ParseMode.HTML, false,false,2,null)))
 

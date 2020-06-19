@@ -188,7 +188,8 @@ class CountryListHandlerTests {
             "| 10-01-2020 | 50        | 50       | 50        |\n" +
             "| 11-01-2020 | 10        | 10       | 10        |\n" +
             "</pre>",
-            parseMode= ParseMode.HTML
+            parseMode= ParseMode.HTML,
+            replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))
         )),
             messageCommand(chatId, chatId, "1")
         )

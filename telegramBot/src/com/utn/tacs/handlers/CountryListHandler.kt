@@ -146,9 +146,13 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                 lastImportantMessages.remove(userId)
                 val telegramMessageWrappers = buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
                         .map { row -> TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML) }.toMutableList()
-                telegramMessageWrappers[telegramMessageWrappers.lastIndex] =
-                        telegramMessageWrappers[telegramMessageWrappers.lastIndex].copy(replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(lastMessage.countryListId)))
-                telegramMessageWrappers
+                if(telegramMessageWrappers.isEmpty()){
+                    telegramMessageWrappers
+                }else{
+                    telegramMessageWrappers[telegramMessageWrappers.lastIndex] =
+                            telegramMessageWrappers[telegramMessageWrappers.lastIndex].copy(replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(lastMessage.countryListId)))
+                    telegramMessageWrappers
+                }
             }
         }
     }

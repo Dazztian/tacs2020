@@ -137,3 +137,22 @@ data class TimeSeriesTotal(
         val deaths: Int,
         val recovered: Int
 )
+
+
+data class CountryCode(
+        val iso2: String,
+        val iso3: String
+)
+
+
+data class TelegramUser(
+        val telegramId: String,
+        val username: String?,
+        val password: String?
+)
+
+
+data class UserCountriesListModificationRequest(
+        val name: String,
+        val countries: MutableSet<String>
+)

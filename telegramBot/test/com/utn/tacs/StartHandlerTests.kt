@@ -46,13 +46,13 @@ class StartHandlerTests {
 
     @Test
     fun validateLoginTypeTest(){
-        assertEquals(true, validateLoginType(createBot(""), chatId, LoginType.NotRequired))
-        assertEquals(true, validateLoginType(createBot(""), chatId, LoginType.LoggedIn))
-        assertEquals(false, validateLoginType(createBot(""), chatId, LoginType.NotLoggedIn))
+        assertEquals(true, validateLoginType(createBot(), chatId, LoginType.NotRequired))
+        assertEquals(true, validateLoginType(createBot(), chatId, LoginType.LoggedIn))
+        assertEquals(false, validateLoginType(createBot(), chatId, LoginType.NotLoggedIn))
 
 
         every { RequestManager.healthCheck() } returns false
-        assertEquals(false, validateLoginType(createBot(""), chatId, LoginType.NotRequired))
+        assertEquals(false, validateLoginType(createBot(), chatId, LoginType.NotRequired))
     }
 
     @Test
