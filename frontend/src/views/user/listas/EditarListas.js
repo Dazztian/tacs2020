@@ -10,6 +10,8 @@ const api = new Api()
 
 const EditarListas = ()=>{
 
+    const state = { rowsSelected: [] };
+
     const [unArrayTodosLosPaises,setUnArrayTodosLosPaises] = useState([])
     const [unArray,setUnArray] = useState([{name:null,paises:[]}])
     const [selectedList,setSelectedList] = useState([])
@@ -23,7 +25,6 @@ const EditarListas = ()=>{
     const obtenerListaDePaises = async ()=>{
       try{
 
-      //let countryList = await api.getCountryList()
       let res = await api.getCountryList()
       let countryList = await res.json()
 
@@ -90,8 +91,6 @@ const EditarListas = ()=>{
       let newCountriesToAdd = selectedList[2].filter(value => !arrNewCountriesFlat.includes(value[1]))
       let newCountry = [...newCountriesToAdd,...arrNewCountries]
       setSelectedList([selectedList[0],selectedList[1],newCountry])
-      console.log(newCountry)
-      setSelectedNewCountries([])
     }
 
     const updateLista = async (nuevoNombre)=>{
@@ -106,7 +105,6 @@ const EditarListas = ()=>{
             console.log(err)
             window.alert(err)
         }
-
     }
 
     useEffect(() => {
@@ -258,19 +256,19 @@ const EditarListas = ()=>{
                 title={
                   <Grid item xs={6} md={6}>
                   <Button  
-                  xs={4} 
-                  md={4} 
-                  disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 || selectedList[2].length>20 }
-                  size='medium'
-                  variant="contained" color="primary" 
-                  onClick={(e)=> handleAddCountries()}
+                    xs={4} 
+                    md={4} 
+                    disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 || selectedList[2].length>20 }
+                    size='medium'
+                    variant="contained" color="primary" 
+                    onClick={(e)=> handleAddCountries()}
                   >    
                     Add 
                   </Button>
                 </Grid>
                 }
                 data={unArrayTodosLosPaises}
-                columns={["Country", "Id"]}
+                columns={["Country", "Code"]}
                 options={{
                   fixedHeaderOptions: false,
                   fixedSelectColumn: false,
@@ -291,8 +289,7 @@ const EditarListas = ()=>{
                   rowsPerPageOptions: [10],
                   onRowsSelect:  (rowsSelected, allRows) => { //console.log(unArrayTodosLosPaises[rowsSelected.dataIndex])
                     setSelectedNewCountries(allRows);
-                    setPaisElegido(true)
-                    
+                    setPaisElegido(true)    
                   },
 
                 }

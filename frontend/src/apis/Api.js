@@ -13,7 +13,7 @@ class Api {
       'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'https://debe3c13773f.ngrok.io';
+    BASE_URL = 'https://37d48d2c79b1.ngrok.io';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -73,9 +73,6 @@ class Api {
     }catch(error){
       console.log(error)
     }*/
-    console.log(this.authToken)
-    console.log(this.userSessionId)
-    console.log(listarray)
     try {
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
         method:"POST",
@@ -98,9 +95,6 @@ class Api {
           }, 500);
         })
       */
-    console.log(name)
-    console.log(listId)
-    console.log(countries)
     try{
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
         method:"PUT",
@@ -117,7 +111,6 @@ class Api {
     
   async deleteUserList(listId) {
     try{
-      console.log(listId)
       return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
             method:"DELETE",
             headers: this.createHeaders()
@@ -247,8 +240,7 @@ class Api {
             {
               email: loginValue,
               password: passwordValue
-            }
-          ),
+            }),
         });
     }catch(error){
       console.log(error)
@@ -295,6 +287,7 @@ class Api {
                         email: loginValue,
                         password: passwordValue,
                         country: countryIso,
+                        isAdmin: false
                         }),
                       });
     } catch(error){

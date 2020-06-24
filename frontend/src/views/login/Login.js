@@ -64,12 +64,11 @@ function Login(props) {
   const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,countryISo,history,setIsLoading,setSignupError) => {
     setSignupError(false);
     setIsLoading(true)
-    if (!!loginValue && !!passwordValue) {
       const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
-      console.log(res)
       if(res.ok) {
-        //const {user, token} = await res.json()
-        const {user, token} = res;
+        const {user, token} = await res.json()
+          console.log(user)
+          console.log(token)
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user["id"])
           localStorage.setItem('tracker_name', user.name)
@@ -79,7 +78,6 @@ function Login(props) {
         setSignupError(true);
         setIsLoading(false);
       }
-    }
   }
 
   const handleLoginUser = async (userDispatch,loginValue,passwordValue,history,setIsLoading,setLoginError) => {
@@ -115,8 +113,7 @@ function Login(props) {
   async function fetchCountries(){
       const res = await api.getCountryList()
       if(res.ok){
-        const countries = await res.json()
-        countryList = countries        
+        countryList = await res.json()        
       } else {
         console.log(res.errorMessage)
       }
@@ -302,8 +299,8 @@ function Login(props) {
                   },
                 }}
                 select
-                value={countryValue.country}
-                onChange={e => setCountryValue({'country': e.target.value,'iso2': e.target.key})}
+                value={countryValue}
+                onChange={e => setCountryValue(e.target.value)}
                 margin="normal"
                 placeholder="Country"
                 type="Country"
@@ -312,7 +309,7 @@ function Login(props) {
               >
                 {
                 countryList.map((country) => (
-                  <MenuItem key={country.iso2} value={country.name}>
+                  <MenuItem key={country.iso2} value={country.iso2}>
                     {country.name}
                   </MenuItem>
                 ))}
@@ -328,7 +325,7 @@ function Login(props) {
                         nameValue,
                         loginValue,
                         passwordValue,
-                        countryValue.iso2,
+                        countryValue,
                         props.history,
                         setIsLoading,
                         setSignupError)

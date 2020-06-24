@@ -55,9 +55,9 @@ const CrearListas = ()=>{
 
     const crearListaDePaisesXUsuario = async ()=>{
         try{	
-          console.log(listarray[listarray.length - 1])
 					await api.createCountryList(nombreLista,listarray[listarray.length - 1])
-					window.alert("List: "+nombreLista+ "created")
+          window.alert("List: "+nombreLista+ " created")
+          console.log(listarray)
 					listarray = []
 					setNombreLista("")
         }
@@ -101,20 +101,19 @@ return(
             >
             <Grid item xs={3} md={3}> 
             <TextField 
-             id="filled-namelist"
-             label="List name"
-             type="string"
-             margin='dense'
-             size='small'
-             value={nombreLista}
-             fullWidth={false}
-             variant="outlined" 
-            onChange={e => setNombreLista(e.target.value)} 
-            InputLabelProps={{
-              shrink: true,
-            }}
-            />
-              
+              id="filled-namelist"
+              label="List name"
+              type="string"
+              margin='dense'
+              size='small'
+              value={nombreLista}
+              fullWidth={false}
+              variant="outlined" 
+              onChange={e => setNombreLista(e.target.value)} 
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />  
             </Grid>
               <Grid item> 
                 <Button 
@@ -154,11 +153,9 @@ return(
                 rowsPerPage: 10,
                 rowsPerPageOptions: [10],
                 rowsSelected: state.rowsSelected,
-								onRowsSelect:  (rowsSelected, allRows) => {
-							//["nombrePais, ....etc"]                
+								onRowsSelect:  (rowsSelected, allRows) => {       
               listarray.push(allRows.map( item => unArray[item.dataIndex][1]));
 							setPaisElegido(true)
-							//console.log(listarray)
 							},
 						}
 					}
