@@ -10,9 +10,10 @@ class Api {
   
     headers = {
       'Accept': 'application/json',
+      'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'https://32ddbafd6091.ngrok.io';
+    BASE_URL = 'https://debe3c13773f.ngrok.io';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -20,9 +21,9 @@ class Api {
         'Authorization': 'Bearer ' + this.authToken
       } : this.headers;
     }
-  
-    async getCountryList(isoList){
-      try{
+
+  async getCountryList(){
+      /*try{
         const data = mock.countriesNameISo 
   
         return new Promise(resolve => {
@@ -32,73 +33,97 @@ class Api {
         })
       }catch(error){
         console.log(error)
-      }
-      /*
-      return await fetch(`${this.BASE_URL}/api/countries/names`, {
-        method:'GET',
-        headers: this.createHeaders(),
-      });*/
+      }*/
+    try {
+        return await fetch(`${this.BASE_URL}/api/countries/names`, {
+          method:'GET',
+          headers: this.createHeaders(),  
+        });
+    } catch(error) {
+      console.log(error)
     }
 
-    async createCountryList(nombreLista,listarray){
-      try{
-  
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve();
-          }, 500);
-        })
-      }catch(error){
-        console.log(error)
-      }
-      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
+  }
+
+  async getUserLists() {
+      /*const data = mock.userLists
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data);
+        }, 500);
+      })*/
+      
+    try{
+      return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists`, {
+        method: 'GET',
+        headers: this.createHeaders()
+      });
+    }catch(e){
+      console.log(e)
+    }
+  }
+
+  async createCountryList(nombreLista,listarray){
+   /* try{
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      })
+    }catch(error){
+      console.log(error)
+    }*/
+    try {
+      return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
         method:"post",
         headers: this.createHeaders(),
         body:JSON.stringify({
             "name": nombreLista,
             "countries":listarray
         })
-      })*/
+      })
+    } catch(error) {
+      console.log(error)
     }
+  }
 
-    async deleteCountryList(nombreLista,listarray){
-      try{
-  
-        return new Promise(resolve => {
+  async editCountryList(name,listId,countries){
+      /*
+      return new Promise(resolve => {
           setTimeout(() => {
             resolve();
           }, 500);
         })
-      }catch(error){
-        console.log(error)
-      }
-      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
-        method:"DELETE",
-        headers: this.createHeaders(),
-      })*/
-    }
-
-    async editCountryList(name,listId,countries){
-      try{
-  
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve();
-          }, 500);
-        })
-      }catch(error){
-        console.log(error)
-      }
-
-      /*return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
+      */
+    try{
+      return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
         method:"PUT",
         headers: this.createHeaders(),
         body:JSON.stringify({
             "name": name,
             "countries":countries
         })
-      })*/
+      })
+    } catch(error){
+        console.log(error)
     }
+  }
+    
+  async deleteUserList(listId) {
+    try{
+      return await fetch(`${this.BASE_URL}/api/${this.userSessionId}/lists/${listId}`,{
+            method:"DELETE",
+            headers: this.createHeaders()
+            });
+    }catch(e){
+      console.log(e)
+    }
+    /*return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    })*/
+  }
 
   async getCountriesDataByDate(isoList,dateinicial,datefinal) {
     try{
@@ -112,7 +137,7 @@ class Api {
     }catch(error){
       console.log(error)
     }
-    /*const res = await await fetch(`${this.BASE_URL}/api/countries/timeseries?`, {
+    /*const res = await fetch(`${this.BASE_URL}/api/countries/timeseries?`, {
           method:'POST',
           headers: this.createHeaders(),
           body: JSON.stringify(item),
@@ -199,60 +224,16 @@ class Api {
     }
   }
 
-  async getUserLists() {
-    try{
-      const data = mock.userLists
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(data);
-        }, 500);
-      })
-
-      /*
-      return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists`, {
-        method: 'GET',
-        headers: this.createHeaders()
-      });*/
-
-    }catch(e){
-      console.log(e)
-    }
-  }
-  
-  async deleteUserList(listId) {
-    try{
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve();
-        }, 500);
-      })
-
-      /*return await fetch(`${this.BASE_URL}/api/${this.userSessionId}/lists/${listId}`,{
-            method:"DELETE",
-            headers: this.createHeaders()
-            })
-      ;*/
-
-    }catch(e){
-      console.log(e)
-    }
-  }
-
-  loginUser(loginValue,passwordValue) { //al api.js
-    const res = mock.loginUser
-    
-    try{
+  async loginUser(loginValue,passwordValue) { //al api.js
+    /*const res = mock.loginUser
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(res);
         }, 2000);
-      })
-    }catch(error){
-      console.log(error)
-    }
-    /*return await fetch(`${BASE_URL}/api/login`, {
+      })*/
+    
+    try{
+      return await fetch(`${this.BASE_URL}/api/login`, {
           method:'POST',
           headers: this.createHeaders(),
           body: JSON.stringify(
@@ -262,10 +243,12 @@ class Api {
             }
           ),
         });
-      }*/
+    }catch(error){
+      console.log(error)
+    } 
   }
 
-  loginUserWithGoogle(tokenId) { //al api.js
+  async loginUserWithGoogle(tokenId) { //al api.js
     const res = mock.loginUser
     
     try{
@@ -289,19 +272,15 @@ class Api {
       }*/
   }
 
-  createUser(nameValue,loginValue,passwordValue,countryIso) { //esto va al api.js
-    try{
-      const res = mock.signUp
-      
+  async createUser(nameValue,loginValue,passwordValue,countryIso) {
+      /*const res = mock.signUp
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(res);
         }, 2000);
-      })
-    }catch(error){
-      console.log(error)
-    }
-    /*return await fetch(`${BASE_URL}/api/signup`, {
+      })*/
+    try{
+      return await fetch(`${this.BASE_URL}/api/signup`, {
           method:'POST',
           headers: this.createHeaders(),
           body: JSON.stringify({
@@ -311,8 +290,11 @@ class Api {
                         country: countryIso,
                         }),
                       });
-      */
+    } catch(error){
+      console.log(error)
+    }
   }
 }
-  export default Api;
+
+export default Api;
   

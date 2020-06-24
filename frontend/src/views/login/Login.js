@@ -29,12 +29,11 @@ import { getCountry } from "../../apis/GeolocationApi";
 
 const api = new Api()
 let countryList = []
-
 function Login(props) {
   var classes = useStyles();
   // global
   var userDispatch = useUserDispatch();
-  
+  //var [countryList, setCountryList] = useState([])
   var [isLoading, setIsLoading] = useState(false);
   var [loginError, setLoginError] = useState(null);
   var [signUpError, setSignupError] = useState(null);
@@ -67,7 +66,8 @@ function Login(props) {
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
       const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
-      if(true/*res.ok*/) {
+      console.log(res)
+      if(res.ok) {
         //const {user, token} = await res.json()
         const {user, token} = res;
         if(!!token){
@@ -85,30 +85,25 @@ function Login(props) {
   }
 
   const handleLoginUser = async (userDispatch,loginValue,passwordValue,history,setIsLoading,setLoginError) => {
-    setLoginError(false);
-    setIsLoading(true);
+    setLoginError(false)
+    setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
       //tener en cuenta q devuelve la res, esa hay q parsearla a json
       const res = await api.loginUser(loginValue,passwordValue)
-      if(true/*res.ok*/) {
-        //const {user, token} = await res.json()
-        const {user,token} = res;
-        if(loginValue !== 'admin' /*!user.isAdmin*/){ 
-          localStorage.setItem('id_session',user._id)
-          localStorage.setItem('id_token', token)
-          localStorage.setItem('tracker_name', user.name)
+      if(res.ok) {
+        const {user, token} = await res.json()
+        localStorage.setItem('id_session',user._id)
+        localStorage.setItem('id_token', token)
+        localStorage.setItem('tracker_name', user.name)
+        setIsLoading(false);
+        if(!user.isAdmin){ 
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
-          localStorage.setItem('role', 1)
-          localStorage.setItem('id_token', 1)
-          localStorage.setItem('tracker_name', 'Jose Perez')
-          //setIsLoading(false);
           userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
           history.push('/admin/home')
         }
       } else { //este else va por el res.ok
-        //userDispatch({ type: "LOGIN_FAILURE" });
         setLoginError(true);
         setIsLoading(false);
       }
@@ -116,16 +111,13 @@ function Login(props) {
   }
 
   async function fetchCountries(){
-      //const res = await api.getCountryList()
-      //if(true/*res.ok*/){
-      //countryList = await res.json()
-    
-      countryList = await api.getCountryList()
-      console.log(countryList)
-      /*console.log(countryList)
+      const res = await api.getCountryList()
+      if(res.ok){
+        const countries = await res.json()
+        countryList = countries        
       } else {
         console.log(res.errorMessage)
-      }*/
+      }
   }
 
   useEffect(() => { //tiene que haber un useEffect por cada variable de estado de chart a modificar
