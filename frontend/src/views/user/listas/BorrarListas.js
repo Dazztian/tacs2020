@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Grid, Container } from '@material-ui/core';
+import { Grid, Container, CircularProgress, Paper } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
 
@@ -13,21 +13,21 @@ const BorrarListas = ()=>{
     const [unArray,setUnArray] = useState([])
     const [selectedLists,setSelectedLists] = useState([])
     const [nameArray,setNameArray] = useState([])
-    const [loading,setLoading] = useState(false)
+    const [loading,setLoading] = useState(true)
 
     const obtenerListaDePaisesXUsuario = async ()=>{
         try{
             let res = await api.getUserLists()
-            //let elemento = await res.json();
+            let data = await res.json();
 
-            let promArray = res.map( list =>{ 
+            let promArray = data.map( list =>{ 
                 return [list.name, list.id]
             })
 
             let resultArray = await Promise.all(promArray)
             console.log(resultArray)
             setUnArray(resultArray)  
-           
+            setLoading(false)
 
         }
         catch(err) {
@@ -37,7 +37,6 @@ const BorrarListas = ()=>{
 
     }
 
-    //{{localPath}}/api/user/{{lastUserId}}/lists/5ed9051d66236a4280ec9603
     const borrarListasSeleccionada= async ()=>{
         try{
             let promArray = selectedLists.map( item => unArray[item.dataIndex][1]).map(listId => api.deleteUserList(listId))
@@ -56,9 +55,27 @@ const BorrarListas = ()=>{
 
     return(
             <>
-            <PageTitle title="Delete a list" />            
-
             {
+            loading 
+				? 
+				<Paper>
+					<Grid
+						container
+						spacing={0}
+						direction="column"
+						alignItems="center"
+						justify="center"
+						style={{ minHeight: '80vh' }}
+					>
+        		<Grid item xs={3}>
+							<CircularProgress size={100}/>
+						</Grid>   
+					</Grid>
+				</Paper>
+				: 
+				<div>
+            <PageTitle title="Delete a list" />            
+            
             <Grid container spacing={4}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
             <MUIDataTable
@@ -85,7 +102,7 @@ const BorrarListas = ()=>{
             />
             </Grid>
             </Grid>
-            
+            </div>
             }
             </>
         )

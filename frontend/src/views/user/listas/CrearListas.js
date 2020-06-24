@@ -35,10 +35,10 @@ const CrearListas = ()=>{
     const fetchAllCountries = async ()=>{
         try{
         let res = await api.getCountryList()
-        console.log(res)
-        //let countryList = await res.json()
+        //console.log(res)
+        let data = await res.json()
 
-        let promArray = res.map( country => {        
+        let promArray = data.map( country => {        
             return [country.name, country.iso2]
         })
         

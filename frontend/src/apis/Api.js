@@ -73,9 +73,12 @@ class Api {
     }catch(error){
       console.log(error)
     }*/
+    console.log(this.authToken)
+    console.log(this.userSessionId)
+    console.log(listarray)
     try {
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
-        method:"post",
+        method:"POST",
         headers: this.createHeaders(),
         body:JSON.stringify({
             "name": nombreLista,
@@ -95,6 +98,9 @@ class Api {
           }, 500);
         })
       */
+    console.log(name)
+    console.log(listId)
+    console.log(countries)
     try{
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
         method:"PUT",
@@ -111,7 +117,8 @@ class Api {
     
   async deleteUserList(listId) {
     try{
-      return await fetch(`${this.BASE_URL}/api/${this.userSessionId}/lists/${listId}`,{
+      console.log(listId)
+      return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
             method:"DELETE",
             headers: this.createHeaders()
             });

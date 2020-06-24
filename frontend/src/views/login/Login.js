@@ -70,13 +70,11 @@ function Login(props) {
       if(res.ok) {
         //const {user, token} = await res.json()
         const {user, token} = res;
-        if(!!token){
           localStorage.setItem('id_token', token)
-          localStorage.setItem('id_session',user._id)
+          localStorage.setItem('id_session',user["id"])
           localStorage.setItem('tracker_name', user.name)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
-        } 
       } else {
         setSignupError(true);
         setIsLoading(false);
@@ -91,8 +89,12 @@ function Login(props) {
       //tener en cuenta q devuelve la res, esa hay q parsearla a json
       const res = await api.loginUser(loginValue,passwordValue)
       if(res.ok) {
-        const {user, token} = await res.json()
-        localStorage.setItem('id_session',user._id)
+        const data = await res.json()
+        const { user, token } = data;
+        console.log(data)
+        console.log(token)
+        console.log(user["id"])
+        localStorage.setItem('id_session',user["id"])
         localStorage.setItem('id_token', token)
         localStorage.setItem('tracker_name', user.name)
         setIsLoading(false);

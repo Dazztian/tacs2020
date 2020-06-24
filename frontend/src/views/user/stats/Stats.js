@@ -63,7 +63,8 @@ export default function Stats(props) {
 
   async function fetchUserListData() {
     try {
-      const userLists = await api.getUserLists()
+      const res = await api.getUserLists()
+      const userLists = await res.json()
       setUserLists(userLists)
     } catch(error) {
       console.log(error)
