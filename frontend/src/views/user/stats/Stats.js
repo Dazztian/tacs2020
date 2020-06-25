@@ -160,7 +160,7 @@ export default function Stats(props) {
                         key={row.id}
                       >
                         <TableCell align="left">{row.name}</TableCell>
-                        <TableCell align="center">{row.countries.map(c=> ` ${c.name} `)}</TableCell>
+                        <TableCell align="center">{row.countries.map(c=>c.name).join(', ')}</TableCell>
                       </TableRow>
                     );
                   })}
