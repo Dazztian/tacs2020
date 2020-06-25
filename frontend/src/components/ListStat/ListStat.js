@@ -43,9 +43,8 @@ const ListStat = ({ isoList })=>{
     
     const res = await api.getCountriesDataByDays(isoList,offinicial,offfinal)
 
-      if(true/*res.ok*/) {
-        //const data = await res.json()
-        const data = res
+      if(res.ok) {
+        const data = await res.json()
         console.log(data)
         setRows(data)
         setNumDays(await createDays(data))
@@ -60,7 +59,7 @@ const ListStat = ({ isoList })=>{
 
     async function createDays(data){
       let dayArray = []
-      const final = await data.filter( r => r.offset===1 )[0].timeseriedate.length
+      const final = await data.filter( r => r.offset===3 )[0].timeserieDate.length
       console.log(final)
       for(let i=1;i<=final;i++){
         dayArray.push(`Day ${i}`)
@@ -72,13 +71,13 @@ const ListStat = ({ isoList })=>{
       let promArr = []
       switch (newChartState){
         case "Infected" : 
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesinfected}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesInfected}})
               break;
         case "Recovered" :
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesreconvered}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesReconvered}})
               break;
         case "Death" : 
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesdeath}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesDeath}})
               break;
         default: 
               break; 

@@ -95,7 +95,10 @@ const EditarListas = ()=>{
 
     const updateLista = async (nuevoNombre)=>{
         try{
+            if(!nuevoNombre.length) nuevoNombre=selectedList[0]
+
             let isoArray = await Promise.all(selectedList[2].map( arr => arr[1]))
+
             await api.editCountryList(nuevoNombre,selectedList[1],isoArray)
             window.alert("List: "+nuevoNombre+ " modified")
             setSelectedList([nuevoNombre,selectedList[1],selectedList[2]])
@@ -198,7 +201,6 @@ const EditarListas = ()=>{
                   type="string"
                   margin='dense'
                   size='small'
-                  value={nuevoNombreLista}
                   fullWidth={false}
                   inputProps={
                     {step: 1,}

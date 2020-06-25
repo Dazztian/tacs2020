@@ -13,7 +13,7 @@ class Api {
       'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'https://37d48d2c79b1.ngrok.io';
+    BASE_URL = 'http://localhost:8080';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -23,17 +23,16 @@ class Api {
     }
 
   async getCountryList(){
-      /*try{
-        const data = mock.countriesNameISo 
-  
-        return new Promise(resolve => {
-          setTimeout(() => {
-            resolve(data);
-          }, 500);
-        })
-      }catch(error){
-        console.log(error)
-      }*/
+    /*try{
+      const data = mock.countriesNameISo 
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data);
+        }, 500);
+      })
+    }catch(error){
+      console.log(error)
+    }*/
     try {
         return await fetch(`${this.BASE_URL}/api/countries/names`, {
           method:'GET',
@@ -125,33 +124,8 @@ class Api {
     })*/
   }
 
-  async getCountriesDataByDate(isoList,dateinicial,datefinal) {
-    try{
-      const data = mock.singleCountryLastday
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(data);
-        }, 500);
-      })
-    }catch(error){
-      console.log(error)
-    }
-    /*const res = await fetch(`${this.BASE_URL}/api/countries/timeseries?`, {
-          method:'POST',
-          headers: this.createHeaders(),
-          body: JSON.stringify(item),
-        });
-
-      if(res.ok)
-        const data = await res.json()
-      
-      return data.timeseries
-      }*/
-  }
-
   async getCountriesDataByDays(iso,startDay,endDay) {
-    try{
+    /*try{
       const data = mock.nearWithOffset 
 
       return new Promise(resolve => {
@@ -161,18 +135,11 @@ class Api {
       })
     }catch(error){
       console.log(error)
-    }
-    /*const res = await await fetch(this.BASE_URL, {
-          method:'POST',
-          headers: this.createHeaders(),
-          body: JSON.stringify(item),
-        });
-
-      if(res.ok)
-        const data = await res.json()
-      
-      return data.timeseries
-      }*/
+    }*/
+    return await fetch(`${this.BASE_URL}/api/countries/timeseries?countries=${iso}&fromDay=${startDay}&toDay=${endDay}`, {
+        method:'GET',
+        headers: this.createHeaders(),
+      });
   }
 
   async getCountriesData(isoList) {
@@ -294,6 +261,28 @@ class Api {
       console.log(error)
     }
   }
+
+  async getAllReports(){
+    return await fetch(`${this.BASE_URL}/api/admin/report/`,{
+      method:'GET',
+      headers: this.createHeaders(),
+    })
+  }
+
+  async getUserReport(unIdUsuario){
+    return await fetch(`${this.BASE_URL}/api/admin/report/${unIdUsuario}`,{
+      method:'GET',
+      headers: this.createHeaders(),
+  })
+  }
+
+  async compareLists(idLista1,idLista2){
+    return await fetch(`${this.BASE_URL}/api/admin/report/lists/compare?list1=${idLista1}&list2=${idLista2}`,{
+      method:'GET',
+      headers: this.createHeaders(),
+  })
+  }
+
 }
 
 export default Api;

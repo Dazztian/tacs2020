@@ -16,6 +16,7 @@ import SidebarAdmin from "../components/Sidebar/SidebarAdmin";
 
 // pages
 import Dashboard from "../views/admin/dashboard/Dashboard";
+import Countries from "../views/admin/countriesandusers/CountriesAndUsers";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -41,7 +42,7 @@ function LayoutAdmin(props) {
             <Switch>
               <Route path="/admin/home" component={Dashboard} />
               <Route path="/admin/usersearch"/>
-              <Route path="/admin/countries"/>
+              <Route path="/admin/countries" component={Countries}/>
             </Switch>
           </div>
         </>

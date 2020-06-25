@@ -13,7 +13,6 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
-import { useUserState } from "../../../context/UserContext";
 const api = new Api();
 
 export default function Dashboard(props) {

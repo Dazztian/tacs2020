@@ -731,9 +731,9 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     timeseriesinfected:   [4, 6, 8, 11, 28, 30],
     timeseriesreconvered: [0, 0, 2, 3, 4, 6],
     timeseriesdeath:      [0, 0, 1, 3, 8, 11],
-    "confirmed": 25987,
-    "deaths": 735,
-    "recovered": 7991,
+    "confirmed": 30,
+    "deaths": 6,
+    "recovered": 11,
   }],
   nearordered: [  {
     "countryregion": "Argentina",
@@ -746,7 +746,7 @@ nearWithOffset : [ //suponiendo consulta de fromDay=1 toDay=4
     "newDeath": 18
   },{
     "countryregion": "Bolivia",
-    "iso2": "BL",
+    "iso2": "BO",
     "confirmed": 15281,
     "deaths": 512,
     "recovered": 2261,

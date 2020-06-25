@@ -11,7 +11,6 @@ import {
   MenuItem 
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
 import { GoogleLogin } from 'react-google-login';
 
 // styles
@@ -23,9 +22,7 @@ import google from "./images/google.svg";
 
 // context
 import { useUserDispatch } from "../../context/UserContext";
-import { loginUser, createUser } from "../../apis/PublicApi"
 import Api from "../../apis/Api"
-import { getCountry } from "../../apis/GeolocationApi";
 
 const api = new Api()
 let countryList = []
@@ -67,8 +64,6 @@ function Login(props) {
       const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
       if(res.ok) {
         const {user, token} = await res.json()
-          console.log(user)
-          console.log(token)
           localStorage.setItem('id_token', token)
           localStorage.setItem('id_session',user["id"])
           localStorage.setItem('tracker_name', user.name)
@@ -89,9 +84,6 @@ function Login(props) {
       if(res.ok) {
         const data = await res.json()
         const { user, token } = data;
-        console.log(data)
-        console.log(token)
-        console.log(user["id"])
         localStorage.setItem('id_session',user["id"])
         localStorage.setItem('id_token', token)
         localStorage.setItem('tracker_name', user.name)
@@ -100,6 +92,7 @@ function Login(props) {
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
+          localStorage.setItem('role', user.isAdmin)
           userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
           history.push('/admin/home')
         }
