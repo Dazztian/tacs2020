@@ -59,7 +59,7 @@ const ListStat = ({ isoList })=>{
 
     async function createDays(data){
       let dayArray = []
-      const final = await data.filter( r => r.offset===3 )[0].timeserieDate.length
+      const final = await data.filter( r => r.offset===1 )[0].timeserieDate.length
       console.log(final)
       for(let i=1;i<=final;i++){
         dayArray.push(`Day ${i}`)

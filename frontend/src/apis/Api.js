@@ -13,7 +13,7 @@ class Api {
       'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'http://localhost:8080';
+    BASE_URL = 'https://c7426d25ab88.ngrok.io';
 
     createHeaders() {
       return !!this.authToken ? {
@@ -153,7 +153,7 @@ class Api {
       })
     }catch(error){
       console.log(error)
-    }
+    
     /*const res = await await fetch(this.BASE_URL, {
           method:'POST',
           headers: this.createHeaders(),
@@ -166,6 +166,7 @@ class Api {
       return data.timeseries
       }*/
   }
+}
   
   async getNearCountries() {
     try{
