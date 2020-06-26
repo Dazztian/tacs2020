@@ -17,6 +17,8 @@ import SidebarAdmin from "../components/Sidebar/SidebarAdmin";
 // pages
 import Dashboard from "../views/admin/dashboard/Dashboard";
 import PaisEnComun from "../views/admin/paisencomun/PaisEnComun";
+import CantUsuariosInteresados from "../views/admin/cantusuariosinteresados/CantUsuariosInteresados";
+import ListasRegistradas from "../views/admin/listasregistradas/ListasRegistradas";
 
 // context
 import { useLayoutState } from "../context/LayoutContext";
@@ -43,6 +45,8 @@ function LayoutAdmin(props) {
               <Route path="/admin/home" />
               <Route path="/admin/usersearch"component={Dashboard}/>
               <Route path="/admin/countries" component={PaisEnComun}/>
+              <Route path="/admin/interestedUsers" component={CantUsuariosInteresados}/>
+              <Route path="/admin/registeredLists" component={ListasRegistradas}/>
             </Switch>
           </div>
         </>

@@ -27,11 +27,20 @@ const structure = [
   { id: 0, label: "Home", link: "/admin/home", icon: <HomeIcon /> },
   {
     id: 1,
-    label: "Search user",
-    link: "/admin/usersearch",
-    icon: <Search />,
+    label: "Search user", link: "/admin/usersearch", icon: <Search />,
   },
-  { id: 2, label: "Countries & Users", link: "/admin/countries", icon: <Public /> },
+  { id: 2,
+    label: "Countries & Users",
+    children: [
+    { label: "Pais en comun", link: "/admin/countries" },
+    { label: "Usuarios interesados en un pais", link: "/admin/interestedUsers" },    
+    ],
+    icon: <Public /> 
+  },
+    {
+      id: 3,//Actualizar/Corregir a donde te redirige
+      label: "Lists", link: "/admin/registeredLists", icon: <Search />,
+    },
 ];
 
 function SidebarAdmin({ location }) {

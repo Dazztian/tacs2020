@@ -1,6 +1,4 @@
 import React, {useState, useEffect} from 'react'
-import {StyleSheet, Text, View, Modal} from "react-native-web";
-import {TextInput, Button} from 'react-native-paper'
 import { Grid, Container } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";

@@ -1,6 +1,4 @@
 import React, {useState, useEffect} from 'react'
-import {StyleSheet, Text, View, Modal} from "react-native-web";
-import {TextInput, Button} from 'react-native-paper'
 import { TextField ,Container } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
@@ -121,25 +119,5 @@ return(
     )
 
 }    
-
-const theme = {
-    colors:{
-        primary:"#006aff"
-
-    }
-}
-
-const styles = StyleSheet.create({
-    root:{
-        flex:1
-    },
-    botones:{
-        marginTop:5
-    },
-    inputStyle:{
-        margin:5
-    }
-
-})
 
 export default CrearListas

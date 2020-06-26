@@ -21,7 +21,7 @@ export default function Dashboard(props) {
 
   const id_user= "5ed6afdefec8e000a9d826ae"
   const BASE_URL = 'http://localhost:8080';
-  const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZDZhZmRlZmVjOGUwMDBhOWQ4MjZhZSIsImV4cCI6MTU5MjU1NTU2M30.bkHQqWkZkX389_wXvM1M5z5WHGZwG0jVOzev4w-yKKI"
+  const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZDZhZmRlZmVjOGUwMDBhOWQ4MjZhZSIsImV4cCI6MTU5MzEzODAxMn0.ewtiIAlsYQeVsTTKZRjVDpV-Lppflu0BDjxj54VVm1Q"
 
   const obtenerInfoDeUsuarios = async ()=>{
     try{
@@ -88,7 +88,7 @@ useEffect(() => {
 
         </Grid>
         <Grid item xs={12}>
-          <Widget title="Usuarios"   upperTitle   noBodyPadding    bodyClass={classes.tableWidget} >
+          <Widget title="Escoja el usuario para obtener sus datos"   upperTitle   noBodyPadding    bodyClass={classes.tableWidget} >
             <MUIDataTable
             title="Lista de usuarios"
             data={unArrayTodosLosUsuarios}
