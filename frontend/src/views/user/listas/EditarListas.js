@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import Button from '@material-ui/core/Button';
-import { Grid, Container,TextField,	CircularProgress, Paper } from '@material-ui/core';
+import { Grid, TextField,	CircularProgress, Paper } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
 
@@ -10,7 +10,6 @@ const api = new Api()
 
 const EditarListas = ()=>{
 
-    const state = { rowsSelected: [] };
 
     const [unArrayTodosLosPaises,setUnArrayTodosLosPaises] = useState([])
     const [unArray,setUnArray] = useState([{name:null,paises:[]}])
@@ -73,7 +72,6 @@ const EditarListas = ()=>{
 
     async function handleSelectRow(rowsSelected){
       let rowArray = [unArray[rowsSelected.dataIndex][0],unArray[rowsSelected.dataIndex][1],unArray[rowsSelected.dataIndex][2]]
-      console.log(rowArray)
       setSelectedList(rowArray)
     }
 
@@ -289,7 +287,7 @@ const EditarListas = ()=>{
                   responsive: 'stacked',
                   rowsPerPage: 10,
                   rowsPerPageOptions: [10],
-                  onRowsSelect:  (rowsSelected, allRows) => { //console.log(unArrayTodosLosPaises[rowsSelected.dataIndex])
+                  onRowsSelect:  (rowsSelected, allRows) => {
                     setSelectedNewCountries(allRows);
                     setPaisElegido(true)    
                   },

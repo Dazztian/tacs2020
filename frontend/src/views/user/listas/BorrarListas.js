@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Grid, Container, CircularProgress, Paper } from '@material-ui/core';
+import { Grid, CircularProgress, Paper } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
 
@@ -12,7 +12,6 @@ const BorrarListas = ()=>{
 
     const [unArray,setUnArray] = useState([])
     const [selectedLists,setSelectedLists] = useState([])
-    const [nameArray,setNameArray] = useState([])
     const [loading,setLoading] = useState(true)
 
     const obtenerListaDePaisesXUsuario = async ()=>{
@@ -25,7 +24,6 @@ const BorrarListas = ()=>{
             })
 
             let resultArray = await Promise.all(promArray)
-            console.log(resultArray)
             setUnArray(resultArray)  
             setLoading(false)
 

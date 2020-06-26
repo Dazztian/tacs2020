@@ -25,7 +25,6 @@ import Api from "../../apis/Api"
 const api = new Api()
 
 const ListStat = ({ isoList })=>{
-  console.log(isoList)
   var theme = useTheme();
   var classes = useStyles();
 
@@ -35,8 +34,8 @@ const ListStat = ({ isoList })=>{
   const [series, setSeries] = useState([])
   const [rows,setRows] = useState([])
   const [numDaysArray,setNumDays] = useState([])
-  const [dayFinal,setOffDayFinal] = useState(0)
-  const [dayInicial,setOffDayInicial] = useState(0)
+  const [dayFinal,setOffDayFinal] = useState(1)
+  const [dayInicial,setOffDayInicial] = useState(1)
 
   async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
@@ -45,7 +44,6 @@ const ListStat = ({ isoList })=>{
 
       if(res.ok) {
         const data = await res.json()
-        console.log(data)
         setRows(data)
         setNumDays(await createDays(data))
         setMainChartState("");
@@ -59,8 +57,7 @@ const ListStat = ({ isoList })=>{
 
     async function createDays(data){
       let dayArray = []
-      const final = await data.filter( r => r.offset===1 )[0].timeserieDate.length
-      console.log(final)
+      const final = await data.filter( r => r.offset===0 )[0].timeserieDate.length
       for(let i=1;i<=final;i++){
         dayArray.push(`Day ${i}`)
       }
@@ -168,7 +165,7 @@ return(
               variant="outlined" 
               color="primary" 
               disabled={
-                dayFinal === undefined || dayInicial === undefined || dayFinal<=dayInicial
+                dayFinal === undefined || dayInicial < 1 || dayInicial === undefined || dayFinal<=dayInicial
               }
               onClick={() =>{
                 handleFetchOffset(dayInicial,dayFinal)
@@ -218,7 +215,6 @@ return(
       header={
         <div className={classes.mainChartHeader}/> }
     >
-        {console.log(rows)}
         { rows.length ? <ColapsableTable rows={rows}/> : <Grid></Grid> }
     </Widget>
   </Grid>

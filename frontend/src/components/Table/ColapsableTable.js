@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  Paper,
   TablePagination,
   IconButton,
   Collapse,
@@ -103,7 +102,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell align="center" component="th" scope="row">
-          {row.countryregion}
+          {row.countryRegion}
         </TableCell>
         <TableCell align="center">{row.confirmed}</TableCell>
         <TableCell align="center">{row.recovered}</TableCell>

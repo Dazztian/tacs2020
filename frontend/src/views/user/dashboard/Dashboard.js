@@ -25,7 +25,8 @@ export default function Dashboard(props) {
   
   async function fetchNearData() {
     try {
-      const nearOrder = await api.getNearCountries()
+      const res = await api.getNearCountries()
+      const nearOrder = await res.json()
       setNearCountriesOrder(nearOrder)
       setIsoList(await Promise.all(nearOrder.map(n => n.iso2)))
     } catch(error) {
@@ -36,7 +37,6 @@ export default function Dashboard(props) {
   async function fetchLocal() {
     try {
       let iso = localStorage.getItem('tracker_country_Iso')
-      console.log(iso)
       if (!iso){
         const {countryIso,countryName} = await getCountry()
         iso = countryIso

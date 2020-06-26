@@ -1,14 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import { TextField,
-	Container, 
-	TableCell, 
 	Grid, 
 	Button, 
 	CircularProgress,
-	TableRow,
-	Paper, Table, TableBody, TableContainer, TableHead  } from '@material-ui/core';
+  Paper
+} from '@material-ui/core';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import useStyles from "../dashboard/styles";
 import MUIDataTable from "mui-datatables"; 
 
@@ -29,13 +26,10 @@ const CrearListas = ()=>{
 
     const [paisElegido,setPaisElegido] = useState(false)
 
-    const [paises, setPaises] = useState([])
-
 
     const fetchAllCountries = async ()=>{
         try{
         let res = await api.getCountryList()
-        //console.log(res)
         let data = await res.json()
 
         let promArray = data.map( country => {        
