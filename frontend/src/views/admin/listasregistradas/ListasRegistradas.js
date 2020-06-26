@@ -4,15 +4,18 @@ import { Grid} from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 
 
-
 const ListasRegistradas = ()=>{
+
+    const [fechaInicio, setFechaInicio] =useState()
+    const [fechaFin, setFechaFin] =useState()
+
 
     const BASE_URL = 'https://dcd471a082b5.ngrok.io';
     const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTQwODJkMDMwNzcyNjA5Y2IzOWQ2ZiIsImV4cCI6MTU5MzIxODU4OH0.zEd2mnPtfovp65fFPkv3WPKSY1RPPmMq5xrpleGv0F8"
 
     // obtenerListasPorFechas('1/15/2020','12/15/2020')
     const obtenerListasPorFechas = async(fechaInicio, fechaFin) =>{
-        try{
+        try{            
             let res = await fetch( BASE_URL + "/api/admin/report/lists?startDate=" + fechaInicio + "&endDate=" + fechaFin,{
                 method:"GET",
                 headers:{
@@ -45,6 +48,7 @@ return(
                 label="Fecha inicio"
                 type="date"
                 defaultValue="2017-05-24"
+                onChange={e => setFechaInicio(reconvertirFormatoFecha(e.target.value))}
                 InputLabelProps={{
                 shrink: true,
                 }}
@@ -56,15 +60,18 @@ return(
                 label="Fecha final"
                 type="date"
                 defaultValue="2017-05-24"
+                //onChange={e => console.log(reconvertirFormatoFecha(e.target.value))}
+                onChange={e => setFechaFin(reconvertirFormatoFecha(e.target.value))}
                 InputLabelProps={{
                 shrink: true,
                 }}
                 />
             </Grid>
             <Button  variant="contained" color="secondary" 
-            onClick={()=> //elObjetoEstaVacio(ListasUsuarioParticular) || elObjetoEstaVacio(ListasUsuarioParticular2) ?
-            //window.alert("Debe elegir las a comparar listas primero"):
-            obtenerListasPorFechas('1/15/2020','12/15/2020')}
+            onClick={()=> !fechaInicio || !fechaFin ?
+            window.alert("Debe elegir las fechas a comparar primero"):
+            //obtenerListasPorFechas('1/15/2020','12/15/2020')}
+            obtenerListasPorFechas(fechaInicio,fechaFin)}
             >
             Obtener Cant Listas
             </Button>
@@ -72,6 +79,16 @@ return(
     </Grid>
     </>
     )
+    //0123456789       
+    //2017-05-29 a 1/15/2020
+    function reconvertirFormatoFecha(unaFecha){
+        let dia= unaFecha.substring(8, 10);
+        let mes= unaFecha.substring(5, 7);
+        let anio= unaFecha.substring(0, 4);
+
+        let fecha= mes + '/' + dia + '/' + anio
+        return fecha
+       }
 
 }    
 
