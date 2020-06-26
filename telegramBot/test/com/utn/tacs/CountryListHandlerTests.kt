@@ -46,7 +46,7 @@ class CountryListHandlerTests {
         val a = RequestManager()
         every { RequestManager.getCountryLists(chatId.toString()) } returns emptyList()
 
-        assertEquals(listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton())),
+        assertEquals(listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup()))),
             myListsCommand(chatId)
         )
 

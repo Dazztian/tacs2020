@@ -103,7 +103,7 @@ const val timeseriesTableHeader =   "|    Date    | Confirmed |  Deaths  | Recov
 data class UserCountriesListResponse(
         val id: String,
         val name: String,
-        val countries: MutableSet<String>
+        val countries: MutableSet<CountryNamesResponse>
 )
 
 data class TelegramMessageWrapper(

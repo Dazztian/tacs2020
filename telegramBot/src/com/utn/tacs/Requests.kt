@@ -151,6 +151,7 @@ class RequestManager{
                     Gson().toJson(UserCountriesListModificationRequest(listName, countries.toMutableSet())).toString())
 
                 return if(response.status.code == 200){
+                    val x = response.responseString
                     val userCountriesList = Gson().fromJson(response.responseString, UserCountriesListResponse::class.java)
 
                     "OK "+userCountriesList.id
