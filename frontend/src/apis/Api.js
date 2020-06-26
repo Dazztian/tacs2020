@@ -13,7 +13,7 @@ class Api {
       'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'https://c7426d25ab88.ngrok.io';
+    BASE_URL = 'https://ab7c3ed5ca13.ngrok.io'; 
 
     createHeaders() {
       return !!this.authToken ? {
@@ -23,16 +23,6 @@ class Api {
     }
 
   async getCountryList(){
-    /*try{
-      const data = mock.countriesNameISo 
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(data);
-        }, 500);
-      })
-    }catch(error){
-      console.log(error)
-    }*/
     try {
         return await fetch(`${this.BASE_URL}/api/countries/names`, {
           method:'GET',
@@ -45,13 +35,6 @@ class Api {
   }
 
   async getUserLists() {
-      /*const data = mock.userLists
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(data);
-        }, 500);
-      })*/
-      
     try{
       return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists`, {
         method: 'GET',
@@ -63,15 +46,6 @@ class Api {
   }
 
   async createCountryList(nombreLista,listarray){
-   /* try{
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve();
-        }, 500);
-      })
-    }catch(error){
-      console.log(error)
-    }*/
     try {
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists`,{
         method:"POST",
@@ -87,13 +61,6 @@ class Api {
   }
 
   async editCountryList(name,listId,countries){
-      /*
-      return new Promise(resolve => {
-          setTimeout(() => {
-            resolve();
-          }, 500);
-        })
-      */
     try{
       return fetch( `${this.BASE_URL}/api/user/${this.userSessionId}/lists/${listId}`,{
         method:"PUT",
@@ -117,29 +84,17 @@ class Api {
     }catch(e){
       console.log(e)
     }
-    /*return new Promise(resolve => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    })*/
   }
 
   async getCountriesDataByDays(iso,startDay,endDay) {
-    /*try{
-      const data = mock.nearWithOffset 
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(data);
-        }, 500);
-      })
-    }catch(error){
-      console.log(error)
-    }*/
-    return await fetch(`${this.BASE_URL}/api/countries/timeseries?countries=${iso}&fromDay=${startDay}&toDay=${endDay}`, {
+    try{
+      return await fetch(`${this.BASE_URL}/api/countries/timeseries?countries=${iso}&fromDay=${startDay}&toDay=${endDay}`, {
         method:'GET',
         headers: this.createHeaders(),
       });
+    }catch(error){
+      console.log(error)
+    }
   }
 
   async getCountriesData(isoList) {
@@ -192,14 +147,7 @@ class Api {
     }
   }
 
-  async loginUser(loginValue,passwordValue) { //al api.js
-    /*const res = mock.loginUser
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(res);
-        }, 2000);
-      })*/
-    
+  async loginUser(loginValue,passwordValue) {
     try{
       return await fetch(`${this.BASE_URL}/api/login`, {
           method:'POST',
@@ -215,37 +163,24 @@ class Api {
     } 
   }
 
-  async loginUserWithGoogle(tokenId) { //al api.js
+  async loginUserWithGoogle(tokenId) {
     const res = mock.loginUser
     
     try{
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(res);
-        }, 2000);
-      })
+      return await fetch(`${this.BASE_URL}/auth/google`, {
+        method:'POST',
+        headers: this.createHeaders(),
+        body: JSON.stringify(
+          {
+            token: tokenId
+          }),
+      });
     }catch(error){
       console.log(error)
     }
-    /*return await fetch(`${BASE_URL}/auth/google`, {
-          method:'POST',
-          headers: this.createHeaders(),
-          body: JSON.stringify(
-            {
-              token: tokenId
-            }
-          ),
-        });
-      }*/
   }
 
   async createUser(nameValue,loginValue,passwordValue,countryIso) {
-      /*const res = mock.signUp
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(res);
-        }, 2000);
-      })*/
     try{
       return await fetch(`${this.BASE_URL}/api/signup`, {
           method:'POST',

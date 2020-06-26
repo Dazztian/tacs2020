@@ -45,17 +45,28 @@ function Login(props) {
   }
   
   const handleLoginWithGoogle = async (response) => {
-    const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
-    //const res = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
-    const data = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
-    if(true/*res.ok*/) {
-        //let user = await res.json()
-        localStorage.setItem('id_token', response.tokenId)
-        localStorage.setItem('id_session',data.sessionId)
-        localStorage.setItem('tracker_name',response.name)
-        userDispatch({ type: 'LOGIN_USER_SUCCESS' })
-        props.history.push('/user/home')
-    } 
+    //const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
+    const res = await api.loginUserWithGoogle(response.tokenId)
+    //const data = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    if(res.ok) {
+        let data = await res.json()
+        console.log(data)
+          const { user, token } = data;
+          localStorage.setItem('id_token', response.tokenId)
+          localStorage.setItem('id_session',user.id)
+          localStorage.setItem('tracker_name', user.name)
+          setIsLoading(false);
+          if(!user.isAdmin){ 
+            userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+            props.history.push('/user/home')
+          } else {
+            localStorage.setItem('role', user.isAdmin)
+            userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
+            props.history.push('/admin/home')
+          }
+    } else {
+      
+    }
   }
 
   const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,countryISo,history,setIsLoading,setSignupError) => {
@@ -65,7 +76,7 @@ function Login(props) {
       if(res.ok) {
         const {user, token} = await res.json()
           localStorage.setItem('id_token', token)
-          localStorage.setItem('id_session',user["id"])
+          localStorage.setItem('id_session',user.id)
           localStorage.setItem('tracker_name', user.name)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
@@ -84,7 +95,7 @@ function Login(props) {
       if(res.ok) {
         const data = await res.json()
         const { user, token } = data;
-        localStorage.setItem('id_session',user["id"])
+        localStorage.setItem('id_session',user.id)
         localStorage.setItem('id_token', token)
         localStorage.setItem('tracker_name', user.name)
         setIsLoading(false);

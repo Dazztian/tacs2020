@@ -833,7 +833,7 @@ loginAdmin : {
     "name": "the Big Boss",
     "email": "admin-root@gmail.com",
     "password": "adminutn",
-    "_id": "5ed691248303c86f89c5cfe8",
+    "id": "5ed691248303c86f89c5cfe8",
     "creationDate": null,
     "country": "Argentina",
     "isAdmin": true
@@ -845,7 +845,7 @@ loginUser : {
       "name": "Nacho Scocco",
       "email": "qwe@gmail.com",
       "password": "password311",
-      "_id": "5ede564a853cd27b821cee5c",
+      "id": "5ede564a853cd27b821cee5c",
       "creationDate": null,
       "country": "AR",
       "isAdmin": false
