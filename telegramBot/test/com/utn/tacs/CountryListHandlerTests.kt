@@ -54,7 +54,7 @@ class CountryListHandlerTests {
 
         assertEquals(listOf(TelegramMessageWrapper(
             chatId, myListsText,
-            replyMarkup = InlineKeyboardMarkup(listOf(listOf(InlineKeyboardButton("name", callbackData = "Check_list _id")))+ newListButtonNoMarkup())
+            replyMarkup = InlineKeyboardMarkup(listOf(listOf(InlineKeyboardButton("name", callbackData = "Check_list _id")))+ newListButtonsNoMarkup())
         )),
             myListsCommand(chatId)
         )
