@@ -2,10 +2,15 @@ import React, {useState, useEffect} from 'react'
 
 import MUIDataTable from "mui-datatables";
 
-
 import PageTitle from "../../../components/PageTitle/PageTitle";
 
+import Api from "../../../apis/Api"
+
+const api = new Api()
+
+
 const CantUsuariosInteresados = ()=>{
+    
 
     const state = { rowsSelected: [] };
 
@@ -15,17 +20,9 @@ const CantUsuariosInteresados = ()=>{
 
     const [count,setCount] = useState(0)
 
-    const BASE_URL = 'https://dcd471a082b5.ngrok.io';
-    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTQwODJkMDMwNzcyNjA5Y2IzOWQ2ZiIsImV4cCI6MTU5MzIxODU4OH0.zEd2mnPtfovp65fFPkv3WPKSY1RPPmMq5xrpleGv0F8"
-
     const obtenerListaDePaises = async ()=>{
         try{
-        let res = await fetch(BASE_URL+"/api/countries/names",{
-            method:"GET",
-            headers:{
-                'Accept': 'application/json'
-            }
-        })
+        const res= await api.getCountryList()
         let elemento = await res.json()
 
         let promArray = elemento.map( item => {  return [ item.name, item.iso2] })
@@ -43,13 +40,7 @@ const CantUsuariosInteresados = ()=>{
 
     const obtenerCantUsuariosInteresados= async (nombreDelPais, paisIsoCode) =>{
         try{
-            let res = await fetch(BASE_URL+"/api/admin/report/"+paisIsoCode+"/list",{
-            method:"GET",
-            headers:{
-                'Accept': 'application/json',
-                'Authorization' : 'Bearer '+ token
-            }
-        })
+        const res = await api.getInterestedInCountry(paisIsoCode)
         let elemento = await res.json()
 
         let promArray = elemento.totalUsers

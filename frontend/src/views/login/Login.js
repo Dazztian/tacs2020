@@ -11,7 +11,7 @@ import {
   MenuItem 
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
+import { GoogleLogin } from 'react-google-login';
 
 // styles
 import useStyles from "./styles";
@@ -21,18 +21,16 @@ import logo from "./images/logo.svg";
 import google from "./images/google.svg";
 
 // context
-import { useUserDispatch,  } from "../../context/UserContext";
-import { loginUser, createUser } from "../../apis/PublicApi"
+import { useUserDispatch } from "../../context/UserContext";
 import Api from "../../apis/Api"
-import { getCountry } from "../../apis/GeolocationApi";
 
 const api = new Api()
-
+let countryList = []
 function Login(props) {
   var classes = useStyles();
   // global
   var userDispatch = useUserDispatch();
-  // local
+  //var [countryList, setCountryList] = useState([])
   var [isLoading, setIsLoading] = useState(false);
   var [loginError, setLoginError] = useState(null);
   var [signUpError, setSignupError] = useState(null);
@@ -42,61 +40,74 @@ function Login(props) {
   var [passwordValue, setPasswordValue] = useState("");
   var [countryValue, setCountryValue] = useState("");
 
-  let countryMap
-  let countryList = []
-
-  const handleLoginWithGoogle = async () => {
-    
+  const responseGoogle = (response) => {
+    console.log(response);
+  }
+  
+  const handleLoginWithGoogle = async (response) => {
+    //const userCountrIso = countryList.filter(country => country.name===response.country)[0].iso2
+    const res = await api.loginUserWithGoogle(response.tokenId)
+    //const data = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
+    if(res.ok) {
+        let data = await res.json()
+        console.log(data)
+          const { user, token } = data;
+          localStorage.setItem('id_token', response.tokenId)
+          localStorage.setItem('id_session',user.id)
+          localStorage.setItem('tracker_name', user.name)
+          setIsLoading(false);
+          if(!user.isAdmin){ 
+            userDispatch({ type: 'LOGIN_USER_SUCCESS' })
+            props.history.push('/user/home')
+          } else {
+            localStorage.setItem('role', user.isAdmin)
+            userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
+            props.history.push('/admin/home')
+          }
+    } else {
+      
+    }
   }
 
-  const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,history,setIsLoading,setSignupError) => {
+  const handleCreateNewUser = async (userDispatch,nameValue,loginValue,passwordValue,countryISo,history,setIsLoading,setSignupError) => {
     setSignupError(false);
     setIsLoading(true)
-    if (!!loginValue && !!passwordValue) {
-      const res = await api.createUser(nameValue,loginValue,passwordValue)
-      if(true/*res.ok*/) {
-        //const {user, token} = await res.json()
-        const {user, token} = res;
-        if(!!token){
+      const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
+      if(res.ok) {
+        const {user, token} = await res.json()
           localStorage.setItem('id_token', token)
-          localStorage.setItem('id_session',user._id)
+          localStorage.setItem('id_session',user.id)
           localStorage.setItem('tracker_name', user.name)
-          localStorage.setItem('countryIso', user.name)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
-        } 
       } else {
         setSignupError(true);
         setIsLoading(false);
       }
-    }
   }
 
   const handleLoginUser = async (userDispatch,loginValue,passwordValue,history,setIsLoading,setLoginError) => {
-    setLoginError(false);
-    setIsLoading(true);
+    setLoginError(false)
+    setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
       //tener en cuenta q devuelve la res, esa hay q parsearla a json
       const res = await api.loginUser(loginValue,passwordValue)
-      if(true/*res.ok*/) {
-        //const {user, token} = await res.json()
-        const {user,token} = res;
-        if(loginValue !== 'admin' /*!user.isAdmin*/){ 
-          localStorage.setItem('id_session',user._id)
-          localStorage.setItem('id_token', token)
-          localStorage.setItem('tracker_name', user.name)
+      if(res.ok) {
+        const data = await res.json()
+        const { user, token } = data;
+        localStorage.setItem('id_session',user.id)
+        localStorage.setItem('id_token', token)
+        localStorage.setItem('tracker_name', user.name)
+        setIsLoading(false);
+        if(!user.isAdmin){ 
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
         } else {
-          localStorage.setItem('role', 1)
-          localStorage.setItem('id_token', 1)
-          localStorage.setItem('tracker_name', 'Jose Perez')
-          //setIsLoading(false);
+          localStorage.setItem('role', user.isAdmin)
           userDispatch({ type: 'LOGIN_ADMIN_SUCCESS' })
           history.push('/admin/home')
         }
       } else { //este else va por el res.ok
-        //userDispatch({ type: "LOGIN_FAILURE" });
         setLoginError(true);
         setIsLoading(false);
       }
@@ -105,9 +116,10 @@ function Login(props) {
 
   async function fetchCountries(){
       const res = await api.getCountryList()
-      if(true/*res.ok*/){
-        const data = await res.json()
-        console.log(data)
+      if(res.ok){
+        countryList = await res.json()        
+      } else {
+        console.log(res.errorMessage)
       }
   }
 
@@ -143,10 +155,18 @@ function Login(props) {
               <Typography variant="h1" className={classes.greeting}>
                 Covid-19 Tracker
               </Typography>
-              <Button size="large" className={classes.googleButton} onClick={() => handleLoginWithGoogle()}>
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
+              <GoogleLogin
+                clientId="850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com"
+                render={renderProps => (
+                  <Button size="large" className={classes.googleButton} onClick={renderProps.onClick}>
+                    <img src={google} alt="google" className={classes.googleIcon} />
+                       &nbsp;Sign in with Google
+                  </Button>
+                )}
+                onSuccess={handleLoginWithGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
               <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
                 <Typography className={classes.formDividerWord}>or</Typography>
@@ -191,7 +211,8 @@ function Login(props) {
                 {isLoading ? (
                   <CircularProgress size={26} className={classes.loginLoader} />
                 ) : (
-                  <Button
+                  <Grid container justify="center"> 
+                    <Button
                     disabled={
                       loginValue.length === 0 || passwordValue.length === 0
                     }
@@ -209,17 +230,12 @@ function Login(props) {
                     variant="contained"
                     color="primary"
                     size="large"
+                    fullWidth
                   >
                     Login
                   </Button>
+                  </Grid>
                 )}
-                <Button
-                  color="primary"
-                  size="large"
-                  className={classes.forgetButton}
-                >
-                  Forget Password
-                </Button>
               </div>
             </React.Fragment>
           )}
@@ -297,8 +313,8 @@ function Login(props) {
               >
                 {
                 countryList.map((country) => (
-                  <MenuItem key={country} value={country}>
-                    {country}
+                  <MenuItem key={country.iso2} value={country.iso2}>
+                    {country.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -313,6 +329,7 @@ function Login(props) {
                         nameValue,
                         loginValue,
                         passwordValue,
+                        countryValue,
                         props.history,
                         setIsLoading,
                         setSignupError)
@@ -348,17 +365,18 @@ function Login(props) {
                 <Typography className={classes.formDividerWord}>or</Typography>
                 <div className={classes.formDivider} />
               </div>
-              <Button
-                onClick={() => handleLoginWithGoogle()}
-                size="large"
-                className={classnames(
-                  classes.googleButton,
-                  classes.googleButtonCreating,
+              <GoogleLogin
+                clientId="850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com"
+                render={renderProps => (
+                  <Button size="large" className={classes.googleButton} onClick={renderProps.onClick}>
+                    <img src={google} alt="google" className={classes.googleIcon} />
+                       &nbsp;Sign in with Google
+                  </Button>
                 )}
-              >
-                <img src={google} alt="google" className={classes.googleIcon} />
-                &nbsp;Sign in with Google
-              </Button>
+                onSuccess={handleLoginWithGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
             </React.Fragment>
           )}
         </div>

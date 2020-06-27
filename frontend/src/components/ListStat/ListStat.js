@@ -12,11 +12,11 @@ import {
 } from "@material-ui/core";
 import ApexCharts from "react-apexcharts";
 import { useTheme } from "@material-ui/styles";
-import Widget from "../Widget";
-import { Typography } from "../Wrappers";
+import Widget from "../Widget/Widget";
+import { Typography } from "../Wrappers/Wrappers";
 import Dot from "../Sidebar/components/Dot";
 
-import TableComponent from "../Table/Table"
+import ColapsableTable from "../Table/ColapsableTable"
 
 // styles
 import useStyles from "../../views/user/dashboard/styles";
@@ -24,105 +24,72 @@ import useStyles from "../../views/user/dashboard/styles";
 import Api from "../../apis/Api"
 const api = new Api()
 
-const ListStat = ({ data })=>{
-  let sec;
-
-    const [unArray,setUnArray] = useState([{}])
-    const [loading,setLoading] = useState(false)
-    const [isLoading, setIsLoading] = useState(false);
-    
-    //esta funcion podria ir definida en el archivo api.js
-    const submitData = async (unPais)=>{
-      try{
-      let res = await fetch("http://localhost:8080/api/countries/"+ unPais+ "/timeseries",{
-          method:"GET",
-          headers:{
-              'Content-Type': 'application/json'
-          }
-      })
-      let elemento = await res.json()
-      
-      let maxCantDias =  Math.max(...elemento.timeseries.map( item => { return [item.number]}))
-  
-      //ARRAY de elementos ordenanados de menor a mayor POR FECHA
-      let timeseriesOrdenado= elemento.timeseries.sort( (a,b) =>{
-        return  new Date(a.date) - new Date(b.date);
-      });        
-             
-      let promArray = timeseriesOrdenado.map(({number, date, ...keepAttrs}) => keepAttrs)
-  
-      let timeSeriesFiltrado = await Promise.all(promArray)
-  
-      let result = {codigo: elemento.countrycode.iso3,
-                       confirmed: elemento.confirmed,
-                       deaths: elemento.deaths,
-                       recovered: elemento.recovered,
-                       diasMaximos: maxCantDias,
-                       timeseries: timeSeriesFiltrado}        
-  
-      setUnArray(result)
-      
-      }
-      catch(err) {
-          console.log(err)
-          //window.alert(err)
-      }
-  }
-  
-    useEffect(() => {
-
-    }, []);    
-    
-
-    var theme = useTheme();
-    var classes = useStyles();
+const ListStat = ({ isoList })=>{
+  var theme = useTheme();
+  var classes = useStyles();
 
     // local
-  var [mainChartState, setMainChartState] = useState("Infected");
-  
-  const series = [
-      {
-        name: "Pais1",
-        data: [31, 40, 28, 51, 42, 109, 100],
-      },
-      {
-        name: "Pais2",
-        data: [11, 32, 45, 32, 34, 52, 41],
-      },
-      {
-        name: "Pais3",
-        data: [7, 48, 12, 32, 63, 8, 72],
-      },
-    ];
-  
-  async function handleFetchOffset(){
+  const [mainChartState, setMainChartState] = useState("Infected");
+  const [isLoading, setIsLoading] = useState(false);
+  const [series, setSeries] = useState([])
+  const [rows,setRows] = useState([])
+  const [numDaysArray,setNumDays] = useState([])
+  const [dayFinal,setOffDayFinal] = useState(1)
+  const [dayInicial,setOffDayInicial] = useState(1)
+
+  async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
-    const res = await api.loginUser()
-      if(true/*res.ok*/) {
-        
-      } else { //este else va por el res.ok
-        //userDispatch({ type: "LOGIN_FAILURE" });
+    
+    const res = await api.getCountriesDataByDays(isoList,offinicial,offfinal)
+
+      if(res.ok) {
+        const data = await res.json()
+        setRows(data)
+        setNumDays(await createDays(data))
+        setMainChartState("");
+        setMainChartState("Infected");
+      } else {
         
       }
       setIsLoading(false);
-    } 
+      
+    }
+
+    async function createDays(data){
+      let dayArray = []
+      const final = await data.filter( r => r.offset===0 )[0].timeserieDate.length
+      for(let i=1;i<=final;i++){
+        dayArray.push(`Day ${i}`)
+      }
+      return dayArray
+    }
+    
+    async function alterChartData(newChartState){
+      let promArr = []
+      switch (newChartState){
+        case "Infected" : 
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesInfected}})
+              break;
+        case "Recovered" :
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesReconvered}})
+              break;
+        case "Death" : 
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesDeath}})
+              break;
+        default: 
+              break; 
+      }
+      setSeries(await Promise.all(promArr))
+    }
+
+    useEffect(() => {
+      alterChartData(mainChartState);
+    }, [mainChartState]); 
 
 return(
     <>
-  <Grid container spacing={2}>
-  <Grid item lg={5} md={6} sm={12} xs={12}>
-    <Widget 
-      upperTitle
-      noBodyPadding
-      bodyClass={classes.mainChartBody}
-      header={
-        <div className={classes.mainChartHeader}/> }
-    >
-        <TableComponent data={data.near} />
-    </Widget>
-  </Grid>
-
-  <Grid item lg={7} md={6} sm={12} xs={12}>
+  <Grid container spacing={1}>
+  <Grid item lg={12} md={12} sm={12} xs={12}>
   <Widget 
       bodyClass={classes.mainChartBody}
       header={
@@ -138,17 +105,21 @@ return(
             </Grid>
         ) : (
           <div className={classes.mainChartHeader}>
+          <Grid
+            container
+            justify="space-between"
+            spacing={1}             
+            > 
             <Grid   
               item lg={8} md={9} sm={10} xs={9}        
               container
               spacing={1}
               alignItems="center"
-              justify="left"
             >
-            <Grid item xs={3} md={3} >
+            <Grid item xs={2} md={2} >
               <TextField
                 id="filled-number"
-                label="Offset start"
+                label="Start day"
                 type="number"
                 margin='dense'
                 size='small'
@@ -156,18 +127,20 @@ return(
                 inputProps={
                   {step: 1,}
                 }
+                value={dayInicial}
                 onChange={(event) => { 
-                  sec=event.target.value
+                 setOffDayInicial(event.target.value)
                 } }
                 InputLabelProps={{
                   shrink: true,
                 }}
+                variant="outlined"
               />
             </Grid>
-            <Grid item xs={3} md={3} >
+            <Grid item xs={2} md={2} >
               <TextField
                 id="filled-number"
-                label="Offset end"
+                label="End day"
                 type="number"
                 margin='dense'
                 size='small'
@@ -175,29 +148,33 @@ return(
                 inputProps={
                   {step: 1,}
                 }
+                value={dayFinal}
                 onChange={(event) => { 
-                  sec=event.target.value
+                  setOffDayFinal(event.target.value)
                 } }
                 InputLabelProps={{
                   shrink: true,
                 }}
+                variant="outlined"
               />
             </Grid>
           <Grid item>
-            <Button xs={2} md={2} variant="outlined" color="primary" onClick={() =>{
-              handleFetchOffset()
+            <Button 
+              xs={2} 
+              md={2} 
+              variant="outlined" 
+              color="primary" 
+              disabled={
+                dayFinal === undefined || dayInicial < 1 || dayInicial === undefined || dayFinal<=dayInicial
+              }
+              onClick={() =>{
+                handleFetchOffset(dayInicial,dayFinal)
             }
             }>
               Submit
             </Button>
           </Grid> 
         </Grid>
-        <Grid
-            item lg={2} md={3} sm={2} xs={3}
-            container
-            spacing={1}             
-            alignItems="center"
-            justify="right"> 
           <Grid > 
           <Select
               value={mainChartState}
@@ -221,14 +198,24 @@ return(
         </Grid>          
       </div>
         )        
-        }
-  >
+        }>
             <ApexCharts
-            options={themeOptions(theme)}
+            options={themeOptions(numDaysArray,theme)}
             series={series}
             type="area"
-            height={350}
+            height="auto"
             />
+    </Widget>
+  </Grid>
+  <Grid item lg={12} md={12} sm={12} xs={12}>
+    <Widget 
+      upperTitle
+      noBodyPadding
+      bodyClass={classes.mainChartBody}
+      header={
+        <div className={classes.mainChartHeader}/> }
+    >
+        { rows.length ? <ColapsableTable rows={rows}/> : <Grid></Grid> }
     </Widget>
   </Grid>
   </Grid>
@@ -238,7 +225,7 @@ return(
 
 export default ListStat
 
-  function themeOptions(theme) {
+  function themeOptions(numDaysArray,theme) {
     return {
       dataLabels: {
         enabled: false,
@@ -247,21 +234,8 @@ export default ListStat
         curve: "smooth",
       },
       xaxis: {
-        type: "datetime",
-        categories: [
-          "2018-09-19T00:00:00",
-          "2018-09-19T01:30:00",
-          "2018-09-19T02:30:00",
-          "2018-09-19T03:30:00",
-          "2018-09-19T04:30:00",
-          "2018-09-19T05:30:00",
-          "2018-09-19T06:30:00",
-        ],
-      },
-      tooltip: {
-        x: {
-          format: "dd/MM/yy HH:mm",
-        },
+        type: "string",
+        categories: numDaysArray
       },
       fill: {
         colors: [theme.palette.primary.light, theme.palette.success.light],

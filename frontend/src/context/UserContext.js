@@ -54,6 +54,18 @@ export { UserProvider, useUserState, useUserDispatch, signOut };
 
 // ###########################################################
 
+
+function signOut(dispatch, history) {
+  localStorage.removeItem("id_token");
+  localStorage.removeItem('tracker_name');
+  localStorage.removeItem("role");
+  localStorage.removeItem('id_session')
+  localStorage.removeItem('tracker_country')
+  localStorage.removeItem('tracker_country_Iso')
+  dispatch({ type: "SIGN_OUT_SUCCESS" });
+  history.push("/login");
+}
+
 const loginUser = async (dispatch, login, password, history, setIsLoading, setError) => {
   setError(false);
   if (!!login && !!password) {
@@ -102,15 +114,6 @@ const createNewUser = async (dispatch, nameValue, login, password, history, setI
     }
   }
 
-function signOut(dispatch, history) {
-  localStorage.removeItem("id_token");
-  localStorage.removeItem('tracker_name');
-  localStorage.removeItem('tracker_country');
-  localStorage.removeItem("role");
-  localStorage.removeItem('tracker_country_Iso')
-  dispatch({ type: "SIGN_OUT_SUCCESS" });
-  history.push("/login");
-}
 
 
 /*

@@ -15,7 +15,6 @@ import useStyles from "./styles";
 
 // components
 import SidebarLink from "./components/SidebarLink/SidebarLink";
-import Dot from "./components/Dot";
 
 // context
 import {
@@ -28,7 +27,7 @@ const structure = [
   { id: 0, label: "Home", link: "/user/home", icon: <HomeIcon /> },
   {
     id: 1,
-    label: "Lists",
+    label: "Lists", link: "/user/createlists",
     children: [
       { label: "Create", link: "/user/createlists" },
       { label: "Edit", link: "/user/editlists" },

@@ -22,7 +22,7 @@ import { useUserState } from "./context/UserContext";
 export default function App() {
   // global
   var { isAuthenticated, isAdmin } = useUserState();
-
+  
   return (
     <Router>
       <Switch>
@@ -47,7 +47,7 @@ export default function App() {
             ) : (
               <Redirect
                 to={{
-                  pathname: "/user",
+                  pathname: "/user/home",
                   state: { from: props.location }
                 }}
               />
@@ -74,7 +74,7 @@ export default function App() {
             isAdmin ? (
               <Redirect
                 to={{
-                  pathname: "/admin",
+                  pathname: "/admin/home",
                   state: { from: props.location }
                 }}
               />

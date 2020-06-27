@@ -1,11 +1,15 @@
-FROM node:10.20.0 as build-deps
-WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
-RUN yarn
+# build environment
+FROM node:10.20.0 as build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json .
+RUN npm i --silent
 COPY . ./
-RUN yarn build
+RUN npm run build
 
-FROM nginx:1.12-alpine
-COPY --from=build-deps /usr/src/app/build /usr/share/nginx/html
+# production environment
+FROM nginx:stable-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 8081
 CMD ["nginx", "-g", "daemon off;"]

@@ -38,7 +38,7 @@ const structure = [
     icon: <Public /> 
   },
     {
-      id: 3,//Actualizar/Corregir a donde te redirige
+      id: 3,
       label: "Lists", link: "/admin/registeredLists", icon: <Search />,
     },
 ];

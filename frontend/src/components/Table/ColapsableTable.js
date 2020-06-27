@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  Paper,
   TablePagination,
   IconButton,
   Collapse,
@@ -46,40 +45,40 @@ const useRowStyles = makeStyles({
   },
 });
 
-export default function TableComponent({data}) {
+export default function ColapsableTable({rows}) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
-  const rowsPerPage = 2
-
+  const rowsPerPage = 5
+  const rowAlign = "center"
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
   return (
     <React.Fragment>
-      <TableContainer className={Paper}>
+      <TableContainer>
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
-              <StyledTableCell align="right">Country</StyledTableCell>
-              <StyledTableCell align="right">Infected</StyledTableCell>
-              <StyledTableCell align="right">Recovered</StyledTableCell>
-              <StyledTableCell align="right">Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Country</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Infected</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Recovered</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Deceased</StyledTableCell>
+              <StyledTableCell align={rowAlign}>Offset</StyledTableCell>
             </TableRow>
         </TableHead>
         <TableBody>
-        {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
           .map((row) => (
-            <Row key={row._id} row={row} />
+            <Row key={row.iso2} row={row} />
           ))}
-
         </TableBody>
       </Table>
       <TablePagination
         rowsPerPageOptions={[rowsPerPage]}
         component="div"
-        count={data.length}
+        count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -102,26 +101,43 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell align="right" component="th" scope="row">
-          {row.countryregion}
+        <TableCell align="center" component="th" scope="row">
+          {row.countryRegion}
         </TableCell>
-        <TableCell align="right">{row.confirmed}</TableCell>
-        <TableCell align="right">{row.deaths}</TableCell>
-        <TableCell align="right">{row.recovered}</TableCell>
+        <TableCell align="center">{row.confirmed}</TableCell>
+        <TableCell align="center">{row.recovered}</TableCell>
+        <TableCell align="center">{row.deaths}</TableCell>
+        <TableCell align="center">{row.offset}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                Offset
+              <Typography variant="h3" gutterBottom component="div">
+                Timeline
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell align="center">Infected</TableCell>
+                    <TableCell align="center">Recovered</TableCell>
+                    <TableCell align="center">Deceased</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  { row.timeserieDate.map((value, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">
+                        {value}
+                      </TableCell >
+                      <TableCell align="center">{row.timeseriesInfected[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesReconvered[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesDeath[index]}</TableCell>
+                    </TableRow>
+                    ))
+                  }
+
                 </TableBody>
               </Table>
             </Box>

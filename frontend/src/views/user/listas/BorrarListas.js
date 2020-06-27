@@ -1,44 +1,31 @@
 import React, {useState, useEffect} from 'react'
-import { Grid, Container } from '@material-ui/core';
+import { Grid, CircularProgress, Paper } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
-import ReactDOM from "react-dom";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
-
+import Api from '../../../apis/Api';
+const api = new Api()
 
 const BorrarListas = ()=>{
 
 
-    const [unArray,setUnArray] = useState([{name:null,paises:[]}])
-    const [count,setCount] = useState(0)
-    const [loading,setLoading] = useState(false)
-
-    
-    const id_user= "5ee7832eccd6b51684d61dd0"
-    const BASE_URL = 'http://localhost:8080';
-    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTc4MzJlY2NkNmI1MTY4NGQ2MWRkMCIsImV4cCI6MTU5MjI2NjcwMn0.kFiKa2zV5vHF18NG_khjR8xKpmpLKk6BMYFPcntI0_M"
+    const [unArray,setUnArray] = useState([])
+    const [selectedLists,setSelectedLists] = useState([])
+    const [loading,setLoading] = useState(true)
 
     const obtenerListaDePaisesXUsuario = async ()=>{
         try{
-            let res = await fetch("http://localhost:8080/api/user/"+ id_user + "/lists",{
-            method:"get",
-            headers:{
-                'Accept': 'application/json',
-                'Authorization' : 'Bearer '+ token
-                }
-            })
-            let elemento = await res.json();
+            let res = await api.getUserLists()
+            let data = await res.json();
 
-            let promArray = elemento.map( item=>{ return {name:item.name, id:item.id,
-                 paises:item.countries.map(pais => [pais]) } })
+            let promArray = data.map( list =>{ 
+                return [list.name, list.id]
+            })
 
             let resultArray = await Promise.all(promArray)
-
-            console.log(resultArray)
-
             setUnArray(resultArray)  
-           
+            setLoading(false)
 
         }
         catch(err) {
@@ -48,61 +35,72 @@ const BorrarListas = ()=>{
 
     }
 
-    //{{localPath}}/api/user/{{lastUserId}}/lists/5ed9051d66236a4280ec9603
-    const borrarListaSeleccionada= async (lista)=>{
+    const borrarListasSeleccionada= async ()=>{
         try{
-            let res = await fetch("http://localhost:8080/api/user/"+ id_user + "/lists/" + lista,{
-            method:"DELETE",
-            headers:{
-                'Accept': 'application/json',
-                'Authorization' : 'Bearer '+ token
-                }
-            })
-            console.log("La lista: "+lista+ "Ha sido eliminada exitosamente")
+            let promArray = selectedLists.map( item => unArray[item.dataIndex][1]).map(listId => api.deleteUserList(listId))
+            Promise.all(promArray);
         }
         catch(err) {
-            console.log("ERROR AL ELIMINAR LA LISTA: "+ lista)
             console.log(err)
             window.alert(err)
         }
 
     }
-
 
     useEffect(() => {
         obtenerListaDePaisesXUsuario()
-    }, [count]); 
+    }, []); 
 
     return(
             <>
-            {console.log("Esto es DENTRO del RETURN: "),
-            console.log(unArray.length)}
-
-            <PageTitle title="Listas de paises a BORRAR, escoja la lista a BORRAR" />            
-
-            {unArray.map(elemento =>{ return [
+            {
+            loading 
+				? 
+				<Paper>
+					<Grid
+						container
+						spacing={0}
+						direction="column"
+						alignItems="center"
+						justify="center"
+						style={{ minHeight: '80vh' }}
+					>
+        		<Grid item xs={3}>
+							<CircularProgress size={100}/>
+						</Grid>   
+					</Grid>
+				</Paper>
+				: 
+				<div>
+            <PageTitle title="Delete a list" />            
+            
             <Grid container spacing={4}>
-            <Grid item lg={10} md={4} sm={6} xs={12}>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
             <MUIDataTable
-            title={ elemento.name +'  '+ elemento.id}
-            data={elemento.paises}
-            columns={["paises"]}
+            title={""}
+            data={unArray}
+            columns={["List name","Id"]}
             options={{
-                filter: true,
                 selectableRows: 'multiple',
                 selectableRowsOnClick: true,
-                filterType: 'dropdown',
                 responsive: 'stacked',
                 rowsPerPage: 10,
-                onRowsDelete: ()=>{borrarListaSeleccionada(elemento.id)}
+                rowsPerPageOptions: [10],
+                print: false,
+                viewColumns: false,
+                fixedHeader: false,
+                download: false,
+                filter: false,
+                onRowsSelect:  (rowsSelected, allRows) => {
+                    setSelectedLists(allRows)
+                },
+                onRowsDelete: ()=>{ borrarListasSeleccionada()}
             }
             }
             />
             </Grid>
             </Grid>
-            ]
-             })
-            
+            </div>
             }
             </>
         )

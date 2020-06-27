@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react'
 import { TextField ,Container } from '@material-ui/core';
 import { Grid} from "@material-ui/core";
 import Button from '@material-ui/core/Button';
+import Api from "../../../apis/Api"
+
+const api = new Api()
 
 
 const ListasRegistradas = ()=>{
@@ -9,19 +12,16 @@ const ListasRegistradas = ()=>{
     const [fechaInicio, setFechaInicio] =useState()
     const [fechaFin, setFechaFin] =useState()
 
-
-    const BASE_URL = 'https://dcd471a082b5.ngrok.io';
-    const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZTQwODJkMDMwNzcyNjA5Y2IzOWQ2ZiIsImV4cCI6MTU5MzIxODU4OH0.zEd2mnPtfovp65fFPkv3WPKSY1RPPmMq5xrpleGv0F8"
-
     const obtenerListasPorFechas = async(fechaInicio, fechaFin) =>{
         try{            
-            let res = await fetch( BASE_URL + "/api/admin/report/lists?startDate=" + fechaInicio + "&endDate=" + fechaFin,{
+            /*let res = await fetch( BASE_URL + "/api/admin/report/lists?startDate=" + fechaInicio + "&endDate=" + fechaFin,{ 
                 method:"GET",
                 headers:{
                     'Accept': 'application/json',
                     'Authorization' : 'Bearer '+ tokenAdmin
                 }
-            })
+            })*/
+            const res = await api.getAmountOfListsFromTo(fechaInicio, fechaFin)
             let elemento = await res.json()
             window.alert("La cantidad de listas es: " +elemento.totalLists)
         }

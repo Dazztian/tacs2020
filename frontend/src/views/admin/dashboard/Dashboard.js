@@ -2,12 +2,16 @@ import React, {useState, useEffect} from 'react'
 import { Grid} from "@material-ui/core";
 
 // components
-import Widget from "../../../components/Widget";
+import Widget from "../../../components/Widget/Widget";
 //import Table from "../../../components/Table/Table";
 import MUIDataTable from "mui-datatables";
 
-// styles
+import Api from "../../../apis/Api"
+
+// styles 
 import useStyles from "./styles";
+
+const api = new Api()
 
 export default function Dashboard(props) {
   var classes = useStyles();
@@ -18,27 +22,16 @@ export default function Dashboard(props) {
   const [unArrayUsuarioParticular,setunArrayUsuarioParticular] = useState({})
   const [count,setCount] = useState(0)
 
-
-  const id_user= "5ed6afdefec8e000a9d826ae"
-  const BASE_URL = 'http://localhost:8080';
-  const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6InRhY3MiLCJpZCI6IjVlZDZhZmRlZmVjOGUwMDBhOWQ4MjZhZSIsImV4cCI6MTU5MzEzODAxMn0.ewtiIAlsYQeVsTTKZRjVDpV-Lppflu0BDjxj54VVm1Q"
-
   const obtenerInfoDeUsuarios = async ()=>{
     try{
-    let res = await fetch(BASE_URL +"/api/admin/report/",{
-        method:"get",
-        headers:{
-          'Accept': 'application/json',
-          'Authorization' : 'Bearer '+ tokenAdmin
-          }
-    })
+    
+    const res = await api.getAllReports()
     let elemento = await res.json()
-    /* [{  id: 0, name: "Mark Otto",  email: "ottoto@wxample.com"},*/
+    console.log(elemento)
     let resultArray = await Promise.all(elemento)
 
     setunArrayTodosLosUsuarios(resultArray)
-    console.log(resultArray)
-    
+
     }
     catch(err) {
         console.log(err)
@@ -49,13 +42,7 @@ export default function Dashboard(props) {
 
 const obtenerInfoUsuarioParticular = async (unIdUsuario)=>{
   try{
-      let res = await fetch(BASE_URL +"/api/admin/report/"+ unIdUsuario,{
-      method:"get",
-      headers:{
-        'Accept': 'application/json',
-        'Authorization' : 'Bearer '+ tokenAdmin
-        }
-  })
+      let res = api.getUserReport(unIdUsuario)
       let elemento = await res.json()
 
       let promArray =  [{ name:elemento.user.name, listsQuantity:elemento.listsQuantity, countriesTotal:elemento.countriesTotal }]
@@ -88,7 +75,7 @@ useEffect(() => {
 
         </Grid>
         <Grid item xs={12}>
-          <Widget title="Escoja el usuario para obtener sus datos"   upperTitle   noBodyPadding    bodyClass={classes.tableWidget} >
+          <Widget title="Usuarios"   upperTitle   noBodyPadding    bodyClass={classes.tableWidget} >
             <MUIDataTable
             title="Lista de usuarios"
             data={unArrayTodosLosUsuarios}
