@@ -1,91 +1,118 @@
 package com.utn.tacs.e2e.rest
 
-import org.junit.Test
-import org.junit.Before
-import io.ktor.server.testing.withTestApplication
-import io.ktor.application.Application
-import com.utn.tacs.module
-import io.ktor.server.testing.handleRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.utn.tacs.Country
+import com.mongodb.client.MongoDatabase
 import com.utn.tacs.LoginResponse
-import com.utn.tacs.SignUpRequest
-import io.ktor.http.*
+import com.utn.tacs.auth.AuthorizationService
+import com.utn.tacs.authentication
+import com.utn.tacs.contentNegotiator
+import com.utn.tacs.exception.exceptionHandler
+import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.rest.login
+import com.utn.tacs.user.UsersRepository
+import com.utn.tacs.user.UsersService
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import org.json.JSONObject
-import org.junit.jupiter.api.Assertions
-import kotlin.test.assertNotNull
-import org.litote.kmongo.id.jackson.IdJacksonModule
+import io.ktor.server.testing.withTestApplication
+import org.junit.BeforeClass
+import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
+import org.litote.kmongo.KMongo
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.concurrent.TimeUnit
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
+@Testcontainers
 class LoginControllerKtTest {
-
-    private val timestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
-    private val userEmail = "testuser" + timestamp + "@gmail.com"
-
     @Test
-    /**
-     * Test login non existing user
-     */
-    fun testLogin_nonExistingUser_notFoundException() = withTestApplication(Application::module) {
+    fun testSignUpAndLoginFlow() = withTestApplication({
+        exceptionHandler()
+        contentNegotiator()
+        authentication(usersRepository)
+        login(authorizationService, usersService)
+    }) {
         with(handleRequest(HttpMethod.Post, "/api/login") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody("{\"email\":\""+ userEmail +"\",\"password\":\"1234\"}")
-        }){
+            setBody("{\"email\":\"$userEmail\",\"password\":\"1234\"}")
+        }) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.NotFound)
+            assertEquals(HttpStatusCode.NotFound, status)
         }
-    }
-
-    @Test
-    /**
-     * Test Steps:
-     *      create an user successfully - try send is admin true but the user should be created as no admin
-     *      Login that user
-     *      Get that user info
-     *      Delete that user
-     */
-    fun testSignUp_nonExistingUserSendIsAdmingTrue_ok() = withTestApplication(Application::module) {
-        var userId = ""
-        var token = ""
 
         with(handleRequest(HttpMethod.Post, "/api/signup") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody("{\"name\":\"testUser\",\"email\":\"" + userEmail + "\",\"password\":\"1234\",\"country\":\"AR\",\"isAdmin\":true}")
-        }){
+            setBody("{\"name\":\"testUser\",\"email\":\"$userEmail\",\"password\":\"1234\",\"country\":\"AR\",\"isAdmin\":true}")
+        }) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(HttpStatusCode.OK, status)
+            val loginResponse: LoginResponse = jacksonObjectMapper().readValue(response.content!!)
 
-            val jsonData = JSONObject(response.content)
-            userId = (jsonData.get("user") as JSONObject).get("_id").toString()
-            token = jsonData.get("token").toString()
+            assertEquals(HttpStatusCode.OK, status)
+            assertTrue(loginResponse.token.isNotEmpty())
+            assertTrue(loginResponse.user.email.isNotEmpty())
+            assertTrue(loginResponse.user.id.isNotEmpty())
+            assertFalse(loginResponse.user.isAdmin)
+            assertTrue(loginResponse.user.name.isNotEmpty())
         }
 
         with(handleRequest(HttpMethod.Post, "/api/login") {
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody("{\"email\":\""+ userEmail +"\",\"password\":\"1234\"}")
-        }){
+            setBody("{\"email\":\"$userEmail\",\"password\":\"12345\"}")
+        }) {
+            val status = response.status() ?: throw Exception("not response status code found")
+            assertEquals(HttpStatusCode.Unauthorized, status)
+        }
+
+        with(handleRequest(HttpMethod.Post, "/api/login") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody("{\"email\":\"$userEmail\",\"password\":\"1234\"}")
+        }) {
             val status = response.status() ?: throw Exception("not response status code found")
             assertEquals(status, HttpStatusCode.OK)
         }
 
-        with(handleRequest(HttpMethod.Get, "/api/user/${userId}") {
-            addHeader(HttpHeaders.Authorization, "Bearer ${token}")
-        }){
+        with(handleRequest(HttpMethod.Post, "/api/signup") {
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody("{\"name\":\"testUser\",\"email\":\"$userEmail\",\"password\":\"1234\",\"country\":\"AR\",\"isAdmin\":true}")
+        }) {
             val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.OK)
+            assertEquals(HttpStatusCode.BadRequest, status)
         }
+    }
 
-        with(handleRequest(HttpMethod.Delete, "/api/user/${userId}") {
-            addHeader(HttpHeaders.Authorization, "Bearer ${token}")
-        }){
-            val status = response.status() ?: throw Exception("not response status code found")
-            assertEquals(status, HttpStatusCode.Accepted)
+    companion object {
+        private lateinit var usersRepository: UsersRepository
+        private lateinit var authorizationService: AuthorizationService
+        private lateinit var usersService: UsersService
+        private lateinit var userListsRepository: UserListsRepository
+
+        private val timestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
+        private val userEmail = "testuser" + timestamp + "@gmail.com"
+
+        @Container
+        var mongoContainer = GenericContainer<Nothing>("mongo:3.6.18").apply { withExposedPorts(27017) }
+
+        private lateinit var mongoDatabase: MongoDatabase
+
+        @BeforeClass
+        @JvmStatic
+        fun before() {
+            mongoContainer.start()
+            mongoDatabase = KMongo.createClient("mongodb://${mongoContainer.containerIpAddress}:${mongoContainer.getMappedPort(27017)}").getDatabase("test")
+
+            usersRepository = UsersRepository(mongoDatabase)
+
+            userListsRepository = UserListsRepository(mongoDatabase, usersRepository)
+            usersService = UsersService(usersRepository, userListsRepository)
+            authorizationService = AuthorizationService(usersRepository, usersService)
+
         }
     }
 }

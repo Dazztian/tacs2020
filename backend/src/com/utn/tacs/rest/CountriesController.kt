@@ -1,54 +1,49 @@
 package com.utn.tacs.rest
 
+import com.utn.tacs.CountriesNamesResponse
 import com.utn.tacs.countries.CountriesService
-import com.utn.tacs.*
-import com.utn.tacs.countries.*
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
 import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
+import io.ktor.features.BadRequestException
 import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import io.ktor.util.pipeline.intercept
-
 
 fun Application.countriesRoutes(countriesService: CountriesService) {
-    val logger = getLogger()
 
     routing {
         route("/api/countries") {
             get {
-                try{
-                    val name = call.request.queryParameters["name"]
-                    val lat = call.request.queryParameters["lat"]?.toDouble()
-                    val lon = call.request.queryParameters["lon"]?.toDouble()
-                    when{
-                        lat != null && lon != null -> call.respond(countriesService.getNearestCountries(lat, lon))
-                        name != null -> call.respond(countriesService.getCountryLatestByName(name))
-                        else -> call.respond(countriesService.getAllCountries())
-                    }
-                } catch (e: Exception){
-                    logger.error("Parameters where not correct...", e)
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-            }
-            get("/names") {
-                try{
-                    val a = countriesService.getAllCountries().map { x -> x.countryregion }.sorted()
-                    call.respond(a)
-                } catch (e: Exception){
-                    call.respond(HttpStatusCode.BadRequest)
+                val name = call.request.queryParameters["name"]
+                val lat = call.request.queryParameters["lat"]?.toDouble()
+                val lon = call.request.queryParameters["lon"]?.toDouble()
+                when {
+                    lat != null && lon != null -> call.respond(countriesService.getNearestCountries(lat, lon))
+                    name != null -> call.respond(countriesService.getCountryLatestByName(name))
+                    else -> call.respond(countriesService.getAllCountries())
                 }
             }
             get("/{iso2}") {
                 val iso2: String = call.parameters["iso2"].toString()
                 call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
             }
-            get("/{iso2}/timeseries") {
-                val iso2: String = call.parameters["iso2"].toString()
-                call.respond(countriesService.getCountryTimesSeries(iso2.toUpperCase()))
+            get("/names") {
+                call.respond(countriesService.getAllCountries()
+                    .filter { it.countrycode != null}
+                    .map { CountriesNamesResponse(it.countryregion, it.countrycode!!.iso2) } )
+            }
+            get("/timeseries") {
+                val iso2Countries = call.request.queryParameters["countries"]!!.split(",")
+                val fromDay: Int? = call.request.queryParameters["fromDay"]?.toInt()
+                val toDay: Int? = call.request.queryParameters["toDay"]?.toInt()
+                val fromDate: String? = call.request.queryParameters["fromDate"]
+                val toDate: String? = call.request.queryParameters["toDate"]
+                if (null != fromDay && null != toDay && fromDay > toDay) {
+                    throw BadRequestException("Invalid days ranges")
+                }
+                call.respond(countriesService.getCountryTimesSeries(iso2Countries, fromDay, toDay, fromDate, toDate))
             }
         }
     }

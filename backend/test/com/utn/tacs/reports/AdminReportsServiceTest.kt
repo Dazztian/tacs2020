@@ -4,26 +4,30 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import com.utn.tacs.User
 import com.utn.tacs.UserCountriesList
+import com.utn.tacs.UserCountriesListResponse
 import com.utn.tacs.UserData
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.user.USERS_COLLECTION_NAME
 import com.utn.tacs.user.UsersRepository
+import io.ktor.features.NotFoundException
 import org.bson.Document
+import org.bson.types.ObjectId
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
-import org.litote.kmongo.*
+import org.junit.jupiter.api.assertThrows
+import org.litote.kmongo.Id
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.newId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
-import java.time.ZoneOffset
-import kotlin.test.*
 
 @Testcontainers
 class AdminReportsServiceTest {
-
 
     @Test
     fun testGetUserData() {
@@ -36,75 +40,71 @@ class AdminReportsServiceTest {
         Assert.assertEquals(2, result?.listsQuantity)
         Assert.assertEquals(6, result?.countriesTotal)
 
-        Assert.assertNull(service.getUserData("NON_EXISTENT_ID"))
+        assertThrows<NotFoundException> { service.getUserData(ObjectId().toString()) }
     }
 
     @Test
     fun testGetListsByDate() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
-        val result = service.getRegisteredUserListsBetween(LocalDate.parse("2020-05-23"), LocalDate.parse("2020-05-23"))
+        val result = service.getListsQuantityBetween(LocalDate.parse("2020-05-23"), LocalDate.parse("2020-05-23"))
 
         Assert.assertNotNull(result)
-        Assert.assertEquals(1, result.size)
-        Assert.assertTrue(result.contains(userCountryList1))
+        Assert.assertEquals(1, result.totalLists)
 
-        val result2 = service.getRegisteredUserListsBetween(LocalDate.parse("2020-05-05"), LocalDate.parse("2020-05-25"))
+        val result2 = service.getListsQuantityBetween(LocalDate.parse("2020-05-05"), LocalDate.parse("2020-05-25"))
 
         Assert.assertNotNull(result2)
-        Assert.assertEquals(4, result2.size)
-        Assert.assertTrue(result2.containsAll(listOf(userCountryList1, userCountryList2, userCountryList3, userCountryList4)))
+        Assert.assertEquals(4, result2.totalLists)
 
-        val result3 = service.getRegisteredUserListsBetween(LocalDate.parse("2021-05-05"), LocalDate.parse("2021-05-25"))
+        val result3 = service.getListsQuantityBetween(LocalDate.parse("2021-05-05"), LocalDate.parse("2021-05-25"))
 
         Assert.assertNotNull(result3)
-        Assert.assertEquals(0, result3.size)
+        Assert.assertEquals(0, result3.totalLists)
     }
 
     @Test
-    fun testGetListQuantity(){
+    fun testGetListQuantity() {
         val service = AdminReportsService(usersRepository, userListRepository)
-        Assert.assertEquals(4, service.getListsQuantity())
+        Assert.assertEquals(4, service.getListsQuantity().totalLists)
     }
 
     @Test
-    fun testGetUsersByCountry(){
+    fun testGetUsersByCountry() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
         val result = service.getUsersByCountry("Country3")
-        Assert.assertEquals(2, result.size)
-        Assert.assertTrue(result.contains(user1._id.toString()))
-        Assert.assertTrue(result.contains(user2._id.toString()))
+        Assert.assertEquals(2, result.users.size)
+        Assert.assertTrue(result.users.contains(user1._id.toString()))
+        Assert.assertTrue(result.users.contains(user2._id.toString()))
 
         val result2 = service.getUsersByCountry("Country6")
-        Assert.assertEquals(1, result2.size)
-        Assert.assertTrue(result2.contains(user1._id.toString()))
+        Assert.assertEquals(1, result2.users.size)
+        Assert.assertTrue(result2.users.contains(user1._id.toString()))
 
         val result3 = service.getUsersByCountry("NON_EXISTENT")
-        Assert.assertEquals(0, result3.size)
+        Assert.assertEquals(0, result3.users.size)
     }
 
     @Test
-    fun testGetListComparison(){
+    fun testGetListComparison() {
         val service = AdminReportsService(usersRepository, userListRepository)
 
         val result = service.getListComparison(userCountryList1._id.toString(), userCountryList4._id.toString())
         Assert.assertNotNull(result)
-        Assert.assertEquals(userCountryList1, result.userCountryList1)
-        Assert.assertEquals(userCountryList4, result.userCountryList2)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList1), result.userCountryList1)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList4), result.userCountryList2)
         Assert.assertEquals(setOf("Country1", "Country2", "Country3"), result.sharedCountries)
 
         val result2 = service.getListComparison(userCountryList1._id.toString(), userCountryList2._id.toString())
         Assert.assertNotNull(result2)
-        Assert.assertEquals(userCountryList1, result2.userCountryList1)
-        Assert.assertEquals(userCountryList2, result2.userCountryList2)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList1), result2.userCountryList1)
+        Assert.assertEquals(UserCountriesListResponse(userCountryList2), result2.userCountryList2)
         Assert.assertTrue(result2.sharedCountries.isEmpty())
 
-        val result3 = service.getListComparison(userCountryList1._id.toString(), "NON_EXISTENT")
-        Assert.assertNull(result3)
+        assertThrows<NotFoundException> { service.getListComparison(userCountryList1._id.toString(), ObjectId().toString()) }
 
-        val result4 = service.getListComparison("NON_EXISTENT_1", "NON_EXISTENT_2")
-        Assert.assertNull(result4)
+        assertThrows<NotFoundException> { service.getListComparison(ObjectId().toString(), ObjectId().toString()) }
     }
 
     companion object {

@@ -2,11 +2,11 @@ package com.utn.tacs
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.utn.tacs.account.AccountRepository
-import com.utn.tacs.account.AccountService
+import com.utn.tacs.auth.AuthorizationService
+import com.utn.tacs.auth.JwtConfig
 import com.utn.tacs.countries.CountriesRepository
 import com.utn.tacs.countries.CountriesService
-
+import com.utn.tacs.exception.exceptionHandler
 import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.reports.AdminReportsService
 import com.utn.tacs.rest.*
@@ -16,53 +16,83 @@ import com.utn.tacs.user.UsersService
 import com.utn.tacs.utils.MongoClientGenerator
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
-import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.OAuthServerSettings
+import io.ktor.auth.authentication
+import io.ktor.auth.jwt.jwt
+import io.ktor.auth.oauth
+import io.ktor.client.HttpClient
 import io.ktor.features.CORS
+import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.util.pipeline.PipelineInterceptor
-import io.ktor.util.pipeline.PipelinePhase
+import io.ktor.routing.Routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import org.litote.kmongo.id.jackson.IdJacksonModule
 
-val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
-val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
-val usersService = UsersService(usersRepository, userListsRepository)
-val accountService = AccountService(usersRepository, AccountRepository(MongoClientGenerator.getDataBase()), usersService)
-val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase()))
+fun main(args: Array<String>) {
 
-//Changed the package to work with intellij.
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+    //Initialize everything with the correct mongo url
+    //This is done here to be allowed to change the db on executing the app, and not having it tied up to the config file
+    val mongoDb = args[0]
+    val mongoUrl = args[1]
+    val mongoPort = args[2]
 
-fun Application. module() {
+    MongoClientGenerator.setProperties(mongoDb, mongoUrl, mongoPort.toInt())
+
+    embeddedServer(Netty, 8080, module = Application::module).start(wait = true)
+}
+
+fun Application.module() {
+    val usersRepository = UsersRepository(MongoClientGenerator.getDataBase())
 
     install(DefaultHeaders)
     install(CORS) {
         method(HttpMethod.Post)
         method(HttpMethod.Get)
+        method(HttpMethod.Delete)
+        method(HttpMethod.Put)
         header(HttpHeaders.Accept)
+        header("Authorization")
         anyHost()
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
-
+    install(CallLogging)
+    authentication(usersRepository)
     contentNegotiator()
+    exceptionHandler()
+    routes(usersRepository)
+}
 
-    install(StatusPages) {
-        exception<Throwable> { cause ->
-            val error = HttpBinError(code = HttpStatusCode.InternalServerError, request = call.request.local.uri, message = cause.toString(), cause = cause)
-            call.respond(error)
+/**
+ * This is separated in a different method to be able to call it when testing controllers.
+ * */
+fun Application.authentication(usersRepository: UsersRepository) {
+    install(Authentication) {
+        /**
+         * Setup the JWT authentication to be used in [Routing].
+         * If the token is valid, the corresponding [User] is fetched from the database.
+         * The [User] can then be accessed in each [ApplicationCall].
+         */
+        jwt {
+            verifier(JwtConfig.verifier)
+            realm = "tacs"
+            validate {
+                it.payload.getClaim("id").asString()?.let(usersRepository::getUserOrFail)
+            }
+        }
+        oauth("google-oauth") {
+            client = HttpClient()
+            providerLookup = { googleOauthProvider }
+            urlProvider = { "http://localhost:8080/api/google" }
         }
     }
-
-    routes()
 }
 
 fun Application.contentNegotiator() {
@@ -75,12 +105,33 @@ fun Application.contentNegotiator() {
     }
 }
 
-fun Application.routes() {
+fun Application.routes(usersRepository: UsersRepository) {
+    val userListsRepository = UserListsRepository(MongoClientGenerator.getDataBase(), usersRepository)
+    val usersService = UsersService(usersRepository, userListsRepository)
+    val authorizationService = AuthorizationService(usersRepository, usersService)
+    val countriesService = CountriesService(CountriesRepository(MongoClientGenerator.getDataBase(), CovidExternalClient))
+
+
     healthCheckRoutes()
     countriesRoutes(countriesService)
     userCountriesListRoutes(usersService)
     users(usersService)
-    login(accountService)
+    login(authorizationService, usersService)
     adminReports(AdminReportsService(usersRepository, userListsRepository))
-    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase()), usersService, countriesService)
+    telegram(usersRepository, userListsRepository, TelegramRepository(MongoClientGenerator.getDataBase(), userListsRepository), usersService, countriesService)
 }
+
+//Define a call for when using authorization
+val ApplicationCall.user get() = authentication.principal<User>()
+
+
+val googleOauthProvider = OAuthServerSettings.OAuth2ServerSettings(
+        name = "google",
+        authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
+        accessTokenUrl = "https://www.googleapis.com/oauth2/v3/token",
+        requestMethod = HttpMethod.Post,
+
+        clientId = "850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com",
+        clientSecret = "",
+        defaultScopes = listOf("profile", "email")
+)

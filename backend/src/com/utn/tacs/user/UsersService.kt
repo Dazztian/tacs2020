@@ -1,14 +1,15 @@
 package com.utn.tacs.user
 
 import com.utn.tacs.*
-import com.utn.tacs.lists.*
-import io.ktor.features.NotFoundException
-import org.litote.kmongo.Id
-import java.lang.Exception
-import com.utn.tacs.exception.UnAuthorizedException
 import com.utn.tacs.exception.UserAlreadyExistsException
+import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.utils.Encoder
+import com.utn.tacs.utils.GoogleOauthDataParser
+import com.utn.tacs.utils.countriesNamesMap
+import io.ktor.features.NotFoundException
 import org.bson.types.ObjectId
 import org.litote.kmongo.id.toId
+import java.time.LocalDate
 
 class UsersService(private val usersRepository: UsersRepository, private val userListsRepository: UserListsRepository) {
 
@@ -16,22 +17,13 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * Get user by Id
      *
      * @param id String
-     * @return UserResponse
+     * @return User
      *
      * @throws NotFoundException
      */
-    fun getUser(id: String): UserResponse {
+    fun getUser(id: String): User {
         try {
-            val user = usersRepository.getUserById(id) ?: throw NotFoundException()
-            return UserResponse(
-                user._id.toString(),
-                user.name,
-                user.email,
-                user.creationDate ?: "",
-                user.country!!,
-                user.isAdmin,
-                getUserLists(id)
-            )
+            return usersRepository.getUserById(id) ?: throw NotFoundException()
         } catch (e: IllegalArgumentException) {
             throw NotFoundException()
         }
@@ -50,10 +42,8 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         if (null != usersRepository.getUserByEmail(signUpRequest.email.trim().toLowerCase())) {
             throw UserAlreadyExistsException()
         }
-
-        return usersRepository.createUser(
-            User(signUpRequest.name, signUpRequest.email, signUpRequest.password, signUpRequest.country, signUpRequest.isAdmin ?: false)
-        ) ?: throw Exception()
+        return usersRepository.createUser(User(signUpRequest.name, signUpRequest.email, Encoder.encode(signUpRequest.password),
+                signUpRequest.country, signUpRequest.isAdmin ?: false)) ?: throw Exception()
     }
 
     /**
@@ -65,9 +55,16 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     fun getUserLists(userId: String): List<UserCountriesListResponse> {
         usersRepository.getUserById(userId) ?: throw NotFoundException()
         val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
-        userListsRepository.getUserLists(userId).forEach { it -> userLists.add(
-            UserCountriesListResponse(it._id.toString(), it.name, it.countries)
-        )}
+        userListsRepository.getUserLists(userId).forEach {
+            userLists.add(
+                UserCountriesListResponse(
+                    it._id.toString(),
+                    it.name,
+                    it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                    it.creationDate.toString()
+                )
+            )
+        }
         return userLists
     }
 
@@ -82,13 +79,14 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun getUserList(userId: String, listId: String): UserCountriesListResponse {
         val userList = userListsRepository.getUserList(listId) ?: throw NotFoundException()
-        if(!userList.userId.toString().equals(userId)) {
+        if (!userList.userId.toString().equals(userId)) {
             throw NotFoundException()
         }
         return UserCountriesListResponse(
-            userList._id.toString(),
-            userList.name,
-            userList.countries
+                userList._id.toString(),
+                userList.name,
+                userList.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                userList.creationDate.toString()
         )
     }
 
@@ -103,11 +101,13 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      * @throws NotFoundException
      */
     fun createUserList(userId: String, listName: String, countries: MutableSet<String>): UserCountriesListResponse {
-        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries)) ?: throw NotFoundException()
+        val creationDate = LocalDate.now()
+        val id = userListsRepository.createUserList(UserCountriesList(ObjectId(userId).toId(), listName.trim(), countries, creationDate)) ?: throw NotFoundException()
         return UserCountriesListResponse(
-            id.toString(),
-            listName,
-            countries
+                id,
+                listName,
+                countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                creationDate.toString()
         )
     }
 
@@ -122,7 +122,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUserList(userId: String, listId: String) {
         getUserList(userId, listId)
-        if (! userListsRepository.delete(listId)) {
+        if (!userListsRepository.delete(listId)) {
             throw Exception()
         }
     }
@@ -142,9 +142,10 @@ class UsersService(private val usersRepository: UsersRepository, private val use
         getUserList(userId, listId)
         val newListId = userListsRepository.doUpdate(listId, request.name, request.countries) ?: throw Exception()
         return UserCountriesListResponse(
-            newListId,
-            request.name,
-            request.countries
+                newListId,
+                request.name,
+                request.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                getUserList(userId, listId).creationDate
         )
     }
 
@@ -156,5 +157,20 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun deleteUser(userId: String) {
         usersRepository.delete(usersRepository.getUserById(userId) ?: throw NotFoundException())
+    }
+
+    /**
+     * Delete a user by his email
+     * @param userEmail String
+     * @throws NotFoundException
+     * @throws Exception
+     */
+    fun deleteUserByEmail(userEmail: String) {
+        usersRepository.delete(usersRepository.getUserByEmail(userEmail) ?: throw NotFoundException())
+    }
+
+    fun getOrCreate(data: Map<String, Any?>): User {
+        return usersRepository.getUserByEmail(data["email"] as String)
+                ?: usersRepository.createUser(GoogleOauthDataParser.parse(data))!!
     }
 }

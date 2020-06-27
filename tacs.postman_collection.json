@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b1249a49-f0ae-4aec-9021-7661d9c67ecf",
+		"_postman_id": "c18d1f9a-a9ec-45dc-8bba-7b0d0166341a",
 		"name": "tacs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -130,7 +130,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "506679e0-a5e1-43a3-9537-14275e05443f",
+								"id": "8a5fdd7c-1bfd-4252-b599-5e201aa12ba5",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"lastUserId\", jsonData._id);"
@@ -235,7 +235,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e4e9b101-d224-459c-b7fd-8dcaa21db5ee",
+								"id": "e029b6a4-8f48-4692-bd8b-502f001bb5d7",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"lastUserListId\", jsonData.id);"
@@ -352,7 +352,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "dcc65e7b-c683-4b5c-ad5e-eb5b87cad17b",
+								"id": "3ea48fdf-6857-4bc8-9f56-a9baa4ed1a13",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
@@ -393,7 +393,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "efd06b09-f273-4e2f-815f-6da73c03a836",
+								"id": "f1558be9-268f-4a52-991f-ca4101b9e8cc",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
@@ -447,6 +447,251 @@
 							"path": [
 								"api",
 								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "telegram",
+			"item": [
+				{
+					"name": "login telegram",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telegramId\":\"telegramId\",\n\t\"username\":\"test@gmail.com\",\n\t\"password\":\"pass\"\n}"
+						},
+						"url": {
+							"raw": "{{localPath}}/api/telegram/login",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get telegram session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{localPath}}/api/telegram?telegramId={telegramId}",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram"
+							],
+							"query": [
+								{
+									"key": "telegramId",
+									"value": "{telegramId}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout telegram",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"telegramId\":\"telegramId\",\n\t\"username\":null,\n\t\"password\":null\n}"
+						},
+						"url": {
+							"raw": "{{localPath}}/api/telegram/logout",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Countries list Telegram",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/telegram/countryList?telegramId=telegramId",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"countryList"
+							],
+							"query": [
+								{
+									"key": "telegramId",
+									"value": "telegramId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get countryList telegram",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/telegram/countryList/5ed597f56ffcd7219b362f14?telegramId=telegramId",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"countryList",
+								"5ed597f56ffcd7219b362f14"
+							],
+							"query": [
+								{
+									"key": "telegramId",
+									"value": "telegramId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add country to list",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"listName\",\n\t\"countries\": [\"Brazil\",\"China\",\"Argentina\",\"Chile\"]\n}"
+						},
+						"url": {
+							"raw": "{{localPath}}/api/telegram/countryList/5ed597f56ffcd7219b362f14/add?telegramId=telegramId",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"countryList",
+								"5ed597f56ffcd7219b362f14",
+								"add"
+							],
+							"query": [
+								{
+									"key": "telegramId",
+									"value": "telegramId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "timeseries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/countries/timeseries?fromDate=05/25/20&toDate=05/25/20&countries=CL,AR,AF&listId=listId",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"countries",
+								"timeseries"
+							],
+							"query": [
+								{
+									"key": "fromDate",
+									"value": "05/25/20"
+								},
+								{
+									"key": "toDate",
+									"value": "05/25/20"
+								},
+								{
+									"key": "countries",
+									"value": "CL,AR,AF"
+								},
+								{
+									"key": "listId",
+									"value": "listId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "timeseries Telegram",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localPath}}/api/telegram/timeseries?listId=listId",
+							"host": [
+								"{{localPath}}"
+							],
+							"path": [
+								"api",
+								"telegram",
+								"timeseries"
+							],
+							"query": [
+								{
+									"key": "listId",
+									"value": "listId"
+								}
 							]
 						}
 					},
