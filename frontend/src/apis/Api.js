@@ -142,17 +142,12 @@ class Api {
   }
 
   async loginUserWithGoogle(tokenId) {
-    
-    try{
-      return await fetch(`${this.BASE_URL}/auth/google`, {
-        method:'POST',
-        headers: this.createHeaders(),
-        body: JSON.stringify(
-          {
-            token: tokenId
-          }),
+    try {
+      return await fetch(`${this.BASE_URL}/api/auth/google?token=${tokenId}`, {
+        method: 'POST',
+        headers: this.createHeaders()
       });
-    }catch(error){
+    } catch (error) {
       console.log(error)
     }
   }

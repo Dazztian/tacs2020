@@ -45,24 +45,19 @@ fun Application.login(authorizationService: AuthorizationService, usersService: 
                 call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
             }
         }
-        authenticate("google-oauth") {
-            route("/api/google") {
-                handle {
-                    val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
-                            ?: error("No principal")
+        route("/api/auth/google") {
+            handle {
+                val token = call.request.queryParameters["token"] ?: error("Token was not passed")
 
-                    val json = HttpClient().get<String>("https://www.googleapis.com/userinfo/v2/me") {
-                        header("Authorization", "Bearer ${principal.accessToken}")
-                    }
-                    val data = ObjectMapper().readValue<Map<String, Any?>>(json)
-                    val email = data["email"] as String?
+                val json = HttpClient().get<String>("https://oauth2.googleapis.com/tokeninfo?id_token=$token")
+                val data = ObjectMapper().readValue<Map<String, Any?>>(json)
+                val email = data["email"] as String?
 
-                    if (email != null) {
-                        val user = usersService.getOrCreate(data)
-                        call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
-                    } else {
-                        throw NotFoundException("Could not find mail")
-                    }
+                if (email != null) {
+                    val user = usersService.getOrCreate(data)
+                    call.respond(LoginResponse(user, usersService.getUserLists(user._id.toString()), JwtConfig.makeToken(user)))
+                } else {
+                    throw NotFoundException("Could not find mail")
                 }
             }
         }

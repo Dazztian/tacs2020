@@ -87,11 +87,6 @@ fun Application.authentication(usersRepository: UsersRepository) {
                 it.payload.getClaim("id").asString()?.let(usersRepository::getUserOrFail)
             }
         }
-        oauth("google-oauth") {
-            client = HttpClient()
-            providerLookup = { googleOauthProvider }
-            urlProvider = { "http://localhost:8080/api/google" }
-        }
     }
 }
 
@@ -123,15 +118,3 @@ fun Application.routes(usersRepository: UsersRepository) {
 
 //Define a call for when using authorization
 val ApplicationCall.user get() = authentication.principal<User>()
-
-
-val googleOauthProvider = OAuthServerSettings.OAuth2ServerSettings(
-        name = "google",
-        authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
-        accessTokenUrl = "https://www.googleapis.com/oauth2/v3/token",
-        requestMethod = HttpMethod.Post,
-
-        clientId = "850038158644-32c2v3i19hur7v95ttbnlaq5qi49b85e.apps.googleusercontent.com",
-        clientSecret = "",
-        defaultScopes = listOf("profile", "email")
-)
