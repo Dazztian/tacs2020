@@ -151,7 +151,7 @@ class RequestsTests {
         val userCountriesListModificationRequest = UserCountriesListModificationRequest(listName, countries.toMutableSet())
 
         every { RequestManager.getResponse(urlBase+"api/telegram/countryList?telegramId=$telegramUserId",
-            Gson().toJson(userCountriesListModificationRequest).toString()) } returns Response(Status(200,""), Gson().toJson(UserCountriesListResponse("123", "name", countries.toMutableSet())).toString())
+            Gson().toJson(userCountriesListModificationRequest).toString()) } returns Response(Status(200,""), Gson().toJson(UserCountriesListResponse("123", "name", mutableSetOf(CountryNamesResponse("Argentina", "AR"), CountryNamesResponse("Brazil", "BR")))).toString())
         assertEquals("OK 123", RequestManager.newCountriesList(telegramUserId, listName, countries))
 
         every { RequestManager.getResponse(urlBase+"api/telegram/countryList?telegramId=$telegramUserId",

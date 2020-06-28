@@ -24,7 +24,7 @@ fun listButtonsNoMarkup(listId :String) = listOf(
                                                         text = "Return",
                                                         callbackData = "My_Lists")
                                                 ))
-fun newListButtonNoMarkup() = listOf(
+fun newListButtonsNoMarkup() = listOf(
                                     listOf(
                                         InlineKeyboardButton(
                                             text = "Create New List",
@@ -75,11 +75,11 @@ fun countriesCommand(chatId: Long) :responseMessages =
 
 fun myListsCommand(chatId: Long) :responseMessages{
     return when(val countriesLists = RequestManager.getCountryLists(chatId.toString())){
-        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = returnButton()))
+        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup())))
         else -> listOf(TelegramMessageWrapper(
                 chatId, myListsText,
                 replyMarkup = InlineKeyboardMarkup(countriesLists.map { countriesList -> listOf(countriesList.toButton()) } +
-                        newListButtonNoMarkup())))
+                        newListButtonsNoMarkup())))
     }
 }
 fun showList(listId: String, chatId :Long) :responseMessages{

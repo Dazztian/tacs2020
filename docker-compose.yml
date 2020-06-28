@@ -11,7 +11,7 @@ services:
       
   telegram-bot:
     container_name: tacs-telegrambot
-    image: docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.3
+    image: docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.4
     ports:
       - "8082:8082"
 
