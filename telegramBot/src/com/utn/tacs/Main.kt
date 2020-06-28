@@ -9,7 +9,7 @@ import java.io.File
 
 //Map of last important messages separated by each telegram user Id
 val lastImportantMessages = mutableMapOf<Long, PreviousMessageWrapper>()
-var urlBase :String = "http://localhost:8080/"
+var urlBase :String = "http://localhost:8083/"
 
 fun main() {
     val bot = createBot()

@@ -13,6 +13,7 @@ import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.newId
+import kotlin.test.assertTrue
 
 class CountriesServiceTest {
 
@@ -33,15 +34,19 @@ class CountriesServiceTest {
 
     @Test
     fun testGetNearestCountries() {
-        val country1 = Country(newId(), "region1", "2020-05-05", Location(25.0, 25.0), CountryCode("ISO21", "ISO31"), 1000, 960, 40)
-        val country2 = Country(newId(), "region2", "2020-05-06", Location(35.0, 2445.0), CountryCode("ISO22", "ISO33"), 424000, 9610, 340)
-        val country3 = Country(newId(), "region3", "2020-05-07", Location(505.0, 235.0), CountryCode("ISO23", "ISO33"), 10030, 9604, 430)
+        val country1 = Country(newId(), "region1", "2020-05-05", Location(25.0, 25.0), CountryCode("AR", "ISO31"), 1000, 960, 40)
+        val country2 = Country(newId(), "region2", "2020-05-06", Location(35.0, 2445.0), CountryCode("UY", "ISO33"), 424000, 9610, 340)
+        val country3 = Country(newId(), "region3", "2020-05-07", Location(505.0, 235.0), CountryCode("CN", "ISO33"), 10030, 9604, 430)
 
         coEvery { countriesRepository.getCountries() } returns listOf(country1, country2, country3)
 
         val service = CountriesService(countriesRepository)
+        var response: List<CountryResponse> = listOf()
+        runBlocking { response = service.getNearestCountries(25.0, 25.0) }
 
-        assertEquals(listOf(CountryResponse(country1), CountryResponse(country3)), runBlocking { service.getNearestCountries(25.0, 25.0) })
+        assertEquals(2, response.size)
+        assertEquals("AR", response.first().countrycode?.iso2)
+        assertEquals("CN", response.last().countrycode?.iso2)
     }
 
     @Test

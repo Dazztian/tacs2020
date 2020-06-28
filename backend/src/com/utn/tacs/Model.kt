@@ -59,24 +59,20 @@ data class CountryResponse (
         val lastupdate: String,
         val location: Location,
         val countrycode: CountryCode?,
-        val confirmed: Int,
-        val deaths: Int,
-        val recovered: Int,
+        var confirmed: Int,
+        var deaths: Int,
+        var recovered: Int,
         var timeseries: List<TimeSeries>? = listOf(),
-        var timeSeriesTotal: TimeSeriesTotal? = null
+        var offset: Int? = 0,
+        var newCases: Int? = 0,
+        var newRecovered: Int? = 0,
+        var newDeath: Int? = 0
 ){
         constructor(c: Country):
         this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf())
-        constructor(c: Country, timeSeriesTotal: TimeSeriesTotal):
-        this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf(), timeSeriesTotal)
+        constructor(c: Country, newCases: Int?, newRecovered: Int?, newDeath: Int?):
+        this(c.countryregion, c.lastupdate, c.location, c.countrycode, c.confirmed, c.deaths, c.recovered, c.timeseries ?: listOf(),0 , newCases, newRecovered, newDeath)
 }
-
-@Serializable
-data class TimeSeriesTotal(
-        val confirmed: Int,
-        val deaths: Int,
-        val recovered: Int
-)
 
 @Serializable
 data class TimeSeries(
@@ -85,7 +81,9 @@ data class TimeSeries(
         val deaths: Int,
         val recovered: Int,
         val date: String
-)
+) {
+        constructor():this(0,0,0,0, "")
+}
 
 data class UserCountriesList(
         @ContextualSerialization
@@ -212,4 +210,39 @@ data class ListTotalResponse(
 ){
         constructor(totalLists: Int):
                 this(totalLists.toLong())
+}
+
+@Serializable
+data class TimeserieResponse(
+        val countryRegion: String,
+        val iso2: String? = "",
+        val offset: Int,
+        val timeserieDate: List<String>? = listOf(),
+        val timeseriesInfected: List<String>? = listOf(),
+        val timeseriesReconvered: List<String>? = listOf(),
+        val timeseriesDeath: List<String>? = listOf(),
+        val confirmed: Int? = 0,
+        val deaths: Int? = 0,
+        val recovered: Int? = 0,
+        val newCases: Int? = 0,
+        val newRecovered: Int? = 0,
+        val newDeath: Int? = 0
+
+){
+        constructor(c: CountryResponse):
+                this(
+                        c.countryregion,
+                        c.countrycode?.iso2,
+                        c.offset ?: 0,
+                        c.timeseries?.map { it.date },
+                        c.timeseries?.map { it.confirmed.toString() },
+                        c.timeseries?.map { it.recovered.toString() },
+                        c.timeseries?.map { it.deaths.toString() },
+                        c.confirmed,
+                        c.deaths,
+                        c.recovered,
+                        c.newCases,
+                        c.newRecovered,
+                        c.newDeath
+                )
 }
