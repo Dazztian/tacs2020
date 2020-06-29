@@ -60,8 +60,7 @@ class UsersService(private val usersRepository: UsersRepository, private val use
                 it.name,
                 it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
                 it.creationDate.toString()
-            )
-        }
+            )}
     }
 
     /**
