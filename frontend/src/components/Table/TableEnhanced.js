@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -71,9 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EnhancedTable({initialCountryIso,totalCountries}) {
-  console.log(initialCountryIso)
-  console.log(totalCountries)
+export default function EnhancedTable({initialCountryIso,totalCountries=[]}) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState();
   const [page, setPage] = React.useState(0);
@@ -109,7 +107,7 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
     <div className={classes.root}>
       <Grid container>
         <Grid item lg={12} md={12} sm={12} xs={12}> 
-          {!!actualCountryData && <PageTitle title= {`${actualCountryData.countryregion} today`} />}  
+          {!!actualCountryData && <PageTitle title= {`${actualCountryData.countryRegion} today`} />}  
         </Grid>
       <Grid container spacing={5}>  
       <Grid item lg={6} md={6} sm={12} xs={12}>
@@ -141,7 +139,7 @@ export default function EnhancedTable({initialCountryIso,totalCountries}) {
                       key={row.iso2}
                       selected={isItemSelected}
                     >
-                      <TableCell align="center">{row.countryregion}</TableCell>
+                      <TableCell align="center">{row.countryRegion}</TableCell>
                       <TableCell align="center">{row.confirmed}</TableCell>
                       <TableCell align="center">{row.recovered}</TableCell>
                       <TableCell align="center">{row.deaths}</TableCell>

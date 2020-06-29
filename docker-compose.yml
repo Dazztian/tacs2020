@@ -8,7 +8,15 @@ services:
       - "8080:8080"
     environment:
       - dbUrl=mongodb
-      
+ 
+  frontend:
+    container_name: tacs-frontend
+    image: docker.pkg.github.com/paniaton/tacs2020/tacs-frontend:0.0.3
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./frontend:/webapp
+ 
   telegram-bot:
     container_name: tacs-telegrambot
     image: docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.5
@@ -22,6 +30,6 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
-
+      
 volumes:
   mongodb_data_container:

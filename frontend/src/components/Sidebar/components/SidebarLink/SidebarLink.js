@@ -137,7 +137,6 @@ export default function SidebarLink({
   // ###########################################################
 
   function toggleCollapse(e) {
-    console.log(link)
     if (isSidebarOpened) {
       e.preventDefault();
       setIsOpen(!isOpen);

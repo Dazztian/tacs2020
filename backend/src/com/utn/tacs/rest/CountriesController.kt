@@ -1,8 +1,8 @@
 package com.utn.tacs.rest
-
 import com.utn.tacs.CountriesNamesResponse
 import com.utn.tacs.CountryResponse
 import com.utn.tacs.TimeserieResponse
+import com.utn.tacs.UserNamesResponse
 import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
@@ -26,6 +26,11 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                     name != null -> call.respond(countriesService.getCountryLatestByName(name))
                     else -> call.respond(countriesService.getAllCountries())
                 }
+            }
+            get("/names") {
+                call.respond(countriesService.getAllCountries()
+                    .filter { it.countrycode != null}
+                    .map { UserNamesResponse(it.countryregion, it.countrycode!!.iso2) } )
             }
             get("/{iso2}") {
                 val iso2: String = call.parameters["iso2"].toString()

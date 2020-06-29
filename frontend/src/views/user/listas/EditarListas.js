@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import Button from '@material-ui/core/Button';
-import { Grid, Container,TextField, } from '@material-ui/core';
+import { Grid, TextField,	CircularProgress, Paper } from '@material-ui/core';
 
 import MUIDataTable from "mui-datatables";
 
@@ -10,22 +10,22 @@ const api = new Api()
 
 const EditarListas = ()=>{
 
+
     const [unArrayTodosLosPaises,setUnArrayTodosLosPaises] = useState([])
     const [unArray,setUnArray] = useState([{name:null,paises:[]}])
     const [selectedList,setSelectedList] = useState([])
     const [selectedRows,setSelectedRows] = useState([])
     const [selectedNewCountries,setSelectedNewCountries] = useState([])
-    const [nuevoNombreLista,setNuevoNombreLista] = useState()
-
+    const [nuevoNombreLista,setNuevoNombreLista] = useState("")
+    const [loading,setLoading] = useState(true)
 
     const [paisElegido,setPaisElegido] = useState(false)
 
     const obtenerListaDePaises = async ()=>{
       try{
 
-      let countryList = await api.getCountryList()
-      //let res = await api.getCountryList()
-      //let countryList = await res.json()
+      let res = await api.getCountryList()
+      let countryList = await res.json()
 
       let promArray = countryList.map( country => {        
           return [country.name, country.iso2]
@@ -44,9 +44,9 @@ const EditarListas = ()=>{
     
     const obtenerListaDePaisesXUsuario = async ()=>{
         try{
-          let elemento = await api.getUserLists()
-          //let res = await api.getUserLists()
-          //let elemento = await res.json();
+          //let elemento = await api.getUserLists()
+          let res = await api.getUserLists()
+          let elemento = await res.json();
 
           let promArray = elemento.map( item=>{ return [item.name, item.id,
              item.countries.map(pais => [pais.name,pais.iso2])] })
@@ -54,7 +54,7 @@ const EditarListas = ()=>{
           let resultArray = await Promise.all(promArray)
 
             setUnArray(resultArray)  
-           
+            setLoading(false)
 
         }
         catch(err) {
@@ -64,10 +64,14 @@ const EditarListas = ()=>{
 
     }
 
+    async function handleBack(){
+      setLoading(true)
+      setSelectedList([])
+      obtenerListaDePaisesXUsuario()
+    }
+
     async function handleSelectRow(rowsSelected){
       let rowArray = [unArray[rowsSelected.dataIndex][0],unArray[rowsSelected.dataIndex][1],unArray[rowsSelected.dataIndex][2]]
-      console.log(rowArray)
-      setNuevoNombreLista(rowArray[0])
       setSelectedList(rowArray)
     }
 
@@ -85,31 +89,50 @@ const EditarListas = ()=>{
       let newCountriesToAdd = selectedList[2].filter(value => !arrNewCountriesFlat.includes(value[1]))
       let newCountry = [...newCountriesToAdd,...arrNewCountries]
       setSelectedList([selectedList[0],selectedList[1],newCountry])
-      console.log(newCountry)
-      setSelectedNewCountries([])
     }
 
     const updateLista = async (nuevoNombre)=>{
         try{
-            await api.editCountryList(nuevoNombreLista,selectedList[1],selectedList[2])
+            if(!nuevoNombre.length) nuevoNombre=selectedList[0]
+
+            let isoArray = await Promise.all(selectedList[2].map( arr => arr[1]))
+
+            await api.editCountryList(nuevoNombre,selectedList[1],isoArray)
             window.alert("List: "+nuevoNombre+ " modified")
+            setSelectedList([nuevoNombre,selectedList[1],selectedList[2]])
+            setNuevoNombreLista("")
         }
         catch(err) {
             console.log(err)
             window.alert(err)
         }
-
     }
 
     useEffect(() => {
-        obtenerListaDePaisesXUsuario()
         obtenerListaDePaises()
+        obtenerListaDePaisesXUsuario()
     }, []); 
 
 
     return(
             <>
-            {
+            {loading 
+				    ? 
+              <Paper>
+                <Grid
+                  container
+                  spacing={0}
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                  style={{ minHeight: '80vh' }}
+                >
+                  <Grid item xs={3}>
+                    <CircularProgress size={100}/>
+                  </Grid>   
+                </Grid>
+              </Paper>
+            : 
             !selectedList.length ? 
             <div>
             <PageTitle title="Edit lists" /> 
@@ -151,7 +174,7 @@ const EditarListas = ()=>{
                   variant="contained" 
                   color="secondary"
                   size="large"
-                  onClick={()=> setSelectedList([])}>
+                  onClick={()=> handleBack()}>
                     Back
                 </Button>
               </Grid>
@@ -233,19 +256,19 @@ const EditarListas = ()=>{
                 title={
                   <Grid item xs={6} md={6}>
                   <Button  
-                  xs={4} 
-                  md={4} 
-                  disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 || selectedList[2].length>20 }
-                  size='medium'
-                  variant="contained" color="primary" 
-                  onClick={(e)=> handleAddCountries()}
+                    xs={4} 
+                    md={4} 
+                    disabled={selectedNewCountries.length===0 || selectedNewCountries.length>20 || selectedList[2].length>20 }
+                    size='medium'
+                    variant="contained" color="primary" 
+                    onClick={(e)=> handleAddCountries()}
                   >    
                     Add 
                   </Button>
                 </Grid>
                 }
                 data={unArrayTodosLosPaises}
-                columns={["Country", "Id"]}
+                columns={["Country", "Code"]}
                 options={{
                   fixedHeaderOptions: false,
                   fixedSelectColumn: false,
@@ -264,10 +287,9 @@ const EditarListas = ()=>{
                   responsive: 'stacked',
                   rowsPerPage: 10,
                   rowsPerPageOptions: [10],
-                  onRowsSelect:  (rowsSelected, allRows) => { //console.log(unArrayTodosLosPaises[rowsSelected.dataIndex])
+                  onRowsSelect:  (rowsSelected, allRows) => {
                     setSelectedNewCountries(allRows);
-                    setPaisElegido(true)
-                    
+                    setPaisElegido(true)    
                   },
 
                 }

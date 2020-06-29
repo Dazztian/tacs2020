@@ -175,6 +175,12 @@ data class LoginResponse(
                 this(UserResponse(u._id.toString(), u.name, u.email, u.creationDate ?: "", u.country ?: "", u.isAdmin, lists), token)
 }
 
+data class UserNamesResponse(
+        val name: String,
+        val iso2: String
+)
+
+
 data class UserCountriesListResponse(
         val id: String,
         val name: String,

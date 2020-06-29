@@ -54,10 +54,7 @@ export default function TableComponent({initialCountryIso,totalCountries}) {
   };
 
   async function updateMainCountry(actualCountryIson){
-    console.log(totalCountries)
     actualCountryIso = actualCountryIson
-    const data = await totalCountries.filter(country => country.iso2===actualCountryIso)[0]
-    console.log(data)
     setMainCountryData(await totalCountries.filter(country => country.iso2===actualCountryIso)[0])
   }
 
