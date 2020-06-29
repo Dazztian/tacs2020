@@ -132,9 +132,9 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
         var offsets: HashMap<String, Int>  = HashMap()
         for (country in countries) {
             var timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
-            offsets.put(country.countrycode!!.iso2,0)
+            offsets.put(country.countrycode.iso2,0)
             if (null != fromDay) {
-                offsets.put(country.countrycode!!.iso2,timeseries.size)
+                offsets.put(country.countrycode.iso2,timeseries.size)
                 timeseries = timeseries.dropWhile { it.number < fromDay }
             }
             if (null != toDay) {
@@ -207,7 +207,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     /**
      * Get countries time series
      *
-     * @param country Country
+     * @param countryIso2Code String
      * @return List<TimeSeries>
      */
     private suspend fun getCountryTimeSeries(countryIso2Code: String): List<TimeSeries> {
