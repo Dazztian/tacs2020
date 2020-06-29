@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getCountry } from "../../../apis/GeolocationApi"
-import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
   Grid,
   CircularProgress,
@@ -19,7 +18,6 @@ import Api from '../../../apis/Api';
 
 // components
 import PageTitle from "../../../components/PageTitle";
-import { useUserState } from "../../../context/UserContext";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
@@ -63,8 +61,9 @@ export default function Stats(props) {
 
   async function fetchUserListData() {
     try {
-      const userLists = await api.getUserLists()
-      setUserLists(userLists)
+      const res = await api.getUserLists()
+      const userList = await res.json()
+      setUserLists(userList)
     } catch(error) {
       console.log(error)
     }
@@ -85,7 +84,8 @@ export default function Stats(props) {
   const handleClick = async (event, row) => {
       setIsLoading(true)
       let isoList = await row.countries.map(country => country.iso2)
-        const countriesData = await api.getCountriesData(isoList)
+        const res = await api.getCountriesData(isoList)
+        const countriesData = await res.json()
         setCountriesInitialData(countriesData)
         setSelectedCountryList(isoList)
         setIsLoading(false)
@@ -159,7 +159,7 @@ export default function Stats(props) {
                         key={row.id}
                       >
                         <TableCell align="left">{row.name}</TableCell>
-                        <TableCell align="center">{row.countries.map(c=> ` ${c.name} `)}</TableCell>
+                        <TableCell align="center">{row.countries.map(c=>c.name).join(', ')}</TableCell>
                       </TableRow>
                     );
                   })}

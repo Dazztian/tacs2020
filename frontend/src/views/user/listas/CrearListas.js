@@ -1,14 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import { TextField,
-	Container, 
-	TableCell, 
 	Grid, 
 	Button, 
 	CircularProgress,
-	TableRow,
-	Paper, Table, TableBody, TableContainer, TableHead  } from '@material-ui/core';
+  Paper
+} from '@material-ui/core';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import useStyles from "../dashboard/styles";
 import MUIDataTable from "mui-datatables"; 
 
@@ -29,16 +26,13 @@ const CrearListas = ()=>{
 
     const [paisElegido,setPaisElegido] = useState(false)
 
-    const [paises, setPaises] = useState([])
-
 
     const fetchAllCountries = async ()=>{
         try{
         let res = await api.getCountryList()
-        console.log(res)
-        //let countryList = await res.json()
+        let data = await res.json()
 
-        let promArray = res.map( country => {        
+        let promArray = data.map( country => {        
             return [country.name, country.iso2]
         })
         
@@ -55,9 +49,9 @@ const CrearListas = ()=>{
 
     const crearListaDePaisesXUsuario = async ()=>{
         try{	
-          console.log(listarray[listarray.length - 1])
 					await api.createCountryList(nombreLista,listarray[listarray.length - 1])
-					window.alert("List: "+nombreLista+ "created")
+          window.alert("List: "+nombreLista+ " created")
+          console.log(listarray)
 					listarray = []
 					setNombreLista("")
         }
@@ -101,20 +95,19 @@ return(
             >
             <Grid item xs={3} md={3}> 
             <TextField 
-             id="filled-namelist"
-             label="List name"
-             type="string"
-             margin='dense'
-             size='small'
-             value={nombreLista}
-             fullWidth={false}
-             variant="outlined" 
-            onChange={e => setNombreLista(e.target.value)} 
-            InputLabelProps={{
-              shrink: true,
-            }}
-            />
-              
+              id="filled-namelist"
+              label="List name"
+              type="string"
+              margin='dense'
+              size='small'
+              value={nombreLista}
+              fullWidth={false}
+              variant="outlined" 
+              onChange={e => setNombreLista(e.target.value)} 
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />  
             </Grid>
               <Grid item> 
                 <Button 
@@ -154,11 +147,9 @@ return(
                 rowsPerPage: 10,
                 rowsPerPageOptions: [10],
                 rowsSelected: state.rowsSelected,
-								onRowsSelect:  (rowsSelected, allRows) => {
-							//["nombrePais, ....etc"]                
+								onRowsSelect:  (rowsSelected, allRows) => {       
               listarray.push(allRows.map( item => unArray[item.dataIndex][1]));
 							setPaisElegido(true)
-							//console.log(listarray)
 							},
 						}
 					}
@@ -169,6 +160,5 @@ return(
     )
 
 }    
-
 
 export default CrearListas

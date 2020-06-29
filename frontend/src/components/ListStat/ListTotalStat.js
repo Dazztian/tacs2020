@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import {
   Grid,
 } from "@material-ui/core";
@@ -24,7 +24,6 @@ import Widget from "../Widget";
 import useStyles from "../../views/user/dashboard/styles";
 
 const ListTotalStats = ({actualCountryData})=>{
-    console.log(actualCountryData)
   var theme = useTheme();
   var classes = useStyles();
     /*const [newCases,setNewCases] = useState(actualCountryData.newCases)

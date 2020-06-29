@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  Paper,
   TablePagination,
   IconButton,
   Collapse,
@@ -103,7 +102,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell align="center" component="th" scope="row">
-          {row.countryregion}
+          {row.countryRegion}
         </TableCell>
         <TableCell align="center">{row.confirmed}</TableCell>
         <TableCell align="center">{row.recovered}</TableCell>
@@ -127,14 +126,14 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  { row.timeseriedate.map((value, index) => (
+                  { row.timeserieDate.map((value, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {value}
                       </TableCell >
-                      <TableCell align="center">{row.timeseriesinfected[index]}</TableCell>
-                      <TableCell align="center">{row.timeseriesreconvered[index]}</TableCell>
-                      <TableCell align="center">{row.timeseriesdeath[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesInfected[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesReconvered[index]}</TableCell>
+                      <TableCell align="center">{row.timeseriesDeath[index]}</TableCell>
                     </TableRow>
                     ))
                   }

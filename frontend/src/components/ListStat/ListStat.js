@@ -25,7 +25,6 @@ import Api from "../../apis/Api"
 const api = new Api()
 
 const ListStat = ({ isoList })=>{
-  console.log(isoList)
   var theme = useTheme();
   var classes = useStyles();
 
@@ -35,18 +34,16 @@ const ListStat = ({ isoList })=>{
   const [series, setSeries] = useState([])
   const [rows,setRows] = useState([])
   const [numDaysArray,setNumDays] = useState([])
-  const [dayFinal,setOffDayFinal] = useState(0)
-  const [dayInicial,setOffDayInicial] = useState(0)
+  const [dayFinal,setOffDayFinal] = useState(1)
+  const [dayInicial,setOffDayInicial] = useState(1)
 
   async function handleFetchOffset(offinicial,offfinal){
     setIsLoading(true);
     
     const res = await api.getCountriesDataByDays(isoList,offinicial,offfinal)
 
-      if(true/*res.ok*/) {
-        //const data = await res.json()
-        const data = res
-        console.log(data)
+      if(res.ok) {
+        const data = await res.json()
         setRows(data)
         setNumDays(await createDays(data))
         setMainChartState("");
@@ -60,8 +57,7 @@ const ListStat = ({ isoList })=>{
 
     async function createDays(data){
       let dayArray = []
-      const final = await data.filter( r => r.offset===1 )[0].timeseriedate.length
-      console.log(final)
+      const final = await data.filter( r => r.offset===0 )[0].timeserieDate.length
       for(let i=1;i<=final;i++){
         dayArray.push(`Day ${i}`)
       }
@@ -72,13 +68,13 @@ const ListStat = ({ isoList })=>{
       let promArr = []
       switch (newChartState){
         case "Infected" : 
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesinfected}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesInfected}})
               break;
         case "Recovered" :
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesreconvered}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesReconvered}})
               break;
         case "Death" : 
-              promArr = await rows.map(row => {return {name: row.countryregion, data: row.timeseriesdeath}})
+              promArr = await rows.map(row => {return {name: row.countryRegion, data: row.timeseriesDeath}})
               break;
         default: 
               break; 
@@ -169,7 +165,7 @@ return(
               variant="outlined" 
               color="primary" 
               disabled={
-                dayFinal === undefined || dayInicial === undefined || dayFinal<=dayInicial
+                dayFinal === undefined || dayInicial < 1 || dayInicial === undefined || dayFinal<=dayInicial
               }
               onClick={() =>{
                 handleFetchOffset(dayInicial,dayFinal)
@@ -219,7 +215,6 @@ return(
       header={
         <div className={classes.mainChartHeader}/> }
     >
-        {console.log(rows)}
         { rows.length ? <ColapsableTable rows={rows}/> : <Grid></Grid> }
     </Widget>
   </Grid>
