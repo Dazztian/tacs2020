@@ -1,12 +1,8 @@
 package com.utn.tacs.rest
-
-<<<<<<< HEAD
 import com.utn.tacs.CountriesNamesResponse
 import com.utn.tacs.CountryResponse
 import com.utn.tacs.TimeserieResponse
-=======
 import com.utn.tacs.UserNamesResponse
->>>>>>> frontFinal
 import com.utn.tacs.countries.CountriesService
 import com.utn.tacs.utils.getLogger
 import io.ktor.application.Application
