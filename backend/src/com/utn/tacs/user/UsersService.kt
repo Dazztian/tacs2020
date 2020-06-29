@@ -54,18 +54,14 @@ class UsersService(private val usersRepository: UsersRepository, private val use
      */
     fun getUserLists(userId: String): List<UserCountriesListResponse> {
         usersRepository.getUserById(userId) ?: throw NotFoundException()
-        val userLists: ArrayList<UserCountriesListResponse> = ArrayList()
-        userListsRepository.getUserLists(userId).forEach {
-            userLists.add(
-                UserCountriesListResponse(
-                    it._id.toString(),
-                    it.name,
-                    it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
-                    it.creationDate.toString()
-                )
+        return userListsRepository.getUserLists(userId).map {
+            UserCountriesListResponse(
+                it._id.toString(),
+                it.name,
+                it.countries.map { countryName -> CountriesNamesResponse(countryName) }.toMutableSet(),
+                it.creationDate.toString()
             )
         }
-        return userLists
     }
 
     /**

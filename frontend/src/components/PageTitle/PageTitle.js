@@ -21,6 +21,7 @@ export default function PageTitle(props) {
           variant="contained"
           size="large"
           color="secondary"
+          onClick={props.buttonEvent}
         >
           {props.button}
         </Button>

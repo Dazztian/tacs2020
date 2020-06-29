@@ -13,7 +13,7 @@ class Api {
       'Content-Type': 'application/json',
     };
   
-    BASE_URL = 'http://54.162.60.250:8080/'; 
+    BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
       return !!this.authToken ? {
@@ -183,9 +183,24 @@ class Api {
       headers: this.createHeaders(),
   })
   }
+  async getInterestedInCountry(paisIsoCode){
+    return await fetch(`${this.BASE_URL}/api/admin/report/${paisIsoCode}/list`,{
+      method:'GET',
+      headers: this.createHeaders(),
+  })
+  }
 
   async compareLists(idLista1,idLista2){
     return await fetch(`${this.BASE_URL}/api/admin/report/lists/compare?list1=${idLista1}&list2=${idLista2}`,{
+      method:'GET',
+      headers: this.createHeaders(),
+  })
+  }
+
+
+  async getAmountOfListsFromTo(fechaInicio, fechaFin){
+    console.log(this.BASE_URL + "/api/admin/report/lists?startDate=" + fechaInicio + "&endDate=" + fechaFin)
+    return await fetch( this.BASE_URL + "/api/admin/report/lists?startDate=" + fechaInicio + "&endDate=" + fechaFin,{
       method:'GET',
       headers: this.createHeaders(),
   })

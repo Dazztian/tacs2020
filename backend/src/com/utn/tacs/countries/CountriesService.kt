@@ -3,11 +3,13 @@ package com.utn.tacs.countries
 import com.utn.tacs.CountryResponse
 import com.utn.tacs.CovidExternalClient
 import com.utn.tacs.TimeSeries
-import com.utn.tacs.TimeSeriesTotal
 import com.utn.tacs.utils.DistanceCalculator
 import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
 import java.time.LocalDate
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class CountriesService(private val countriesRepository: CountriesRepository) {
 
@@ -31,7 +33,16 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      * @return List<CountryResponse>
      */
     suspend fun getNearestCountries(lat: Double, lon: Double): List<CountryResponse> {
-        return getAllCountries().filter { countryData -> DistanceCalculator.isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }
+        val countries = getAllCountries().filter { countryData -> DistanceCalculator.isDistanceLowerThan(lat, lon, countryData.location.lat, countryData.location.lng, maxDistance) }
+        for (country in countries) {
+            val timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
+            val penultimate = timeseries.get(timeseries.size - 2)
+            val last = timeseries.last()
+            country.newCases = last.confirmed - penultimate.confirmed
+            country.newDeath = last.deaths - penultimate.deaths
+            country.newRecovered = last.recovered - penultimate.recovered
+        }
+        return countries
     }
 
     /**
@@ -98,7 +109,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     }
 
     /**
-     * Get one country covid timeseries by iso2 codes for required countries
+     * Get one or more countries covid timeseries by iso2 codes for required countries
      *
      * @param countriesCodes List<String>
      * @param fromDay Int?
@@ -118,9 +129,12 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
             toDate: String?
     ): List<CountryResponse> {
         val countries = countriesCodes.map { getCountryLatestByIsoCode(it.toUpperCase()) }
+        var offsets: HashMap<String, Int>  = HashMap()
         for (country in countries) {
             var timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
+            offsets.put(country.countrycode.iso2,0)
             if (null != fromDay) {
+                offsets.put(country.countrycode.iso2,timeseries.size)
                 timeseries = timeseries.dropWhile { it.number < fromDay }
             }
             if (null != toDay) {
@@ -157,11 +171,35 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
                 throw BadRequestException("Wrong dates format")
             }
             country.timeseries = timeseries
-            country.timeSeriesTotal = TimeSeriesTotal(
-                    timeseries.sumBy { it.confirmed },
-                    timeseries.sumBy { it.deaths },
-                    timeseries.sumBy { it.recovered }
-            )
+
+            val last = if (timeseries.isEmpty())  TimeSeries() else timeseries.last()
+            country.confirmed = last.confirmed
+            country.recovered = last.recovered
+            country.deaths = last.deaths
+        }
+        val maxOffset = Collections.max(offsets.values)
+        countries.forEach { it.offset = maxOffset - offsets.get(it.countrycode!!.iso2)!! }
+        return countries
+    }
+
+    /**
+     * Get one or more country covid timeseries by iso2 codes for required countries
+     *
+     * @param countriesCodes List<String>
+     * @return List<CountryResponse>
+     *
+     * @throws NotFoundException
+     * @throws BadRequestException
+     */
+    suspend fun getCountryTimesSeries(countriesCodes: List<String>): List<CountryResponse> {
+        val countries = countriesCodes.map { getCountryLatestByIsoCode(it.toUpperCase()) }
+        for (country in countries) {
+            val timeseries = getCountryTimeSeries(country.countrycode!!.iso2)
+            val penultimate = timeseries.get(timeseries.size - 2)
+            val last = timeseries.last()
+            country.newCases = last.confirmed - penultimate.confirmed
+            country.newDeath = last.deaths - penultimate.deaths
+            country.newRecovered = last.recovered - penultimate.recovered
         }
         return countries
     }
@@ -169,7 +207,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
     /**
      * Get countries time series
      *
-     * @param country Country
+     * @param countryIso2Code String
      * @return List<TimeSeries>
      */
     private suspend fun getCountryTimeSeries(countryIso2Code: String): List<TimeSeries> {
