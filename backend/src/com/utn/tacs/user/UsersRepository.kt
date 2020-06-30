@@ -16,9 +16,9 @@ import java.time.format.DateTimeFormatter
 const val USERS_COLLECTION_NAME = "users"
 
 class UsersRepository(private val database: MongoDatabase) {
-    private val adminUserName = ConfigFactory.load().getString("adminUser.name")
-    private val adminUserEmail = ConfigFactory.load().getString("adminUser.email")
-    private val adminUserPass = ConfigFactory.load().getString("adminUser.pass")
+    val adminUserName = ConfigFactory.load().getString("adminUser.name")
+    val adminUserEmail = ConfigFactory.load().getString("adminUser.email")
+    val adminUserPass = ConfigFactory.load().getString("adminUser.pass")
 
     init {
         getUserByEmail(adminUserEmail)
@@ -97,14 +97,12 @@ class UsersRepository(private val database: MongoDatabase) {
      *
      * @param user User
      * @return User?
+     *
+     * @throws MongoException
      */
     fun createUser(user: User): User? {
-        try {
-            database.getCollection<User>(USERS_COLLECTION_NAME).insertOne(user)
-            return getUserById(user._id)
-        } catch (e: MongoException) {
-            throw e
-        }
+        database.getCollection<User>(USERS_COLLECTION_NAME).insertOne(user)
+        return getUserById(user._id)
     }
 
     /**
