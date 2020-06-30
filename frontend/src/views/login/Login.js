@@ -51,7 +51,6 @@ function Login(props) {
     //const data = await api.loginUserWithGoogle(response.tokenId,response.mail,response.name,userCountrIso)
     if(res.ok) {
         let data = await res.json()
-        console.log(data)
           const { user, token } = data;
           localStorage.setItem('tracker_id_token', token)
           localStorage.setItem('tracker_id_session',user.id)
