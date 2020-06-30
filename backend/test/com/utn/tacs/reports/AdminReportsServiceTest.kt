@@ -28,6 +28,19 @@ import java.time.LocalDate
 
 @Testcontainers
 class AdminReportsServiceTest {
+    @Test
+    fun testGetAllUsers() {
+        val service = AdminReportsService(usersRepository, userListRepository)
+
+        val result: UserData? = service.getUserData(userId1.toString())
+
+        Assert.assertNotNull(result)
+        Assert.assertEquals(user1, result?.user)
+        Assert.assertEquals(2, result?.listsQuantity)
+        Assert.assertEquals(6, result?.countriesTotal)
+
+        assertThrows<NotFoundException> { service.getUserData(ObjectId().toString()) }
+    }
 
     @Test
     fun testGetUserData() {

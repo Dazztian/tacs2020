@@ -186,5 +186,34 @@ class UsersServiceTest {
         val usersService = UsersService(usersRepository, userListsRepository)
         assertEquals(userCountriesListResponse, usersService.updateUserList(userId.toString(), listId.toString(), request))
     }
+
+    @Test
+    fun testDeleteUser_ok() {
+        val userId: Id<User> = newId()
+        val user = User(userId, "pepe")
+
+        coEvery { usersRepository.getUserById(userId.toString()) } returns user
+        coEvery { usersRepository.delete(user) } returns Unit
+
+        val usersService = UsersService(usersRepository, userListsRepository)
+        usersService.deleteUser(userId.toString())
+
+        verify { usersRepository.delete(user) }
+    }
+
+    @Test
+    fun testDeleteUserByEmail_ok() {
+        val userEmail = "test@gmail.com"
+        val userId: Id<User> = newId()
+        val user = User(userId, "pepe")
+
+        coEvery { usersRepository.getUserByEmail(userEmail) } returns user
+        coEvery { usersRepository.delete(user) } returns Unit
+
+        val usersService = UsersService(usersRepository, userListsRepository)
+        usersService.deleteUserByEmail(userEmail)
+
+        verify { usersRepository.delete(user) }
+    }
 }
 
