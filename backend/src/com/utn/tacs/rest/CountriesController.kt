@@ -36,11 +36,6 @@ fun Application.countriesRoutes(countriesService: CountriesService) {
                 val iso2: String = call.parameters["iso2"].toString()
                 call.respond(countriesService.getCountryLatestByIsoCode(iso2.toUpperCase()))
             }
-            get("/names") {
-                call.respond(countriesService.getAllCountries()
-                    .filter { it.countrycode != null}
-                    .map { CountriesNamesResponse(it.countryregion, it.countrycode!!.iso2) } )
-            }
             get("/timeseries") {
                 val iso2Countries = call.request.queryParameters["countries"]!!.split(",")
                 val fromDay: Int? = call.request.queryParameters["fromDay"]?.toInt()
