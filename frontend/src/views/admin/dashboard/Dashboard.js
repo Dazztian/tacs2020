@@ -27,7 +27,6 @@ export default function Dashboard(props) {
     
     const res = await api.getAllReports()
     let elemento = await res.json()
-    console.log(elemento)
     let resultArray = await Promise.all(elemento)
 
     setunArrayTodosLosUsuarios(resultArray)

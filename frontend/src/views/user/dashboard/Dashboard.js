@@ -40,7 +40,6 @@ export default function Dashboard(props) {
       if (!iso){
         const {countryIso,countryName} = await getCountry()
         iso = countryIso
-        console.log(iso)
         localStorage.setItem('tracker_country', countryName)
         localStorage.setItem('tracker_country_Iso', countryIso)
       }
