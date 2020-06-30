@@ -2,52 +2,80 @@
 ## Técnicas Avanzadas de la Construcción de Software
 ### UTN - FRBA
 
-This project is the work done following this [statement](https://docs.google.com/document/u/1/d/e/2PACX-1vQo5WkN-3RTLaeB5885hlfcnuWFgxzxe-u5gPa5IGrtkeTF9BHMjeh1YScTO-Tg000gzllwmRaFFKet/pub "TACS - Covid19 - Enunciado")
+Trabajo practico realizado siguiendo el siguiente [enunciado](https://docs.google.com/document/u/1/d/e/2PACX-1vQo5WkN-3RTLaeB5885hlfcnuWFgxzxe-u5gPa5IGrtkeTF9BHMjeh1YScTO-Tg000gzllwmRaFFKet/pub "TACS - Covid19 - Enunciado")
 
-##### Building the application
+El repositorio cuenta con tres modulos:
+- Backend
+- Frontend
+- Telegram Bot
 
-First build the applications using gradle.
+#### Backend
 
-Backend 
+Es lo que consideramos la API, dentro se encuentra el manejo de base de datos, los controllers para request, y la asociación con la API que provee data sobre el Coronavirus.
 
 ```bash
 cd backend
 ./gradlew build
 ```
-Frontend
+
+Compilará y ejecutará la aplicación.
+Para correrla se puede utilizar un IDE, o simplemente un docker run.
+
+Esta aplicación requiere una conexión a un mongodb. Se puede utilizar un docker simplemente:
+
+```bash
+docker run --name tacs-mongo-db -p 27017:27017 -d mongo:latest 
+```
+Los parametros que requiere la aplicación siendo ejecutada en un IDE son:
+ - mongoDb
+ - mongoUrl
+ - mongoPort
+ 
+Si se utiliza el docker, estos son:
+ - tacs 0.0.0.0 27017
+
+Si se quiere usar docker para correr la aplicación, el comando es el siguiente: 
+
+- Es necesario tener el docker de la db corriendo en local.
+```bash
+docker run --network="host" --name tacs-backend-docker -p 8080:8080 -d docker.pkg.github.com/paniaton/tacs2020/tacs-backend:1.0.3
+```
+- --network="host" es necesario para poder relacionar ambos docker, cuando se ejecuta con un IDE no es necesario y utilizando docker-compose tampoco.
+
+- La API se disponibiliza en localhost:8080
+
+#### Frontend
+
+Para correr local se necesita primero ejecutar
 
 ```bash
 cd frontend
-./yarn install (just run in case you want to install dependencies, for testing purposes, otherwise is not needed)
+./yarn install
+npm start
 ```
-Telegram Bot
+
+Se puede levantar utilizando Docker, le pegará a la API real.
+```bash
+ docker run  --name tacs-frontend-docker -p 8081:8081 -d docker.pkg.github.com/paniaton/tacs2020/tacs-frontend:0.0.12
+```
+- Se disponibiliza en localhost:8081
+
+##### Telegram bot
+
+Para usarlo, se puede enviar un mensaje a @Tacs_2020_Grupo_4_bot
 
 ```bash
 cd telegramBot
 ./gradlew build
 ```
 
-##### Compose docker containers
+##### Docker compose
 
-Just up the docker compose. It will proceed to build all the dockers images before composing the containers.
-Remember always to build your backend app
+Ejecutando parado en donde se encuentra docker-compose.yml se levantan los tres docker relacionados, incluyendo una base de datos mongodb.
 
 ```bash
 docker-compose up -d
 ```
 
-##### Telegram bot
 
-To use the telegram bot send a message to @Tacs_2020_Grupo_4_bot
 
-#### Troubleshooting
-
-If having problems seeing the downloaded libraries, and using Intellij do this:
-
-File -> New -> Module from existing sources 
-
-Select backend, (then do it again) and frontend, this will add the folders as modules, and build them.
-
-Another thing that solves some problems is on the on the right, click Gradle and Reimport All Gradle Projects.
-
-TODO: The project structure can be further improved
