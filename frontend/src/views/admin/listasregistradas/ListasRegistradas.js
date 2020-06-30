@@ -72,43 +72,7 @@ return(
             window.alert("Debe elegir las fechas a comparar primero"):
             obtenerListasPorFechas(fechaInicio,fechaFin)}
             >
-            Obtener Cant Listas
-            Rango de fecha libre
-            </Button>
-            </Grid>
-        </Grid>
-        <Grid container xs={12} spacing={4}> 
-        <Grid item xs={2}> 
-                <TextField
-                id="date"
-                label="Fecha inicio"
-                type="date"
-                defaultValue="2017-05-24"
-                onChange={e => setFechaInicio(reconvertirFormatoFecha(e.target.value))}
-                InputLabelProps={{
-                shrink: true,
-                }}
-                />
-            </Grid>
-            <Grid item xs={2}> 
-                <TextField
-                id="date"
-                label="Fecha final"
-                type="date"
-                defaultValue="2017-05-24"
-                onChange={e => setFechaFin(reconvertirFormatoFecha(e.target.value))}
-                InputLabelProps={{
-                shrink: true,
-                }}
-                />
-            </Grid>
-            <Grid item xs={2}>
-            <Button  variant="contained" color="secondary" 
-            onClick={()=> !fechaInicio || !fechaFin ?
-            window.alert("Debe elegir las fechas a comparar primero"):
-            obtenerListasPorFechas(fechaInicio,fechaFin)}
-            >
-            Seleccionar Ultima Semana
+            Seleccion libre
             </Button>
             </Grid>
         </Grid>
@@ -124,10 +88,10 @@ return(
             <Button  variant="contained" color="primary"
             onClick={()=>obtenerListasFechaUltimos3Dias()}>Ultimos 3 dias</Button>
             </Grid>
-            {/*<Grid  item xs> 
+            <Grid  item xs> 
             <Button  variant="contained" color="primary" 
             onClick={()=>obtenerListasFechaUltimaSemana()}>Ultima SEMANA</Button>
-            </Grid>*/}
+            </Grid>
             <Grid  item lg={12}  > 
             <Button  variant="contained" color="primary" 
             onClick={()=>obtenerListasFechaUltimoMes()}>Ultimo MES</Button>
@@ -167,21 +131,21 @@ return(
 
     }
     function obtenerListasFechaUltimaSemana() {
-        var today = new Date();
-        //obtenerListasPorFechas(fechaInicioSemana, obtenerFechaActual() ) 
+        obtenerListasFechaUltimosNDias(7)
     }
-
-   function obtenerListasFechaUltimos3Dias() {
-        let days =3
+    function obtenerListasFechaUltimos3Dias() {
+        obtenerListasFechaUltimosNDias(3)
+    }
+    
+    function obtenerListasFechaUltimosNDias(cantDias) {
         var date = new Date();
-        var last = new Date(date.getTime() - ( days * 24 * 60 * 60 * 1000));
+        var last = new Date(date.getTime() - ( cantDias * 24 * 60 * 60 * 1000));
         let diaInicial = last.getDate()
         let mesInicial = last.getMonth() +1
         let anioInicial = last.getFullYear()
         let fechaInicial= mesInicial +'/'+ diaInicial +'/'+ anioInicial;
         console.log(fechaInicial)
         obtenerListasPorFechas(fechaInicial, obtenerFechaActual() ) 
-
     }
 
     function obtenerListasFechaDesdeElInicio() {
