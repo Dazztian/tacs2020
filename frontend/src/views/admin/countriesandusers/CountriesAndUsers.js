@@ -56,7 +56,7 @@ export default function PaisEnComun(props) {
   
 const obtenerListasDePaisesDelUsuario = async (unIdUsuario)=>{
   try{
-      let res = api.getUserLists()
+      let res = api.getUserListsIDUser()
       let elemento = await res.json()
 
       let resultArray = await Promise.all(elemento)
@@ -73,7 +73,7 @@ const obtenerListasDePaisesDelUsuario = async (unIdUsuario)=>{
 
 const obtenerListasDePaisesDelUsuario2 = async (unIdUsuario)=>{
   try{
-      let res = api.getUserLists()
+      let res = api.getUserListsIDUser()
       let elemento = await res.json()
 
       let resultArray = await Promise.all(elemento)
