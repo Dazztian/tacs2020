@@ -60,7 +60,7 @@ function signOut(dispatch, history) {
   localStorage.removeItem('tracker_name');
   localStorage.removeItem("tracker_role");
   localStorage.removeItem('tracker_id_session')
-  localStorage.removeItem('tracker_country')
+  //localStorage.removeItem('tracker_country')
   localStorage.removeItem('tracker_country_Iso')
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
