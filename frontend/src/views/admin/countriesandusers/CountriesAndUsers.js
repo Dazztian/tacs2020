@@ -17,9 +17,9 @@ import { FixedSizeList } from 'react-window';
 
 import Api from "../../../apis/Api"
 
+const api = new Api()
 
 export default function PaisEnComun(props) {
-  const api = new Api()
   var classes = useStyles();
 
   const state = { rowsSelected: [] };
@@ -56,7 +56,7 @@ export default function PaisEnComun(props) {
   
 const obtenerListasDePaisesDelUsuario = async (unIdUsuario)=>{
   try{
-      let res = api.getUserListsIDUser()
+      let res = await api.getUserListsIDUser(unIdUsuario)
       let elemento = await res.json()
 
       let resultArray = await Promise.all(elemento)
@@ -73,7 +73,7 @@ const obtenerListasDePaisesDelUsuario = async (unIdUsuario)=>{
 
 const obtenerListasDePaisesDelUsuario2 = async (unIdUsuario)=>{
   try{
-      let res = api.getUserListsIDUser()
+      let res = await api.getUserListsIDUser(unIdUsuario)
       let elemento = await res.json()
 
       let resultArray = await Promise.all(elemento)
@@ -90,7 +90,7 @@ const obtenerListasDePaisesDelUsuario2 = async (unIdUsuario)=>{
 const obtenerPaisesEnComun = async (idLista1, idLista2)=>{
     try{
 
-        let res = api.compareLists(idLista1,idLista2)
+        let res = await api.compareLists(idLista1,idLista2)
         let elemento = await res.json()
   
         let promArray =  elemento.sharedCountries
