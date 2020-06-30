@@ -3,9 +3,8 @@ import { getLocation } from "./GeolocationApi"
 class Api {
 
     constructor() {
-      this.authToken = localStorage.getItem("id_token");
-      this.userSessionId = localStorage.getItem("id_session");
-      this.countryMap = localStorage.getItem("countriesList");
+      this.authToken = localStorage.getItem("tracker_id_token");
+      this.userSessionId = localStorage.getItem("tracker_id_session");
     }
   
     headers = {
@@ -37,6 +36,16 @@ class Api {
   async getUserLists() {
     try{
       return await fetch(`${this.BASE_URL}/api/user/${this.userSessionId}/lists`, {
+        method: 'GET',
+        headers: this.createHeaders()
+      });
+    }catch(e){
+      console.log(e)
+    }
+  }
+    async getUserListsIDUser(userID) {
+    try{
+      return await fetch(`${this.BASE_URL}/api/user/${userID}/lists`, {
         method: 'GET',
         headers: this.createHeaders()
       });
@@ -111,11 +120,11 @@ class Api {
   async getNearCountries() {
     try{
 
-      let position = await getLocation()
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      
-      return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
+      //let position = await getLocation()
+      //const lat = position.coords.latitude;
+      //const lng = position.coords.longitude;
+      //return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {   
+      return await fetch(`${this.BASE_URL}/api/countries?lat=-34&lon=-58`, {
         method: 'GET',
         headers: this.createHeaders()
       });

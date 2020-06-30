@@ -39,9 +39,9 @@ fun main(args: Array<String>) {
 
     //Initialize everything with the correct mongo url
     //This is done here to be allowed to change the db on executing the app, and not having it tied up to the config file
-    val mongoDb = args[0]
-    val mongoUrl = args[1]
-    val mongoPort = args[2]
+    val mongoDb = "tacs"
+    val mongoUrl = "localhost"
+    val mongoPort = "27017"
 
     MongoClientGenerator.setProperties(mongoDb, mongoUrl, mongoPort.toInt())
 

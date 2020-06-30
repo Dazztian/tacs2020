@@ -11,7 +11,7 @@ services:
  
   frontend:
     container_name: tacs-frontend
-    image: docker.pkg.github.com/paniaton/tacs2020/tacs-frontend:0.0.5
+    image: docker.pkg.github.com/paniaton/tacs2020/tacs-frontend:0.0.9
     ports:
       - "8081:8081"
     volumes:
@@ -19,7 +19,7 @@ services:
  
   telegram-bot:
     container_name: tacs-telegrambot
-    image: docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.5
+    image: docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.6
     ports:
       - "8082:8082"
 

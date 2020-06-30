@@ -14,13 +14,6 @@ fun startButtons() = InlineKeyboardMarkup(
                             listOf(
                                 InlineKeyboardButton(text = "Logout", callbackData = "Logout")
                             )))
-fun returnButtonNoMarkup() = listOf(
-                                    listOf(
-                                        InlineKeyboardButton(
-                                            text = "Return",
-                                            callbackData = "Start")
-                                    ))
-fun returnButton() = InlineKeyboardMarkup(returnButtonNoMarkup())
 
 fun startCommands(updater :Updater){
     listOf(

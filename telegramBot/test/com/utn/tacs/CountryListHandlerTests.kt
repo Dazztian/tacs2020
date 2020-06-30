@@ -46,7 +46,7 @@ class CountryListHandlerTests {
         val a = RequestManager()
         every { RequestManager.getCountryLists(chatId.toString()) } returns emptyList()
 
-        assertEquals(listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup()))),
+        assertEquals(listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup))),
             myListsCommand(chatId)
         )
 
@@ -54,7 +54,7 @@ class CountryListHandlerTests {
 
         assertEquals(listOf(TelegramMessageWrapper(
             chatId, myListsText,
-            replyMarkup = InlineKeyboardMarkup(listOf(listOf(InlineKeyboardButton("name", callbackData = "Check_list _id")))+ newListButtonsNoMarkup())
+            replyMarkup = InlineKeyboardMarkup(listOf(listOf(InlineKeyboardButton("name", callbackData = "Check_list _id")))+ newListButtonsNoMarkup)
         )),
             myListsCommand(chatId)
         )
@@ -65,7 +65,7 @@ class CountryListHandlerTests {
         every { RequestManager.getListCountries(listId, chatId.toString()) } returns emptyList()
 
         assertEquals(listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(
-            listButtonsNoMarkup(listId)
+            emptylistButtonsNoMarkup(listId)
         )
         )),
             showList(listId, chatId)
@@ -134,7 +134,7 @@ class CountryListHandlerTests {
         every { RequestManager.addCountries(chatId.toString(), listId, countriesList) } returns "ERROR"
 
         addCountryCommand(chatId, listId)
-        assertEquals(listOf(TelegramMessageWrapper(chatId, "ERROR")), messageCommand(chatId, chatId, "Argentina\nBrazil"))
+        assertEquals(listOf(TelegramMessageWrapper(chatId, "ERROR"),TelegramMessageWrapper(chatId, addCountryText)), messageCommand(chatId, chatId, "Argentina\nBrazil"))
     }
 
     @Test
@@ -165,7 +165,7 @@ class CountryListHandlerTests {
         every { RequestManager.newCountriesList(chatId.toString(), "name", countriesList) } returns "ERROR"
 
         addListCommand(chatId)
-        assertEquals(listOf(TelegramMessageWrapper(chatId, "ERROR")), messageCommand(chatId, chatId, "name\nArgentina\nBrazil"))
+        assertEquals(listOf(TelegramMessageWrapper(chatId, "ERROR"),TelegramMessageWrapper(chatId, createListText)), messageCommand(chatId, chatId, "name\nArgentina\nBrazil"))
     }
 
     @Test
@@ -201,7 +201,7 @@ class CountryListHandlerTests {
         assertEquals(emptyList(), messageCommand(chatId, chatId, "1"))
 
         checkLastNDays(listId, chatId)
-        assertEquals(listOf(TelegramMessageWrapper(chatId, textInvalidNumber)), messageCommand(chatId, chatId, "0"))
+        assertEquals(listOf(TelegramMessageWrapper(chatId, textInvalidNumber),TelegramMessageWrapper(chatId, textCheckLastNDays)), messageCommand(chatId, chatId, "0"))
     }
 
     @Test
@@ -217,6 +217,12 @@ class CountryListHandlerTests {
                     "| Argentina    | 50        | 60       | 70        |\n" +
                     "</pre>")),
             checkCommand(chatId, listOf("Argentina"))
+        )
+    }
+
+    @Test
+    fun checkEmptyListTest(){
+        assertEquals(listOf(TelegramMessageWrapper(chatId, checkEmptyList)), checkEmptyList(chatId)
         )
     }
 }
