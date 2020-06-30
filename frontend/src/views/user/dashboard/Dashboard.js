@@ -37,13 +37,16 @@ export default function Dashboard(props) {
   async function fetchLocal() {
     try {
       let iso = localStorage.getItem('tracker_country_Iso')
-      if (!iso){
+      console.log(iso)
+      if (!!iso){
         const {countryIso,countryName} = await getCountry()
         iso = countryIso
+        console.log(iso)
         localStorage.setItem('tracker_country', countryName)
         localStorage.setItem('tracker_country_Iso', countryIso)
       }
       setIsLoading(false)
+      console.log(iso)
       setLocalIso(iso)
     } catch(error) {
       console.log(error)

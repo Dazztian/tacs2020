@@ -52,9 +52,9 @@ function Login(props) {
         let data = await res.json()
         console.log(data)
           const { user, token } = data;
-          localStorage.setItem('id_token', response.tokenId)
-          localStorage.setItem('id_session',user.id)
-          localStorage.setItem('tracker_name', user.name)
+          localStorage.setItem('tracker_id_token', response.tokenId)
+          localStorage.setItem('tracker_id_session',user.id)
+          localStorage.setItem('tracker_tracker_name', user.name)
           setIsLoading(false);
           if(!user.isAdmin){ 
             userDispatch({ type: 'LOGIN_USER_SUCCESS' })
@@ -75,9 +75,10 @@ function Login(props) {
       const res = await api.createUser(nameValue,loginValue,passwordValue,countryISo)
       if(res.ok) {
         const {user, token} = await res.json()
-          localStorage.setItem('id_token', token)
-          localStorage.setItem('id_session',user.id)
+          localStorage.setItem('tracker_id_token', token)
+          localStorage.setItem('tracker_id_session',user.id)
           localStorage.setItem('tracker_name', user.name)
+          localStorage.setItem('tracker_country_Iso',countryISo)
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })
           history.push('/user/home')
       } else {
@@ -96,10 +97,11 @@ function Login(props) {
         const data = await res.json()
         const { user, token } = data;
         user["id"] 
-        ? localStorage.setItem('id_session',user["id"])
-        : localStorage.setItem('id_session',user.id)
-        localStorage.setItem('id_token', token)
+        ? localStorage.setItem('tracker_id_session',user["id"])
+        : localStorage.setItem('tracker_id_session',user.id)
+        localStorage.setItem('tracker_id_token', token)
         localStorage.setItem('tracker_name', user.name)
+        localStorage.setItem('tracker_country_Iso',null)
         setIsLoading(false);
         if(!user.isAdmin){ 
           userDispatch({ type: 'LOGIN_USER_SUCCESS' })

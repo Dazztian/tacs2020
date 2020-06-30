@@ -3,9 +3,8 @@ import { getLocation } from "./GeolocationApi"
 class Api {
 
     constructor() {
-      this.authToken = localStorage.getItem("id_token");
-      this.userSessionId = localStorage.getItem("id_session");
-      this.countryMap = localStorage.getItem("countriesList");
+      this.authToken = localStorage.getItem("tracker_id_token");
+      this.userSessionId = localStorage.getItem("tracker_id_session");
     }
   
     headers = {
