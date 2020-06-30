@@ -5,14 +5,7 @@ function getLocation(options) {
   }
   
 async function getCountry(){
-    try {
-      /*const position = await getLocation()
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({countryIso: 'AR', countryName: 'Argentina'});
-        }, 1000);
-      });*/
-      
+    try {     
       const position = await getLocation()
       const res = await fetch(`https://geocode.xyz/${position.coords.latitude},${position.coords.longitude}?json=1`);
       //const promapi2 = await fetch(`https://geocode.xyz/${position.coords.latitude},${position.coords.longitude}?json=1`);

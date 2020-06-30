@@ -114,7 +114,7 @@ class Api {
       let position = await getLocation()
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
-
+      
       return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
         method: 'GET',
         headers: this.createHeaders()
