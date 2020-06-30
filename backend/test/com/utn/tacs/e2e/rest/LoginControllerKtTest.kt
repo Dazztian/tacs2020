@@ -112,7 +112,6 @@ class LoginControllerKtTest {
             userListsRepository = UserListsRepository(mongoDatabase, usersRepository)
             usersService = UsersService(usersRepository, userListsRepository)
             authorizationService = AuthorizationService(usersRepository, usersService)
-
         }
     }
 }

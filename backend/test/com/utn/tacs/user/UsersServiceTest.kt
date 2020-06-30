@@ -6,6 +6,7 @@ import com.utn.tacs.*
 import com.utn.tacs.UserCountriesList
 import com.utn.tacs.UserCountriesListResponse
 import com.utn.tacs.lists.UserListsRepository
+import com.utn.tacs.utils.GoogleOauthDataParser
 import io.ktor.features.NotFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -214,6 +215,50 @@ class UsersServiceTest {
         usersService.deleteUserByEmail(userEmail)
 
         verify { usersRepository.delete(user) }
+    }
+
+    @Test
+    fun testGetOrCreate_ok() {
+        val userId: Id<User> = newId()
+        val user = User(userId, "pepe")
+        val data: Map<String, Any?> = mapOf(
+            Pair("email","martin")
+        )
+
+        coEvery { usersRepository.getUserByEmail("martin") } returns user
+
+        val usersService = UsersService(usersRepository, userListsRepository)
+        assertEquals(user, usersService.getOrCreate(data))
+    }
+
+    @Test
+    fun testGetOrCreate_existingUser_getUser() {
+        val userId: Id<User> = newId()
+        val user = User(userId, "pepe")
+        val data: Map<String, Any?> = mapOf(
+            Pair("email","martin")
+        )
+
+        coEvery { usersRepository.getUserByEmail("martin") } returns user
+
+        val usersService = UsersService(usersRepository, userListsRepository)
+        assertEquals(user, usersService.getOrCreate(data))
+    }
+
+    @Test
+    fun testGetOrCreate_newUser_getUser() {
+        val userId: Id<User> = newId()
+        val user = User(userId, "pepe")
+        val data: Map<String, Any?> = mapOf(
+            Pair("email","martin@gmail.com"),Pair("name","martin")
+        )
+
+        coEvery { usersRepository.getUserByEmail("martin@gmail.com") } returns null
+        coEvery { usersRepository.createUser(any()) } returns user
+
+        val usersService = UsersService(usersRepository, userListsRepository)
+
+        assertEquals(user, usersService.getOrCreate(data))
     }
 }
 
