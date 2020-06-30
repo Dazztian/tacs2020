@@ -17,9 +17,9 @@ import { FixedSizeList } from 'react-window';
 
 import Api from "../../../apis/Api"
 
-const api = new Api()
 
 export default function PaisEnComun(props) {
+  const api = new Api()
   var classes = useStyles();
 
   const state = { rowsSelected: [] };

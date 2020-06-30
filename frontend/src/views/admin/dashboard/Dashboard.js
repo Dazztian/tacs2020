@@ -11,9 +11,10 @@ import Api from "../../../apis/Api"
 // styles 
 import useStyles from "./styles";
 
-const api = new Api()
+
 
 export default function Dashboard(props) {
+  const api = new Api()
   var classes = useStyles();
 
   const state = { rowsSelected: [] };
