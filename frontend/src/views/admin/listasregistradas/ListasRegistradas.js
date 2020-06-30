@@ -171,12 +171,13 @@ return(
         //obtenerListasPorFechas(fechaInicioSemana, obtenerFechaActual() ) 
     }
 
-    function obtenerListasFechaUltimos3Dias() {
-        var today = new Date();
-        let diaFormato365= obtenerDia365DelAnio()//xq buscamos desde los 3 dias anteriores
-        let diaInicial = diaFormato365 % 30-4; //Devuelve el resto tomando que cada mes tiene 30 dias
-        let mesInicial = Math.floor(diaFormato365/30) +1//Devuelve la parte entera de la division
-        let anioInicial = today.getFullYear();
+   function obtenerListasFechaUltimos3Dias() {
+        let days =3
+        var date = new Date();
+        var last = new Date(date.getTime() - ( days * 24 * 60 * 60 * 1000));
+        let diaInicial = last.getDate()
+        let mesInicial = last.getMonth() +1
+        let anioInicial = last.getFullYear()
         let fechaInicial= mesInicial +'/'+ diaInicial +'/'+ anioInicial;
         console.log(fechaInicial)
         obtenerListasPorFechas(fechaInicial, obtenerFechaActual() ) 
