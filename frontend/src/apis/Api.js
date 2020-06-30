@@ -43,6 +43,16 @@ class Api {
       console.log(e)
     }
   }
+    async getUserListsIDUser(userID) {
+    try{
+      return await fetch(`${this.BASE_URL}/api/user/${userID}/lists`, {
+        method: 'GET',
+        headers: this.createHeaders()
+      });
+    }catch(e){
+      console.log(e)
+    }
+  }
 
   async createCountryList(nombreLista,listarray){
     try {
