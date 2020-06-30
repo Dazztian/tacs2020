@@ -11,10 +11,10 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import Api from '../../../apis/Api';
-const api = new Api()
+
 
 const CrearListas = ()=>{
-
+  const api = new Api()
     const state = { rowsSelected: [] };
 		var classes = useStyles();
     var listarray = new Array();

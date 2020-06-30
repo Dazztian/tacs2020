@@ -6,10 +6,10 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import Api from '../../../apis/Api';
-const api = new Api()
+
 
 const EditarListas = ()=>{
-
+  const api = new Api()
 
     const [unArrayTodosLosPaises,setUnArrayTodosLosPaises] = useState([])
     const [unArray,setUnArray] = useState([{name:null,paises:[]}])

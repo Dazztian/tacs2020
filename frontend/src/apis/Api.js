@@ -3,8 +3,8 @@ class Api {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     };
-
-    BASE_URL = 'http://localhost:8080';
+  
+    BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
         this.authToken = localStorage.getItem("tracker_id_token")
@@ -202,4 +202,4 @@ class Api {
 }
 
 export default Api;
-  
+

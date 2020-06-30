@@ -13,9 +13,8 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
-const api = new Api();
-
 export default function Dashboard(props) {
+  const api = new Api();
   // local
   var [localCountry, setLocalIso] = useState("");
   var [isLoading, setIsLoading] = useState(true);
@@ -38,10 +37,10 @@ export default function Dashboard(props) {
     try {
       let iso = localStorage.getItem('tracker_country_Iso')
       if (!!iso){
-        const {countryIso,countryName} = await getCountry()
-        iso = countryIso
-        localStorage.setItem('tracker_country', countryName)
-        localStorage.setItem('tracker_country_Iso', countryIso)
+        //const {countryIso,countryName} = await getCountry()
+        iso = "AR"
+        //localStorage.setItem('tracker_country', countryName)
+        localStorage.setItem('tracker_country_Iso', iso)
       }
       setIsLoading(false)
       setLocalIso(iso)

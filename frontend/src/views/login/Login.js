@@ -24,9 +24,10 @@ import google from "./images/google.svg";
 import { useUserDispatch } from "../../context/UserContext";
 import Api from "../../apis/Api"
 
-const api = new Api()
+
 let countryList = []
 function Login(props) {
+  const api = new Api()
   var classes = useStyles();
   // global
   var userDispatch = useUserDispatch();

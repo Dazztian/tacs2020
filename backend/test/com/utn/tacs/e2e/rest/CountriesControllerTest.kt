@@ -30,7 +30,6 @@ import kotlin.test.assertTrue
 
 @Testcontainers
 class CountriesControllerTest {
-
     private fun testApp(callback: TestApplicationEngine.() -> Unit) {
         withTestApplication({
             authentication(usersRepository)

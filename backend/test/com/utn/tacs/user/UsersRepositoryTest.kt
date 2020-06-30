@@ -1,10 +1,17 @@
 package com.utn.tacs.user
 
 import com.github.dockerjava.api.exception.UnauthorizedException
+import com.mongodb.MongoException
+import com.mongodb.client.FindIterable
+import com.mongodb.client.internal.*
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.utn.tacs.TelegramSession
 import com.utn.tacs.User
 import com.utn.tacs.utils.Encoder
 import io.ktor.features.NotFoundException
+import io.mockk.coEvery
+import io.mockk.mockk
 import org.bson.types.ObjectId
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -20,6 +27,7 @@ import org.litote.kmongo.newId
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.test.assertTrue
 
 @Testcontainers
 class UsersRepositoryTest {
@@ -61,13 +69,21 @@ class UsersRepositoryTest {
         val repository = UsersRepository(mongoDatabase)
         assertEquals(user3, repository.createUser(user3))
 
-        //This is because we generate a new admin user in the repository creation.
         assertEquals(4,  mongoDatabase.getCollection<User>("users").countDocuments())
 
         repository.delete(user3)
         assertEquals(3,  mongoDatabase.getCollection<User>("users").countDocuments())
     }
 
+    @Test
+    fun testGetUsers() {
+        val repository = UsersRepository(mongoDatabase)
+
+        val users = repository.getUsers()
+
+        assertTrue(users.contains(user1))
+        assertTrue(users.contains(user2))
+    }
 
     companion object {
 

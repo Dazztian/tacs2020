@@ -4,11 +4,11 @@ import { Grid} from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import Api from "../../../apis/Api"
 
-const api = new Api()
+
 
 
 const ListasRegistradas = ()=>{
-
+    const api = new Api()
     const [fechaInicio, setFechaInicio] =useState()
     const [fechaFin, setFechaFin] =useState()
 

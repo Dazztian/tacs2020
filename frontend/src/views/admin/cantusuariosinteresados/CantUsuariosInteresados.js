@@ -6,11 +6,8 @@ import PageTitle from "../../../components/PageTitle/PageTitle";
 
 import Api from "../../../apis/Api"
 
-const api = new Api()
-
-
 const CantUsuariosInteresados = ()=>{
-    
+    const api = new Api()
 
     const state = { rowsSelected: [] };
 
