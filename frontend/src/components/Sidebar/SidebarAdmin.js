@@ -25,20 +25,16 @@ import {
 
 const structure = [
   { id: 0, label: "Home", link: "/admin/home", icon: <HomeIcon /> },
-  {
-    id: 1,
-    label: "Search user", link: "/admin/usersearch", icon: <Search />,
-  },
-  { id: 2,
+  { id: 1,
     label: "Countries & Users",
     children: [
-    { label: "Pais en comun", link: "/admin/countries" },
-    { label: "Usuarios interesados en un pais", link: "/admin/interestedUsers" },    
+    { label: "Common countries", link: "/admin/countries" },
+    { label: "Users on countries", link: "/admin/interestedUsers" },    
     ],
     icon: <Public /> 
   },
     {
-      id: 3,
+      id: 2,
       label: "Lists", link: "/admin/registeredLists", icon: <Search />,
     },
 ];

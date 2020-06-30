@@ -6,10 +6,11 @@ function getLocation(options) {
   
 async function getCountry(){
     try {     
-      const position = await getLocation()
-      const res = await fetch(`https://geocode.xyz/${position.coords.latitude},${position.coords.longitude}?json=1`);
+      //const position = await getLocation()
+      //const res = await fetch(`https://geocode.xyz/${position.coords.latitude},${position.coords.longitude}?json=1`);
       //const promapi2 = await fetch(`https://geocode.xyz/${position.coords.latitude},${position.coords.longitude}?json=1`);
       //const res = await Promise.race([promapi1,promapi2])
+      const res = await fetch(`https://geocode.xyz/-34,-58?json=1`);
       const data = await res.json();
       return {countryIso: data.prov, countryName: data.country};
       

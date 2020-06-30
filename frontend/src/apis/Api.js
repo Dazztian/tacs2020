@@ -111,11 +111,11 @@ class Api {
   async getNearCountries() {
     try{
 
-      let position = await getLocation()
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      
-      return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
+      //let position = await getLocation()
+      //const lat = position.coords.latitude;
+      //const lng = position.coords.longitude;
+      //return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {   
+      return await fetch(`${this.BASE_URL}/api/countries?lat=-34&lon=-58`, {
         method: 'GET',
         headers: this.createHeaders()
       });
