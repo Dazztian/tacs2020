@@ -6,9 +6,9 @@ fun startMessageBuilder(firstName :String) =    "Welcome $firstName!  \uD83D\uDE
         "To see command info press \"Help\"\n" +
         "Remember to use telegram in horizontal mode for a better experience!"
 
-val urlFrontend = urlBase.replace(":8080", ":8081")
+const val urlFrontend = "http://tacsgrupo4.tech/"
 
-val helpText =    "- This bot maintains a registry of the Coronavirus advances in the world\n" +
+const val helpText =    "- This bot maintains a registry of the Coronavirus advances in the world\n" +
         "- To begin create an account in $urlFrontend\n" +
         "- To login write /login followed by your username and password\n" +
         "(Example: /login user pass)\n\n" +
@@ -16,7 +16,7 @@ val helpText =    "- This bot maintains a registry of the Coronavirus advances i
         "- To see al countries use /countries\n\n" +
         "Tip: you don't need to capitalize the country or write the whole name\n" +
         "Example: \"/check arg\" brings Argentina info!"
-val startText =   "Welcome to the Group 4 Telegram Bot!  \uD83D\uDCBB\n\n" +
+const val startText =   "Welcome to the Group 4 Telegram Bot!  \uD83D\uDCBB\n\n" +
         "- To see the last values of a country use /check {country}\n" +
         "- To see al countries use /countries\n\n"+
         "- To manage your lists write /login followed by your username and password\n" +
