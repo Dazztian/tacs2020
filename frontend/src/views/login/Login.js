@@ -55,7 +55,8 @@ function Login(props) {
           const { user, token } = data;
           localStorage.setItem('tracker_id_token', response.tokenId)
           localStorage.setItem('tracker_id_session',user.id)
-          localStorage.setItem('tracker_tracker_name', user.name)
+          localStorage.setItem('tracker_name', user.name)
+          localStorage.setItem('tracker_country_Iso',null)
           setIsLoading(false);
           if(!user.isAdmin){ 
             userDispatch({ type: 'LOGIN_USER_SUCCESS' })
