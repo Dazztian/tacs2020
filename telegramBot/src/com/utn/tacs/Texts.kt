@@ -39,6 +39,7 @@ const val createListText =  "To create a new list just send me the name of the l
 const val addCountryText =  "Send me a list of the countries you want to add to this list\n" +
         "Each country must be written on a new line and have the exact name from /countries\n\n" +
         "Example:\nArgentina\nBrazil\nChile"
+const val checkEmptyList =  "This list has no countries"
 
 const val textCheckLastNDays =  "Send me the number of days you want to check\n" +
                                 "This request may take several seconds"

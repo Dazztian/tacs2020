@@ -7,6 +7,15 @@ import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.github.kotlintelegrambot.updater.Updater
 import com.utn.tacs.*
 
+fun emptylistButtonsNoMarkup(listId :String) :List<List<InlineKeyboardButton>> {
+    val buttons = listButtonsNoMarkup(listId)
+    return listOf(
+            listOf(buttons[0][0],
+            InlineKeyboardButton(
+                text = "Check last X days",
+                callbackData = "Check_empty_list")),
+            buttons[1])
+}
 fun listButtonsNoMarkup(listId :String) = listOf(
                                                 listOf(
                                                     InlineKeyboardButton(
@@ -24,7 +33,7 @@ fun listButtonsNoMarkup(listId :String) = listOf(
                                                         text = "Return",
                                                         callbackData = "My_Lists")
                                                 ))
-fun newListButtonsNoMarkup() = listOf(
+val newListButtonsNoMarkup = listOf(
                                     listOf(
                                         InlineKeyboardButton(
                                             text = "Create New List",
@@ -49,6 +58,9 @@ fun countryListCommands(updater : Updater){
         },
         createCallbackQueryHandler("Check_days_list", LoginType.LoggedIn) { _, update, args ->
             checkLastNDays(args[0], update.callbackQuery!!.message!!.chat.id)
+        },
+        createCallbackQueryHandler("Check_empty_list", LoginType.LoggedIn) { _, update ->
+            checkEmptyList(update.callbackQuery!!.message!!.chat.id)
         },
 
         createCallbackQueryHandler("Add_country", LoginType.LoggedIn) { _, update, args ->
@@ -75,16 +87,16 @@ fun countriesCommand(chatId: Long) :responseMessages =
 
 fun myListsCommand(chatId: Long) :responseMessages{
     return when(val countriesLists = RequestManager.getCountryLists(chatId.toString())){
-        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup())))
+        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoLists, replyMarkup = InlineKeyboardMarkup(newListButtonsNoMarkup)))
         else -> listOf(TelegramMessageWrapper(
                 chatId, myListsText,
                 replyMarkup = InlineKeyboardMarkup(countriesLists.map { countriesList -> listOf(countriesList.toButton()) } +
-                        newListButtonsNoMarkup())))
+                        newListButtonsNoMarkup)))
     }
 }
 fun showList(listId: String, chatId :Long) :responseMessages{
     return when(val countriesList = buildTableArray(RequestManager.getListCountries(listId, chatId.toString()))){
-        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(listButtonsNoMarkup(listId))))
+        emptyList<String>() -> listOf(TelegramMessageWrapper(chatId, textNoCountries, replyMarkup = InlineKeyboardMarkup(emptylistButtonsNoMarkup(listId))))
         else -> {
             val telegramMessageWrappers = mutableListOf<TelegramMessageWrapper>()
             countriesList.forEach { row -> telegramMessageWrappers.add(TelegramMessageWrapper(chatId, row, parseMode = ParseMode.HTML)) }
@@ -109,6 +121,9 @@ fun checkLastNDays(listId: String, chatId :Long) :responseMessages{
     lastImportantMessages[chatId] = PreviousMessageWrapper(MessageType.LAST_X_DAYS, listId)
     return listOf(TelegramMessageWrapper(chatId, textCheckLastNDays))
 }
+fun checkEmptyList(chatId: Long) :responseMessages{
+    return listOf(TelegramMessageWrapper(chatId, checkEmptyList))
+}
 
 fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
     if(RequestManager.healthCheck() && RequestManager.isLoggedIn(userId.toString()) && lastImportantMessages.containsKey(userId)){
@@ -123,7 +138,7 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                     lastImportantMessages.remove(userId)
                     showList(lastMessage.countryListId, chatId)
                 }else{
-                    listOf(TelegramMessageWrapper(chatId, response))
+                    listOf(TelegramMessageWrapper(chatId, response),TelegramMessageWrapper(chatId, addCountryText))
                 }
             }
             MessageType.NEW_LIST -> {
@@ -135,13 +150,13 @@ fun messageCommand(userId :Long, chatId :Long, text :String) :responseMessages{
                     lastImportantMessages.remove(userId)
                     showList(response.substringAfter(" "), chatId)
                 }else{
-                    listOf(TelegramMessageWrapper(chatId, response))
+                    listOf(TelegramMessageWrapper(chatId, response),TelegramMessageWrapper(chatId, createListText))
                 }
             }
             else -> {
                 val days = text.trim()
                 if (days.toLongOrNull() == null || days.toLong() < 1)
-                    return listOf(TelegramMessageWrapper(chatId, textInvalidNumber))
+                    return listOf(TelegramMessageWrapper(chatId, textInvalidNumber),TelegramMessageWrapper(chatId, textCheckLastNDays))
 
                 lastImportantMessages.remove(userId)
                 val telegramMessageWrappers = buildTableTimeseries(RequestManager.getTimesesiesList(lastMessage.countryListId, days.toLong()))
