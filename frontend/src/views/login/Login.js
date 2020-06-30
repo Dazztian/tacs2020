@@ -52,7 +52,7 @@ function Login(props) {
         let data = await res.json()
         console.log(data)
           const { user, token } = data;
-          localStorage.setItem('tracker_id_token', response.tokenId)
+          localStorage.setItem('tracker_id_token', token)
           localStorage.setItem('tracker_id_session',user.id)
           localStorage.setItem('tracker_tracker_name', user.name)
           setIsLoading(false);
