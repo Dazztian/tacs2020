@@ -119,7 +119,7 @@ class Api {
             //const lat = position.coords.latitude;
             //const lng = position.coords.longitude;
             //return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
-            return await fetch(`${this.BASE_URL}/api/countries?lat=-34&lon=-58`, {
+            return await fetch(`${this.BASE_URL}/api/countries?lat=-34.60988&lon=-58.45221`, {
                 method: 'GET',
                 headers: this.createHeaders()
             });
