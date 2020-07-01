@@ -64,9 +64,21 @@ Se puede levantar utilizando Docker, le pegará a la API real.
 
 Para usarlo, se puede enviar un mensaje a @Tacs_2020_Grupo_4_bot
 
+Para correrlo se necesitan 2 archivos en la carpeta \tacs2020\telegramBot\src\main\resources
+
+1) APIKey.txt el cual tendra el api token del bot
+2) Base_Url.txt el cual tendra url del backend
+
+Para crear la imagen docker se necesita primero ejecutar:
+
 ```bash
 cd telegramBot
 ./gradlew build
+```
+
+- Para correr el contenedor de manera local se ejecuta:
+```bash
+docker run --network="host" --name tacs-telegrambot -p 8082:8082 -d docker.pkg.github.com/paniaton/tacs2020/tacs-telegrambot:0.0.7
 ```
 
 ##### Docker compose
