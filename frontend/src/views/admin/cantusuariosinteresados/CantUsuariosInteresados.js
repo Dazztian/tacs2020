@@ -69,7 +69,7 @@ return(
             columns={["Nombre", "iso2"]}
             options={{
                 filter: true,
-                selectableRows: 'multiple',
+                selectableRows: 'single',
                 selectableRowsOnClick: true,
                 filterType: 'dropdown',
                 responsive: 'stacked',
