@@ -39,8 +39,8 @@ export default function Dashboard(props) {
     try {
       let iso = localStorage.getItem('tracker_country_Iso')
       if (!!iso){
-        //const {countryIso,countryName} = await getCountry()
-        iso = "AR"
+        const {countryIso,countryName} = await getCountry()
+        iso = countryIso
         //localStorage.setItem('tracker_country', countryName)
         localStorage.setItem('tracker_country_Iso', iso)
       }
