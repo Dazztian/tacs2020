@@ -53,6 +53,7 @@ const obtenerInfoUsuarioParticular = async (unIdUsuario)=>{
       
       window.alert("Ha seleccionado el User: "
                  +"\n Nombre: "+resultArray[0].name
+                 +"\n Ultimo acceso: "+resultArray[0].lastConnection
                  +"\n Cant de listas: " +resultArray[0].listsQuantity
                  +"\n Cant de total de paises: " +resultArray[0].countriesTotal ) 
   }
