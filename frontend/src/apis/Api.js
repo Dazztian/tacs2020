@@ -1,3 +1,5 @@
+import {getLocation} from './GeolocationApi'
+
 class Api {
     headers = {
         'Accept': 'application/json',
@@ -7,9 +9,10 @@ class Api {
     //BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
+        this.authToken = localStorage.getItem("tracker_id_token")
         return !!this.authToken ? {
             ...this.headers,
-            'Authorization': 'Bearer ' + localStorage.getItem("tracker_id_token")
+            'Authorization': 'Bearer ' + this.authToken
         } : this.headers;
     }
 
@@ -114,11 +117,11 @@ class Api {
     async getNearCountries() {
         try {
 
-            //let position = await getLocation()
-            //const lat = position.coords.latitude;
-            //const lng = position.coords.longitude;
-            //return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
-            return await fetch(`${this.BASE_URL}/api/countries?lat=-34.60988&lon=-58.45221`, {
+            let position = await getLocation()
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            return await fetch(`${this.BASE_URL}/api/countries?lat=${lat}&lon=${lng}`, {
+            //return await fetch(`${this.BASE_URL}/api/countries?lat=-34.60988&lon=-58.45221`, {
                 method: 'GET',
                 headers: this.createHeaders()
             });

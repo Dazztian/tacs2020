@@ -97,6 +97,7 @@ function Login(props) {
       if(res.ok) {
         const data = await res.json()
         const { user, token } = data;
+        console.log(user["id"])
         user["id"] 
         ? localStorage.setItem('tracker_id_session',user["id"])
         : localStorage.setItem('tracker_id_session',user.id)
