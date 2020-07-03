@@ -124,12 +124,10 @@ return(
         return date
     }
 
-    function obtenerListasFechaUltimoMes() {
-        var today = new Date();
-        var fechaUltimoMes = (today.getMonth()+1)+'/'+ '1' +'/'+ today.getFullYear();
-        obtenerListasPorFechas(fechaUltimoMes, obtenerFechaActual() ) 
-
+     function obtenerListasFechaUltimoMes() {
+        obtenerListasFechaUltimosNDias(30)
     }
+    
     function obtenerListasFechaUltimaSemana() {
         obtenerListasFechaUltimosNDias(7)
     }
