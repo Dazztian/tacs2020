@@ -45,7 +45,7 @@ const obtenerInfoUsuarioParticular = async (unIdUsuario)=>{
       let res = await api.getUserReport(unIdUsuario)
       let elemento = await res.json()
 
-      let promArray  =  [{ name:elemento.user.name, listsQuantity:elemento.listsQuantity, countriesTotal:elemento.countriesTotal }]
+      let promArray  =  [{ name:elemento.user.name, lastConnection:elemento.user.lastConnection, listsQuantity:elemento.listsQuantity, countriesTotal:elemento.countriesTotal }]
 
       let resultArray = await Promise.all(promArray)
       
