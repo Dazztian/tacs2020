@@ -21,10 +21,10 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
-
+const api = new Api();
 
 export default function Stats(props) {
-  const api = new Api();
+
   const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',

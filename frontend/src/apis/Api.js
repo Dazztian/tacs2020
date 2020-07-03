@@ -7,10 +7,9 @@ class Api {
     BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
-        this.authToken = localStorage.getItem("tracker_id_token")
         return !!this.authToken ? {
             ...this.headers,
-            'Authorization': 'Bearer ' + this.authToken
+            'Authorization': 'Bearer ' + localStorage.getItem("tracker_id_token")
         } : this.headers;
     }
 

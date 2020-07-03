@@ -22,6 +22,8 @@ import { useUserState } from "./context/UserContext";
 export default function App() {
   // global
   var { isAuthenticated, isAdmin } = useUserState();
+  console.log(isAuthenticated)
+  console.log(isAdmin)
   
   return (
     <Router>

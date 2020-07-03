@@ -13,8 +13,10 @@ import PageTitle from "../../../components/PageTitle";
 import ListStats from "../../../components/ListStat/ListStat";
 import TotalStats from "../../../components/Table/TableEnhanced";
 
+const api = new Api();
+
 export default function Dashboard(props) {
-  const api = new Api();
+
   // local
   var [localCountry, setLocalIso] = useState("");
   var [isLoading, setIsLoading] = useState(true);

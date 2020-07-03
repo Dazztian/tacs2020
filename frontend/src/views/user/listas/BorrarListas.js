@@ -6,9 +6,10 @@ import MUIDataTable from "mui-datatables";
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import Api from '../../../apis/Api';
 
+const api = new Api()
 
 const BorrarListas = ()=>{
-    const api = new Api()
+
 
     const [unArray,setUnArray] = useState([])
     const [selectedLists,setSelectedLists] = useState([])
