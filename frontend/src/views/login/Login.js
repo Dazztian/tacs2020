@@ -93,7 +93,6 @@ function Login(props) {
     setLoginError(false)
     setIsLoading(true)
     if (!!loginValue && !!passwordValue) {
-      //tener en cuenta q devuelve la res, esa hay q parsearla a json
       const res = await api.loginUser(loginValue,passwordValue)
       if(res.ok) {
         const data = await res.json()
@@ -194,7 +193,7 @@ function Login(props) {
                 value={loginValue}
                 onChange={e => setLoginValue(e.target.value)}
                 margin="normal"
-                placeholder="Email Adress"
+                placeholder="Username"
                 type="email"
                 fullWidth
               />
@@ -252,7 +251,7 @@ function Login(props) {
               </Typography>
               <Fade in={signUpError} timeout={500}>
                 <Typography color='error' className={classes.errorMessage}>
-                    Email already used.
+                    Username already taken.
                 </Typography>
               </Fade>
               <TextField
@@ -281,7 +280,7 @@ function Login(props) {
                 value={loginValue}
                 onChange={e => setLoginValue(e.target.value)}
                 margin="normal"
-                placeholder="Email Adress"
+                placeholder="Username"
                 type="email"
                 fullWidth
               />
