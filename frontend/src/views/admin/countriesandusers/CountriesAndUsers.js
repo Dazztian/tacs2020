@@ -15,6 +15,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { FixedSizeList } from 'react-window';
 
+import Checkbox from '@material-ui/core/Checkbox';
+
 import Api from "../../../apis/Api"
 
 const api = new Api()
@@ -115,10 +117,11 @@ useEffect(() => {
 
 //Me muestra las listas y al seleccionar me SETEA el id de la lista con el cual LUEGO voy a comparar
  const Column = ({ index, style }) => (
-    <ListItem button style={style} key={index}
-    onClick={()=> {setidLista1(ListasUsuarioParticular[index].id) }}//Seteo el id de la lista correspondiente
-    >
-    <ListItemText primary={ListasUsuarioParticular[index].name}/>
+    <ListItem button component="a" style={style} key={index}>
+      <Checkbox 
+      onClick={()=> setidLista1(ListasUsuarioParticular[index].id) }//Seteo el id de la lista correspondiente
+      />
+      <ListItemText primary={ListasUsuarioParticular[index].name}/>
     </ListItem>
   );
    
@@ -130,10 +133,11 @@ useEffect(() => {
 
 //Me muestra las listas y al seleccionar me SETEA el id de la lista con el cual LUEGO voy a comparar
   const Column2 = ({ index, style }) => (
-    <ListItem button style={style} key={index}
-    onClick={()=>setidLista2(ListasUsuarioParticular2[index].id)}//Seteo el id de la lista correspondiente
-    >
-    <ListItemText primary={ListasUsuarioParticular2[index].name}/>
+    <ListItem button style={style} key={index}>
+      <Checkbox 
+      onClick={()=>setidLista2(ListasUsuarioParticular2[index].id) }//Seteo el id de la lista correspondiente
+      />
+      <ListItemText primary={ListasUsuarioParticular2[index].name}/>
     </ListItem>
   );
    
