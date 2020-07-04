@@ -74,7 +74,7 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
      */
     fun getCountryLatestByName(name: String): CountryResponse {
         try {
-            var country = countriesRepository.getCountryByName(name.toLowerCase().capitalize())
+            val country = countriesRepository.getCountryByName(name.toLowerCase().capitalize())
             return CountryResponse(country)
         } catch (e: Exception) {
             throw NotFoundException("There was no country with name $name")
@@ -83,13 +83,26 @@ class CountriesService(private val countriesRepository: CountriesRepository) {
 
     /**
      * Get one country covid data by iso2 code name
-     * @sample Argentina
+     * @sample [Argentina]
      *
      * @param names List<String>
      * @return CountryResponse
      */
     fun getCountriesByName(names: List<String>): List<CountryResponse> {
         return countriesRepository.getCountriesByName(names).map {
+            CountryResponse(it)
+        }
+    }
+
+    /**
+     * Get one country covid data by iso2 code name
+     * @sample [AR, BR, CL]
+     *
+     * @param names List<String>
+     * @return CountryResponse
+     */
+    fun getCountriesByIso(isos: List<String>): List<CountryResponse> {
+        return countriesRepository.getCountriesByIso(isos).map {
             CountryResponse(it)
         }
     }

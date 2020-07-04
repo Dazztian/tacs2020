@@ -96,12 +96,36 @@ class CountriesServiceTest {
      }
 
     @Test
+    fun testGetCountriesByIso(){
+        val country1 = Country(newId(), "region1", "2020-05-05", Location(25.0, 25.0), CountryCode("ISO21", "ISO31"), 1000, 960, 40)
+        val country2 = Country(newId(), "region2", "2020-05-06", Location(35.0, 2445.0), CountryCode("ISO22", "ISO33"), 424000, 9610, 340)
+        val country3 = Country(newId(), "region3", "2020-05-07", Location(505.0, 235.0), CountryCode("ISO23", "ISO33"), 10030, 9604, 430)
+
+        val isos = listOf("ISO21", "ISO22")
+        coEvery { countriesRepository.getCountriesByIso(isos) } returns listOf(country1, country2, country3)
+
+        val service = CountriesService(countriesRepository)
+
+        assertEquals(listOf(CountryResponse(country1), CountryResponse(country2), CountryResponse(country3)),
+                runBlocking { service.getCountriesByIso(isos) })
+    }
+
+    @Test
     fun testGetCountriesByNameFails(){
         val names = listOf("name1", "name2")
         coEvery { countriesRepository.getCountriesByName(names) } throws NotFoundException()
 
         val service = CountriesService(countriesRepository)
         assertThrows<NotFoundException> { runBlocking { service.getCountriesByName(names)} }
+    }
+
+    @Test
+    fun testGetCountriesByIsoFails(){
+        val isos = listOf("iso1", "iso2")
+        coEvery { countriesRepository.getCountriesByIso(isos) } throws NotFoundException()
+
+        val service = CountriesService(countriesRepository)
+        assertThrows<NotFoundException> { runBlocking { service.getCountriesByIso(isos)} }
     }
 
     @Test

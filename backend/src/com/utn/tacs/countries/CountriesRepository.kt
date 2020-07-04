@@ -81,6 +81,20 @@ class CountriesRepository(database: MongoDatabase, private val externalClient: C
     }
 
     /**
+     * Get country from cache if its present
+     *
+     * @param names String
+     * @return Country
+     */
+    fun getCountriesByIso(isos: List<String>): List<Country> {
+        val result = collection.find(or(isos.map { Country::countrycode / CountryCode::iso2 eq it })).toList().distinctBy { it.countryregion }
+        if (result.isEmpty()) {
+            throw NotFoundException("There are no countries in that list")
+        }
+        return result
+    }
+
+    /**
      * Checks if countries covid data cache should be refreshed
      *
      * @return Boolean

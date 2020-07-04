@@ -82,7 +82,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                             if (countryList!!.countries.isEmpty())
                                 call.respond(emptyList<String>())
                             else
-                                call.respond(countriesService.getCountriesByName(countryList.countries.toList()))
+                                call.respond(countriesService.getCountriesByIso(countryList.countries.toList()))
                         }
                     }
                     //Adds countries to a countriesList
@@ -99,7 +99,8 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                             null -> call.respond(HttpStatusCode(400, "List not found"))
                             else -> {
                                 val request = call.receive<UserCountriesListModificationRequest>()
-                                val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
+                                val allCountries = countriesService.getAllCountries()
+                                val countryNames = allCountries.map { x -> x.countryregion }
                                 if (!countryNames.containsAll(request.countries)) {
                                     call.respond(HttpStatusCode(405, "invalid countries"),
                                             request.countries.fold("Invalid countries:", { acc, country ->
@@ -112,7 +113,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                                 }
 
                                 val newList = UserCountriesListModificationRequest(countryList.name, countryList.countries)
-                                newList.countries.addAll(request.countries)
+                                newList.countries.addAll(allCountries.filter { c -> request.countries.contains(c.countryregion) }.map { c -> c.countrycode!!.iso2 })
                                 usersService.updateUserList(countryList.userId.toString(), countryList._id.toString(), newList)
 
                                 call.respond(HttpStatusCode.OK, "Saved")
@@ -123,7 +124,7 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                     //Gets timeseries of a list between dates
                     get("/timeseries") {
                         val listId = call.parameters["listId"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-                        val iso2Countries = countriesService.getIsoByName(userListsRepository.getUserList(listId)!!.countries.toList())
+                        val iso2Countries = userListsRepository.getUserList(listId)!!.countries.toList()
                         val fromDate: String? = call.request.queryParameters["fromDate"]
                         val toDate: String? = call.request.queryParameters["toDate"]
 
@@ -132,15 +133,15 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                 }
                 //Creates a new userCountriesList
                 post {
-                    val telegramId = call.parameters["telegramId"]
-                            ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val telegramId = call.parameters["telegramId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val allCountries = countriesService.getAllCountries()
                     when (val session = telegramRepository.getTelegramSession(telegramId)) {
                         null -> call.respond(HttpStatusCode(400, "Id not found"))
                         else -> {
                             val request = call.receive<UserCountriesListModificationRequest>()
 
                             if (request.countries.isNotEmpty()) {
-                                val countryNames = countriesService.getAllCountries().map { x -> x.countryregion }
+                                val countryNames = allCountries.map { x -> x.countryregion }
                                 if (!countryNames.containsAll(request.countries)) {
                                     call.respond(HttpStatusCode(405, "invalid countries"),
                                             request.countries.fold("Invalid countries:", { acc, country ->
@@ -152,7 +153,8 @@ fun Application.telegram(usersRepository: UsersRepository, userListsRepository: 
                                     return@post
                                 }
                             }
-                            call.respond(usersService.createUserList(session.userId.toString(), request.name, request.countries))
+                            call.respond(usersService.createUserList(session.userId.toString(), request.name,
+                                    allCountries.filter { c -> request.countries.contains(c.countryregion) }.map { c -> c.countrycode!!.iso2 }.toMutableSet()))
                         }
                     }
                 }
