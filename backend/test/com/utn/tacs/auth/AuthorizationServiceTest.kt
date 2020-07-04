@@ -38,6 +38,8 @@ class AuthorizationServiceTest {
     fun testSignUpCorrect() {
         val user = User("testName", "testEmail", "testPassword", "country", false)
         every { usersService.createUser(any()) } returns user
+        every { usersRepository.setUserLastLogin(any()) } returns user
+
         val service = AuthorizationService(usersRepository, usersService)
         assertEquals(user, service.signUp(SignUpRequest("request", "email", "pass", "country")))
     }

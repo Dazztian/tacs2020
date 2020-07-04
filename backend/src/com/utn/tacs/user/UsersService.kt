@@ -165,7 +165,6 @@ class UsersService(private val usersRepository: UsersRepository, private val use
     }
 
     fun getOrCreate(data: Map<String, Any?>): User {
-        return usersRepository.getUserByEmail(data["email"] as String)
-                ?: usersRepository.createUser(GoogleOauthDataParser.parse(data))!!
+       return usersRepository.setUserLastLogin(usersRepository.getUserByEmail(data["email"] as String) ?: usersRepository.createUser(GoogleOauthDataParser.parse(data))!!)
     }
 }

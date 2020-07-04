@@ -9,6 +9,7 @@ import com.utn.tacs.lists.UserListsRepository
 import com.utn.tacs.utils.GoogleOauthDataParser
 import io.ktor.features.NotFoundException
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
@@ -26,7 +27,8 @@ class UsersServiceTest {
     fun testGetUser_ok() {
         val userId = "224"
         val user = User(newId(), "pepe")
-        coEvery { usersRepository.getUserById(userId) } returns user
+        every { usersRepository.getUserById(userId) } returns user
+        every { usersRepository.setUserLastLogin(user) } returns user
 
         val usersService = UsersService(usersRepository, userListsRepository)
         assertEquals(user, usersService.getUser(userId))
@@ -226,7 +228,8 @@ class UsersServiceTest {
         )
 
         coEvery { usersRepository.getUserByEmail("martin") } returns user
-
+        every { usersRepository.setUserLastLogin(user) } returns user
+9
         val usersService = UsersService(usersRepository, userListsRepository)
         assertEquals(user, usersService.getOrCreate(data))
     }
@@ -240,6 +243,7 @@ class UsersServiceTest {
         )
 
         coEvery { usersRepository.getUserByEmail("martin") } returns user
+        every { usersRepository.setUserLastLogin(user) } returns user
 
         val usersService = UsersService(usersRepository, userListsRepository)
         assertEquals(user, usersService.getOrCreate(data))
@@ -255,6 +259,7 @@ class UsersServiceTest {
 
         coEvery { usersRepository.getUserByEmail("martin@gmail.com") } returns null
         coEvery { usersRepository.createUser(any()) } returns user
+        every { usersRepository.setUserLastLogin(user) } returns user
 
         val usersService = UsersService(usersRepository, userListsRepository)
 

@@ -34,7 +34,7 @@ class AuthorizationService(private val usersRepository: UsersRepository, private
      * @throws Exception
      */
     fun signUp(signUpRequest: SignUpRequest): User {
-        return usersService.createUser(signUpRequest)
+        return usersRepository.setUserLastLogin(usersService.createUser(signUpRequest))
     }
 
 }
