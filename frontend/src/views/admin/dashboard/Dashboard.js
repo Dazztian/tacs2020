@@ -83,7 +83,7 @@ useEffect(() => {
             columns={["id", "name", "email"]}
             options={{
               filter: true,
-              selectableRows: 'multiple',
+              selectableRows: 'single',
               selectableRowsOnClick: true,
               filterType: 'dropdown',
               responsive: 'stacked',
