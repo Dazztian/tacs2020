@@ -5,7 +5,7 @@ class Api {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     };
-    BASE_URL = 'https://4684ca2a0b79.ngrok.io';
+    BASE_URL = 'https://b04660ae0262.ngrok.io';
     //BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
