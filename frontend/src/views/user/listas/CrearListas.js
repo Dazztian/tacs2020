@@ -118,7 +118,7 @@ return(
                   color="primary" 
                   disabled={ !paisElegido || !nombreLista }
                   onClick={() =>{
-                      !listarray.length<1 ? crearListaDePaisesXUsuario() : window.alert("Deja seleccionado algo")
+                      !listarray.length<1 ? crearListaDePaisesXUsuario() : window.alert("Debe seleccionar un pais primero")
                     }
                   }
                 >
