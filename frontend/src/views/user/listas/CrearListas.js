@@ -50,7 +50,7 @@ const CrearListas = ()=>{
 
     const crearListaDePaisesXUsuario = async ()=>{
         try{	
-					await api.createCountryList(nombreLista,listarray[listarray.length - 1])
+					await api.createCountryList(nombreLista,listarray)
           window.alert("List: "+nombreLista+ " created")
           console.log(listarray)
 					listarray = []
@@ -118,7 +118,7 @@ return(
                   color="primary" 
                   disabled={ !paisElegido || !nombreLista }
                   onClick={() =>{
-                      crearListaDePaisesXUsuario()
+                      !listarray.length<1 ? crearListaDePaisesXUsuario() : window.alert("Deja seleccionado algo")
                     }
                   }
                 >
@@ -150,6 +150,7 @@ return(
                 rowsSelected: state.rowsSelected,
 								onRowsSelect:  (rowsSelected, allRows) => {       
               listarray.push(allRows.map( item => unArray[item.dataIndex][1]));
+              listarray=Array.from(new Set(listarray[listarray.length - 1]))
 							setPaisElegido(true)
 							},
 						}
