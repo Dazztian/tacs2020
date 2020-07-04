@@ -5,8 +5,9 @@ class Api {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     };
-    BASE_URL = 'https://b04660ae0262.ngrok.io';
-    //BASE_URL = 'http://54.162.60.250:8080'; 
+    
+    //BASE_URL = 'https://b04660ae0262.ngrok.io';
+    BASE_URL = 'http://54.162.60.250:8080'; 
 
     createHeaders() {
         this.authToken = localStorage.getItem("tracker_id_token")
